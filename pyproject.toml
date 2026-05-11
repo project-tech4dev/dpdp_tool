@@ -6,9 +6,9 @@ authors = [
 description = "DPDP Readiness Navigator for NGOs"
 requires-python = ">=3.10"
 readme = "README.md"
+license = {text = "MIT"}
 dynamic = ["version"]
 dependencies = [
-    "frappe",
     "anthropic>=0.20.0"
 ]
 
@@ -23,5 +23,5 @@ build-backend = "flit_core.buildapi"
 [tool.flit.module]
 name = "dpdp_tool"
 
-[frappe]
-frappe_version = ">=15.0.0"
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<17.0.0-dev"
