@@ -14,10 +14,6 @@ app_license     = "MIT"
 # then commit the updated JSON files.
 fixtures = [
     {
-        "dt": "Module Def",
-        "filters": [["name", "in", ["DPDP Tool"]]]
-    },
-    {
         "dt": "DocType",
         "filters": [["name", "in", [
             "DPDP Assessment",

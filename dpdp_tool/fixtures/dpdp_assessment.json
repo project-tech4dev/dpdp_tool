@@ -1,6 +1,7 @@
 [
   {
     "name": "DPDP Assessment",
+    "custom": 1,
     "module": "DPDP Tool",
     "doctype": "DocType",
     "is_submittable": 0,
