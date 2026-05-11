@@ -1,0 +1,151 @@
+[
+  {
+    "name": "DPDP Assessment",
+    "module": "DPDP Tool",
+    "doctype": "DocType",
+    "is_submittable": 0,
+    "autoname": "format:DPDP-ASSESS-{####}",
+    "sort_field": "submitted_on",
+    "sort_order": "DESC",
+    "fields": [
+      {
+        "fieldname": "org_name",
+        "fieldtype": "Data",
+        "label": "Organisation Name",
+        "reqd": 1,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "org_email",
+        "fieldtype": "Data",
+        "label": "Email",
+        "reqd": 1,
+        "options": "Email"
+      },
+      {
+        "fieldname": "contact_name",
+        "fieldtype": "Data",
+        "label": "Contact Name",
+        "reqd": 0,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "sector",
+        "fieldtype": "Small Text",
+        "label": "Sector(s)",
+        "reqd": 0,
+        "in_list_view": 1,
+        "description": "Comma-separated. E.g. 'Education, Health & Nutrition'"
+      },
+      {
+        "fieldname": "org_size",
+        "fieldtype": "Select",
+        "label": "Organisation Size",
+        "reqd": 0,
+        "options": "\nUnder 20 staff\n20\u2013100 staff\n100\u2013500 staff\n500+ staff"
+      },
+      {
+        "fieldname": "beneficiaries",
+        "fieldtype": "Small Text",
+        "label": "Beneficiary Groups",
+        "reqd": 0
+      },
+      {
+        "fieldname": "sb_scores",
+        "fieldtype": "Section Break",
+        "label": "Section Scores"
+      },
+      {
+        "fieldname": "total_score",
+        "fieldtype": "Float",
+        "label": "Total Score (/50)",
+        "reqd": 0,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "score_consent",
+        "fieldtype": "Float",
+        "label": "Data Collection & Consent (/10)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "score_storage",
+        "fieldtype": "Float",
+        "label": "Data Storage & Security (/10)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "score_usage",
+        "fieldtype": "Float",
+        "label": "Data Usage & Sharing (/10)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "score_rights",
+        "fieldtype": "Float",
+        "label": "Rights of Individuals (/10)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "score_governance",
+        "fieldtype": "Float",
+        "label": "Governance & Processes (/10)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "sb_detail",
+        "fieldtype": "Section Break",
+        "label": "Assessment Detail"
+      },
+      {
+        "fieldname": "answers_json",
+        "fieldtype": "Long Text",
+        "label": "Raw Answers (JSON)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "recommendations",
+        "fieldtype": "Long Text",
+        "label": "AI Recommendations",
+        "reqd": 0
+      },
+      {
+        "fieldname": "sb_meta",
+        "fieldtype": "Section Break",
+        "label": "Metadata"
+      },
+      {
+        "fieldname": "status",
+        "fieldtype": "Select",
+        "label": "Status",
+        "reqd": 0,
+        "in_list_view": 1,
+        "options": "Submitted\nProcessed\nFailed",
+        "default": "Submitted"
+      },
+      {
+        "fieldname": "submitted_on",
+        "fieldtype": "Datetime",
+        "label": "Submitted On",
+        "reqd": 0,
+        "in_list_view": 1
+      }
+    ],
+    "permissions": [
+      {
+        "role": "System Manager",
+        "read": 1,
+        "write": 1,
+        "create": 1,
+        "delete": 1
+      },
+      {
+        "role": "Administrator",
+        "read": 1,
+        "write": 1,
+        "create": 1,
+        "delete": 1
+      }
+    ]
+  }
+]

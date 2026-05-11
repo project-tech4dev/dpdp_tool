@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DPDP Self-Assessment — Tech4Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css">
+<script src="/assets/frappe/js/frappe-web.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<!-- Frappe runtime -->
+<script src="/assets/frappe/js/frappe-web.min.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
+    <div class="nav-div"></div>
+    <span class="nav-label">DPDP Navigator</span>
+  </a>
+  <a href="/" class="nav-back">← Back</a>
+</nav>
+
+<!-- ══ INTRO ══════════════════════════════════════════════════════ -->
+<div id="s-intro" class="screen active">
+  <div class="assess-hero">
+    <div class="assess-hero-inner">
+      <div class="a-tag"><span class="edot"></span>DPDP Act 2023 · Self-Assessment</div>
+      <h1 class="a-h1">Understand your<br><em>compliance posture</em><br>in under 15 minutes.</h1>
+      <p class="a-sub">25 questions across 5 domains of the DPDP Act 2023. Scored instantly. An AI-generated 30/90/365-day roadmap follows — tailored to your sector, size, and gaps. Download as PDF.</p>
+      <div class="a-stats">
+        <div><span class="ahs-val">25</span><span class="ahs-lbl">questions</span></div>
+        <div><span class="ahs-val">5</span><span class="ahs-lbl">domains</span></div>
+        <div><span class="ahs-val">50</span><span class="ahs-lbl">max score</span></div>
+        <div><span class="ahs-val">PDF</span><span class="ahs-lbl">report included</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="intro-wrap">
+    <div class="score-guide">
+      <div class="sg-col">
+        <div class="sg-title">Scoring</div>
+        <div class="sg-row"><div class="sg-dot" style="background:var(--blue)"></div>Yes — 2 points</div>
+        <div class="sg-row"><div class="sg-dot" style="background:var(--amber)"></div>Partially — 1 point</div>
+        <div class="sg-row"><div class="sg-dot" style="background:var(--red)"></div>No / Not Sure — 0 points</div>
+      </div>
+      <div class="sg-col">
+        <div class="sg-title">Readiness Levels</div>
+        <div class="sg-row"><div class="sg-dot d-hi"></div>0–20 · High Risk</div>
+        <div class="sg-row"><div class="sg-dot d-ba"></div>21–35 · Basic Readiness</div>
+        <div class="sg-row"><div class="sg-dot d-mo"></div>36–45 · Moderate Readiness</div>
+        <div class="sg-row"><div class="sg-dot d-st"></div>46–50 · Strong Readiness</div>
+      </div>
+    </div>
+
+    <div class="org-form">
+      <h3>Tell us about your organisation</h3>
+      <p>Calibrates your score against sector benchmarks and tailors the AI roadmap to your context.</p>
+      <div class="fg2">
+        <div class="fg"><label>Organisation Name *</label><input type="text" id="i-org" placeholder="Your organisation"></div>
+        <div class="fg"><label>Your Name *</label><input type="text" id="i-name" placeholder="Full name"></div>
+      </div>
+      <div class="fg"><label>Work Email *</label><input type="email" id="i-email" placeholder="you@organisation.org"></div>
+      <div class="fg" style="grid-column:1/-1">
+        <label>Sector(s) * <span style="font-weight:400;color:var(--muted);font-size:.75rem">(select all that apply)</span></label>
+        <div class="sector-checkboxes" id="sector-checkboxes">
+          <label class="sector-cb"><input type="checkbox" value="Health &amp; Nutrition"> Health &amp; Nutrition</label>
+          <label class="sector-cb"><input type="checkbox" value="Education"> Education</label>
+          <label class="sector-cb"><input type="checkbox" value="Livelihoods"> Livelihoods</label>
+          <label class="sector-cb"><input type="checkbox" value="Gender &amp; SRHR"> Gender &amp; SRHR</label>
+          <label class="sector-cb"><input type="checkbox" value="Environment"> Environment</label>
+          <label class="sector-cb"><input type="checkbox" value="Disability"> Disability</label>
+          <label class="sector-cb"><input type="checkbox" value="Humanitarian"> Humanitarian</label>
+          <label class="sector-cb"><input type="checkbox" value="Governance"> Governance</label>
+          <label class="sector-cb"><input type="checkbox" value="Other"> Other</label>
+        </div>
+      </div>
+      <div class="fg2">
+        <div class="fg" style="grid-column:2"><label>Organisation Size *</label>
+          <select id="i-size">
+            <option value="">Select size</option>
+            <option>Under 20 staff</option><option>20–100 staff</option>
+            <option>100–500 staff</option><option>500+ staff</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Primary beneficiary groups</label><input type="text" id="i-bene" placeholder="e.g. children, women, rural communities"></div>
+      <button class="btn-start" onclick="startAssessment()">Begin Assessment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ASSESS ═════════════════════════════════════════════════════ -->
+<div id="s-assess" class="screen">
+  <div class="assess-wrap">
+    <div class="session-warn">⚠ Progress is not saved — please complete in one session</div>
+    <div class="prog-hdr">
+      <div class="prog-sec" id="prog-sec">Section 1 of 5</div>
+      <div class="prog-cnt" id="prog-cnt">Question 1 of 25</div>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:4%"></div></div>
+    <div class="ss-strip" id="ss-strip">
+      <div class="ss-title">Your scores so far</div>
+      <div id="ss-bars"></div>
+    </div>
+    <div id="q-area"></div>
+    <div class="q-nav">
+      <button class="btn-prev" id="btn-prev" onclick="prevQ()">← Previous</button>
+      <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RESULTS ════════════════════════════════════════════════════ -->
+<div id="s-result" class="screen">
+  <div class="result-wrap">
+    <div class="result-hero">
+      <div class="rh-left">
+        <h2>Your DPDP Readiness Report</h2>
+        <div class="rh-org" id="rh-org"></div>
+        <div class="rh-band" id="rh-band"></div>
+      </div>
+      <div style="text-align:right">
+        <div class="rh-score" id="rh-score">—</div>
+        <div class="rh-score-lbl">out of 50 points</div>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-pdf" id="btn-pdf" onclick="generatePDF()" disabled>⬇ Download PDF Report</button>
+      <a href="/#consult-s" class="btn-consult">Request a DPDP Consult →</a>
+      <button class="btn-restart" onclick="restartAssessment()">↺ Retake</button>
+    </div>
+
+    <div class="sgrid" id="sgrid"></div>
+
+    <div class="qb-box">
+      <h3>Question-by-question breakdown</h3>
+      <p>Your responses across all 25 questions, grouped by domain.</p>
+      <div class="qb-secs" id="qb-secs"></div>
+    </div>
+
+    <div class="reco-box">
+      <div class="reco-hdr">
+        <div class="reco-icon">🤖</div>
+        <div class="reco-hdr-text">
+          <h3>AI-Generated Compliance Roadmap</h3>
+          <p>Tailored to your sector, size, and gap profile</p>
+        </div>
+      </div>
+      <div id="reco-content">
+        <div class="reco-loading" id="reco-loading">
+          <div class="reco-spinner"></div>
+          <div class="reco-loading-text">Generating your personalised roadmap…</div>
+          <div class="reco-loading-step" id="reco-step">Analysing your responses</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="/assets/dpdp_tool/js/dpdp-assess.js"></script>
+</body>
+</html>

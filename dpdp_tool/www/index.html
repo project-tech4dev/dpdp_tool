@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DPDP Readiness Navigator — Tech4Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css">
+<script src="/assets/frappe/js/frappe-web.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<!-- Frappe runtime -->
+<script src="/assets/frappe/js/frappe-web.min.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="https://projecttech4dev.org" class="nav-logo">
+    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
+    <div class="nav-div"></div>
+    <span class="nav-label">DPDP Navigator</span>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="active">Overview</a>
+    <a href="#why">Why DPDP</a>
+    <a href="#who">Who It's For</a>
+    <a href="#dashboard">Sector Insights</a>
+    <a href="/assess" class="nav-cta nav-cta-assess">Begin Self-Assessment</a>
+    <a href="#consult-s" class="nav-cta nav-cta-consult">Request DPDP Consult →</a>
+  </div>
+  <!-- Hamburger — mobile only -->
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile nav drawer -->
+<div class="nav-drawer" id="nav-drawer">
+  <a href="/" onclick="closeMenu()">Overview</a>
+  <a href="#why" onclick="closeMenu()">Why DPDP</a>
+  <a href="#who" onclick="closeMenu()">Who It's For</a>
+  <a href="#dashboard" onclick="closeMenu()">Sector Insights</a>
+  <div class="drawer-ctas">
+    <a href="/assess" class="drawer-btn-assess" onclick="closeMenu()">Begin Self-Assessment</a>
+    <a href="#consult-s" class="drawer-btn-consult" onclick="closeMenu()">Request DPDP Consult →</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-tag"><span class="edot"></span>Digital Personal Data Protection Act 2023</div>
+      <h1>The people you serve<br>trust you with their data.<br><em>That trust deserves</em><br>protection.</h1>
+      <p class="hero-sub">Your NGO holds health records, income data, survivor disclosures, children's information. The DPDP Act is now law — with penalties up to ₹250 crore. Know where you stand in 15 minutes.</p>
+      <div class="hero-btns">
+        <a href="/assess" class="btn-o">Begin Self-Assessment →</a>
+        <a href="#why" class="btn-g">Why this matters ↓</a>
+        <a href="#dashboard" class="btn-g">Sector Insights ↓</a>
+      </div>
+    </div>
+    <div>
+      <div class="uc">
+        <div class="uc-title">⚡ DPDP Enforcement Timeline</div>
+        <div class="tl">
+          <div class="tl-d"><strong>Nov 2025</strong>Active now</div>
+          <div><div class="badge b-done">IN FORCE</div><div class="tl-lbl">Rules Notified · Board Constituted</div><div class="tl-desc">DPDP Rules 2025 gazetted 13 Nov. Data Protection Board of India formally established. Regulatory framework is live.</div></div>
+        </div>
+        <div class="tl">
+          <div class="tl-d"><strong>Nov 2026</strong>~7 months</div>
+          <div><div class="badge b-now">PREPARE NOW</div><div class="tl-lbl">Consent Management Obligations Live</div><div class="tl-desc">Rule 4 activates. All consent mechanisms must be DPDP-compliant. Privacy notices must be updated across every data collection point.</div></div>
+        </div>
+        <div class="tl">
+          <div class="tl-d"><strong>May 2027</strong>~13 months</div>
+          <div><div class="badge b-come">FULL ENFORCEMENT</div><div class="tl-lbl">All Substantive Obligations Enforced</div><div class="tl-desc">Security safeguards, 72-hour breach notification, rights of data principals, children's data rules, and penalties up to ₹250 crore — all enforceable.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- WHY — COMPLIANCE + COMMUNITY -->
+<section id="why">
+  <div class="container">
+    <div class="wsplit">
+      <div>
+        <div class="eyelabel">The compliance case</div>
+        <h2 class="sh">This is now law — with teeth.</h2>
+        <div class="wlead">This is now law — with teeth. The DPDP Act covers every organisation that processes personal data of Indian citizens, including your NGO, regardless of size or registration type.</div>
+        <p class="wbody">It is backed by the <strong>Data Protection Board of India</strong> — an active regulator with powers to investigate and fine. Every NGO that collects, stores, or shares digital personal data is a <strong>Data Fiduciary</strong> under the Act.</p>
+        <p class="wbody">Consent, security, retention, and rights must all meet defined standards. Full enforcement kicks in May 2027 — <strong>the preparation window is open now.</strong></p>
+        <div class="pcard">
+          <div class="pcard-lbl">⚠ Financial penalties under the DPDP Act 2023</div>
+          <div class="prow"><div class="pamt">Up to ₹250 Cr</div><div>Failure to implement required data security safeguards (Section 8)</div></div>
+          <div class="prow"><div class="pamt">Up to ₹200 Cr</div><div>Failure to notify the Board of a personal data breach within required window</div></div>
+          <div class="prow"><div class="pamt">Up to ₹200 Cr</div><div>Non-compliance with children's data processing obligations (Section 9)</div></div>
+          <div class="prow"><div class="pamt">Up to ₹50 Cr</div><div>Failure to fulfil data principal rights obligations within 90 days</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="tblock">
+          <div class="tblock-lbl">The community trust case</div>
+          <h3>"Data protection is not a compliance checkbox — it is a commitment to the dignity of every beneficiary who trusts your organisation with their story."</h3>
+          <p>Survivors, children, patients, and informal workers share personal information because they trust your organisation to protect it. A data breach does not just create legal risk — it causes direct harm to the communities you exist to serve.</p>
+        </div>
+        <div class="vc-cards">
+          <div class="vc">
+            <div class="vc-t">Children and minors under 18</div>
+            <div class="vc-d">The highest protection tier under DPDP. Any programme touching under-18s must obtain <strong>verifiable parental consent</strong> and cannot profile or monitor children's behaviour.</div>
+            <div class="vc-r">Section 9 · Verifiable parental consent · Up to ₹200 Cr penalty</div>
+          </div>
+          <div class="vc">
+            <div class="vc-t">Vulnerable adults and sensitive disclosures</div>
+            <div class="vc-d">Health, income, legal, and survival disclosures. A breach here doesn't just create legal risk — it directly harms the communities you exist to serve.</div>
+            <div class="vc-r">Data minimisation · Purpose limitation · Consent obligations</div>
+          </div>
+          <div class="vc">
+            <div class="vc-t">Field data that outlasts the programme</div>
+            <div class="vc-d">Records from closed programmes sit in old spreadsheets and servers for years. DPDP requires deletion once purpose is served — and documented proof that it happened.</div>
+            <div class="vc-r">Retention schedules · Erasure obligations · Rule 8</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY NGOs SPECIFICALLY -->
+<section id="why-ngo" style="padding:5.5rem 3rem">
+  <div class="container ngo-inner">
+    <div class="eyelabel">Why NGOs face particular exposure</div>
+    <h2 class="sh" style="color:#fff">The social sector collects the most sensitive data — often with the least protection in place.</h2>
+    <p class="sub">NGOs collect data across programmes, M&amp;E systems, and partner databases — without dedicated privacy staff or IT infrastructure. The DPDP Act provides no exemption.</p>
+    <div class="ngo-grid">
+      <div class="nc"><div class="nc-i">📋</div><div class="nc-t">Multi-programme data silos</div><div class="nc-d">Multiple programmes, separate systems, no unified data governance. Each programme is its own compliance surface.</div><div class="nc-f">Common gap → no unified data register</div></div>
+      <div class="nc"><div class="nc-i">🤝</div><div class="nc-t">Partner and government data flows</div><div class="nc-d">Data shared with government systems, hospital partners, or co-implementing NGOs requires Data Processing Agreements — which most NGOs have never put in place.</div><div class="nc-f">Common gap → no DPAs with partners or vendors</div></div>
+      <div class="nc"><div class="nc-i">📱</div><div class="nc-t">Field technology without oversight</div><div class="nc-d">KoBoToolbox, ODK, Google Forms, WhatsApp, field staff's personal phones — all process personal data and all require contractual agreements under the Act.</div><div class="nc-f">Common gap → no systems inventory or access controls</div></div>
+      <div class="nc"><div class="nc-i">📁</div><div class="nc-t">Legacy data without deletion policies</div><div class="nc-d">Records from ended programmes sit in servers and filing cabinets for years. DPDP requires active retention limits and documented deletion.</div><div class="nc-f">Common gap → no retention schedule or deletion process</div></div>
+      <div class="nc"><div class="nc-i">📝</div><div class="nc-t">Consent forms that miss the mark</div><div class="nc-d">Most NGO consent forms were built for IRB or funders — not DPDP. They lack purpose statements, retention periods, and rights language. Every form needs reviewing before Nov 2026.</div><div class="nc-f">Common gap → non-compliant consent and notice processes</div></div>
+      <div class="nc"><div class="nc-i">🔐</div><div class="nc-t">No breach response plan</div><div class="nc-d">Breach notification to the Board is mandatory — regardless of scale. Most NGOs have no documented response procedure for a lost laptop or compromised database.</div><div class="nc-f">Common gap → no incident response procedure</div></div>
+    </div>
+    <div class="ngo-q">
+      <div class="ngo-qt">"The communities we serve trusted us with their stories long before any law required it. DPDP compliance is how we formalise that trust — and honour it."</div>
+      <div class="ngo-qa">Tech4Dev · DPDP Advisory Practice · 2025</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section id="who">
+  <div class="container">
+    <div class="eyelabel">Who can use this tool</div>
+    <h2 class="sh">Built for the social sector.</h2>
+    <p class="sub">Built around how social sector organisations actually collect, process, and share personal data — with guidance calibrated to your sector's specific risks.</p>
+    <div class="wgrid">
+      <div class="wcard"><div class="wi">🏥</div><div class="wt">Health &amp; Nutrition</div><div class="wd">Patient records, treatment data, maternal health, clinical data across field programmes and hospital partnerships.</div></div>
+      <div class="wcard"><div class="wi">📚</div><div class="wt">Education</div><div class="wd">Schools, EdTech NGOs, learning programmes — all collecting children's data at the highest protection tier under DPDP.</div></div>
+      <div class="wcard"><div class="wi">💼</div><div class="wt">Livelihoods &amp; Skilling</div><div class="wd">Financial data, bank details, Aadhaar-linked records, and livelihood profiles from vulnerable communities.</div></div>
+      <div class="wcard"><div class="wi">⚖️</div><div class="wt">Gender &amp; SRHR</div><div class="wd">Survivor disclosures, GBV case records, SRHR data — the most sensitive data in the sector.</div></div>
+      <div class="wcard"><div class="wi">♿</div><div class="wt">Disability Inclusion</div><div class="wd">Health, functional, and care data — often with legally appointed guardians involved in consent.</div></div>
+      <div class="wcard"><div class="wi">🤝</div><div class="wt">Humanitarian Response</div><div class="wd">Beneficiary registries, displacement records, vulnerability data — often under emergency conditions with limited governance.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT -->
+<section id="what">
+  <div class="container">
+    <div class="eyelabel">What the assessment covers</div>
+    <h2 class="sh">In 15 minutes, know exactly<br>where you stand — and what to fix first.</h2>
+    <p class="sub">25 questions across 5 DPDP compliance areas. Your score renders instantly. An AI-generated 30/90/365-day action plan follows — downloadable as a PDF for your board and funders.</p>
+    <div class="dgrid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="dcard"><div class="dn">SECTION 01</div><div class="dt">Data Collection &amp; Consent</div><div class="dd">Notice requirements, children's consent, consent records, data minimisation, and withdrawal process.</div><div class="dc">5 questions · 10 pts</div></div>
+      <div class="dcard"><div class="dn">SECTION 02</div><div class="dt">Data Storage &amp; Security</div><div class="dd">Data inventory, access controls, role-based permissions, retention schedules, and backup procedures.</div><div class="dc">5 questions · 10 pts</div></div>
+      <div class="dcard"><div class="dn">SECTION 03</div><div class="dt">Data Usage &amp; Sharing</div><div class="dd">Purpose limitation, partner agreements, secure transmission, cross-border hosting, and vendor due diligence.</div><div class="dc">5 questions · 10 pts</div></div>
+      <div class="dcard"><div class="dn">SECTION 04</div><div class="dt">Rights of Individuals</div><div class="dd">Access requests, correction, erasure, grievance mechanisms, and timely response within DPDP deadlines.</div><div class="dc">5 questions · 10 pts</div></div>
+      <div class="dcard"><div class="dn">SECTION 05</div><div class="dt">Governance &amp; Processes</div><div class="dd">Designated responsibility, written privacy policy, staff training, breach response plan, and periodic review.</div><div class="dc">5 questions · 10 pts</div></div>
+      <div class="dcard" style="border-top-color:var(--orange)"><div class="dn">SCORING</div><div class="dt">Readiness Bands</div><div class="dd">0–20 · High Risk &nbsp; 21–35 · Basic &nbsp; 36–45 · Moderate &nbsp; 46–50 · Strong</div><div class="dc" style="color:var(--orange)">Max score: 50</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="container">
+    <div class="db-hdr">
+      <div>
+        <div class="eyelabel">Sector Insights</div>
+        <h2 class="sh" style="margin-bottom:.5rem">How the sector is faring.</h2>
+        <p class="sub" style="margin-bottom:0">Aggregated from submitted assessments. Sectors shown once 3+ organisations have completed. Updates on each page load.</p>
+      </div>
+      <div class="db-meta" id="db-meta">Loading data…</div>
+    </div>
+    <div class="stabs" id="stabs"></div>
+    <div id="dpanels">
+      <div class="db-load" id="db-loading">
+        <div class="shimmer" style="height:280px"></div>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div class="shimmer" style="height:90px"></div>
+          <div class="shimmer" style="height:90px"></div>
+          <div class="shimmer" style="height:90px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll to action CTA -->
+    <div class="insights-cta">
+      <div class="insights-cta-text">
+        <strong>See where your organisation stands.</strong><br>
+        Complete the self-assessment to add your data to these sector benchmarks — and get your personalised compliance roadmap.
+      </div>
+      <div class="insights-cta-btns">
+        <a href="/assess" class="icta-btn-o">Begin Self-Assessment →</a>
+        <a href="#consult-s" class="icta-btn-g">Talk to an Advisor</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONSULT -->
+<section id="consult-s">
+  <div class="container">
+    <div class="csplit">
+      <div class="ci">
+        <div class="eyelabel">Advisory Services</div>
+        <h2 class="sh">Need guidance beyond the assessment?</h2>
+        <p>Three levels of engagement — from a structured light review to a full implementation partnership.</p>
+        <div class="tlist">
+          <div class="titem"><div class="ti-n">TIER 1 · SELF-DIRECTED</div><div class="ti-t">Assessment + AI Roadmap</div><div class="ti-d">25-question assessment, instant scoring, question-level breakdown, and an AI-generated 30/90/365-day roadmap. Downloadable PDF report included.</div></div>
+          <div class="titem"><div class="ti-n">TIER 2 · LIGHT ADVISORY</div><div class="ti-t">Facilitated Review + Templates</div><div class="ti-d">Half-day facilitated workshop, data flow mapping, DPDP-compliant policy and consent templates, and 30-day async Q&amp;A with a Tech4Dev advisor.</div></div>
+          <div class="titem"><div class="ti-n">TIER 3 · DEEP ADVISORY</div><div class="ti-t">Implementation Partnership</div><div class="ti-d">3-month fractional CxO engagement: full readiness assessment, governance design, vendor contract review, policy drafting, and staff training.</div></div>
+        </div>
+      </div>
+      <div class="cform">
+        <h3>Request a DPDP Consult</h3>
+        <p>Tell us about your organisation and we'll be in touch within 2 working days.</p>
+        <div id="cf-inner">
+          <div class="frow">
+            <div class="fg2">
+              <div class="fg"><label>Organisation Name *</label><input type="text" id="cf-org" placeholder="Your organisation"></div>
+              <div class="fg"><label>Your Name *</label><input type="text" id="cf-name" placeholder="Full name"></div>
+            </div>
+            <div class="fg"><label>Work Email *</label><input type="email" id="cf-email" placeholder="you@organisation.org"></div>
+              <div class="fg" style="grid-column:1/-1"><label>Sector(s) <span style="font-weight:400;color:rgba(255,255,255,.4)">(select all that apply)</span></label>
+                <div class="sector-checkboxes" id="cf-sectors" style="margin-top:.4rem">
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Health &amp; Nutrition"> Health &amp; Nutrition</label>
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Education"> Education</label>
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Livelihoods"> Livelihoods</label>
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Gender &amp; SRHR"> Gender &amp; SRHR</label>
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Environment"> Environment</label>
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Disability"> Disability</label>
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Humanitarian"> Humanitarian</label>
+                  <label class="sector-cb" style="color:rgba(255,255,255,.72)"><input type="checkbox" value="Governance"> Governance</label>
+                </div>
+              </div>
+              <div class="fg"><label>Organisation Size</label><select id="cf-size"><option value="">Select size</option><option>Under 20 staff</option><option>20–100 staff</option><option>100–500 staff</option><option>500+ staff</option></select></div>
+            </div>
+            <div class="fg"><label>Service Interest</label><select id="cf-svc"><option value="">Which tier?</option><option>Tier 1 — Self Assessment</option><option>Tier 2 — Light Advisory</option><option>Tier 3 — Deep Advisory</option><option>Not sure yet</option></select></div>
+            <div class="fg"><label>Brief context (optional)</label><textarea id="cf-msg" rows="2" placeholder="What's prompting your interest in DPDP compliance?"></textarea></div>
+            <button class="fsub" onclick="submitConsult()">Submit Enquiry →</button>
+          </div>
+        </div>
+        <div class="fsuc" id="cf-success">
+          <div class="fsuc-i">✅</div>
+          <div class="fsuc-t">Enquiry received</div>
+          <div class="fsuc-s">We'll be in touch within 2 working days. In the meantime, the self-assessment gives you an instant readiness score .</div>
+          <a href="/assess" class="fsuc-a">Take the free assessment →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="flogo">
+    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
+    <span>DPDP Readiness Navigator</span>
+  </div>
+  <div class="flinks">
+    <a href="/">Overview</a><a href="/assess">Assessment</a><a href="/consult">Consult</a><a href="https://projecttech4dev.org">Tech4Dev</a>
+  </div>
+  <div class="fnote">Data stored on Indian servers · Frappe Framework · © 2025 Project Tech4Dev</div>
+</footer>
+
+
+<script src="/assets/dpdp_tool/js/dpdp-index.js"></script>
+</body>
+</html>

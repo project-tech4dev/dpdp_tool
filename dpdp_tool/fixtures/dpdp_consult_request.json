@@ -1,0 +1,110 @@
+[
+  {
+    "name": "DPDP Consult Request",
+    "module": "DPDP Tool",
+    "doctype": "DocType",
+    "is_submittable": 0,
+    "autoname": "format:DPDP-CONSULT-{####}",
+    "sort_field": "submitted_on",
+    "sort_order": "DESC",
+    "fields": [
+      {
+        "fieldname": "org_name",
+        "fieldtype": "Data",
+        "label": "Organisation Name",
+        "reqd": 1,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "contact_name",
+        "fieldtype": "Data",
+        "label": "Contact Name",
+        "reqd": 1,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "email",
+        "fieldtype": "Data",
+        "label": "Email",
+        "reqd": 1,
+        "options": "Email"
+      },
+      {
+        "fieldname": "phone",
+        "fieldtype": "Data",
+        "label": "Phone",
+        "reqd": 0
+      },
+      {
+        "fieldname": "sector",
+        "fieldtype": "Small Text",
+        "label": "Sector(s)",
+        "reqd": 0,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "org_size",
+        "fieldtype": "Select",
+        "label": "Organisation Size",
+        "reqd": 0,
+        "options": "\nUnder 20 staff\n20\u2013100 staff\n100\u2013500 staff\n500+ staff"
+      },
+      {
+        "fieldname": "service_interest",
+        "fieldtype": "Select",
+        "label": "Service Interest",
+        "reqd": 0,
+        "in_list_view": 1,
+        "options": "\nTier 1 \u2014 Self Assessment\nTier 2 \u2014 Light Advisory\nTier 3 \u2014 Deep Advisory\nNot sure yet"
+      },
+      {
+        "fieldname": "sb_msg",
+        "fieldtype": "Section Break",
+        "label": "Message"
+      },
+      {
+        "fieldname": "message",
+        "fieldtype": "Text",
+        "label": "Message",
+        "reqd": 0
+      },
+      {
+        "fieldname": "sb_meta",
+        "fieldtype": "Section Break",
+        "label": "Metadata"
+      },
+      {
+        "fieldname": "status",
+        "fieldtype": "Select",
+        "label": "Status",
+        "reqd": 0,
+        "in_list_view": 1,
+        "options": "New\nContacted\nConverted",
+        "default": "New"
+      },
+      {
+        "fieldname": "submitted_on",
+        "fieldtype": "Datetime",
+        "label": "Submitted On",
+        "reqd": 0,
+        "in_list_view": 1
+      }
+    ],
+    "permissions": [
+      {
+        "role": "System Manager",
+        "read": 1,
+        "write": 1,
+        "create": 1,
+        "delete": 1
+      },
+      {
+        "role": "Administrator",
+        "read": 1,
+        "write": 1,
+        "create": 1,
+        "delete": 1
+      }
+    ]
+  }
+]
