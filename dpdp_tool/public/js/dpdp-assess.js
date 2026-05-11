@@ -127,7 +127,7 @@ function startAssessment(){
   const o=document.getElementById('i-org').value.trim();
   const n=document.getElementById('i-name').value.trim();
   const e=document.getElementById('i-email').value.trim();
-  const sc=document.getElementById('i-sector').value;
+  const sc = Array.from(document.querySelectorAll('#sector-checkboxes input:checked')).map(cb => cb.value);
   const sz=document.getElementById('i-size').value;
   if(!o||!n||!e||sc.length===0||!sz){alert('Please fill in all required fields and select at least one sector.');return;}
   org={org:o,name:n,email:e,sector:sc,size:sz,bene:document.getElementById('i-bene').value.trim()};
