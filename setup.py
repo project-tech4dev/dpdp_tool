@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# This file exists for backward compatibility.
+# The canonical build config is pyproject.
 from setuptools import setup, find_packages
 
 with open("requirements.txt") as f:

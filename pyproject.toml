@@ -1,0 +1,27 @@
+[project]
+name = "dpdp_tool"
+authors = [
+    { name = "Tech4Dev", email = "dpdp@projecttech4dev.org" }
+]
+description = "DPDP Readiness Navigator for NGOs"
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "frappe",
+    "anthropic>=0.20.0"
+]
+
+[project.urls]
+Homepage = "https://dpdp.projecttech4dev.org"
+Repository = "https://github.com/project-tech4dev/dpdp"
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "dpdp_tool"
+
+[frappe]
+frappe_version = ">=15.0.0"
