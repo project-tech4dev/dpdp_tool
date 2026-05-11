@@ -7,7 +7,7 @@ description = "DPDP Readiness Navigator for NGOs"
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
-dynamic = ["version"]
+version = "1.0.0"
 dependencies = [
     "anthropic>=0.20.0"
 ]
