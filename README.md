@@ -22,7 +22,7 @@ anthropic_api_key = sk-ant-YOUR-KEY
 ## Structure
 
 ```
-dpdp_tool/             ← repo root = Frappe app root
+dpdp/             ← repo root = Frappe app root
 ├── setup.py
 ├── requirements.txt   anthropic>=0.20.0
 ├── MANIFEST.in
