@@ -93,7 +93,6 @@ def _build_prompt(org_name, sector, org_size, beneficiaries,
     return f"""You are a DPDP Act 2023 compliance advisor for Indian NGOs and social sector organisations.
 
 ORGANISATION
-- Name: {org_name}
 - Sector(s): {sector}
 - Size: {org_size}
 - Beneficiaries: {beneficiaries or "Not specified"}
