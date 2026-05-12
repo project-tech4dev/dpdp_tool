@@ -37,6 +37,21 @@ def _parse_sectors(sector_raw):
         return sector_raw.strip()
     return str(sector_raw).strip()
 
+# ─────────────────────────────────────────────────────────────────
+# SECURITY HELPERS
+# ─────────────────────────────────────────────────────────────────
+
+def _validate_origin():
+    """Reject requests not originating from the DPDP site."""
+    allowed = [
+        "https://dpdp-assessment.m.frappe.cloud",
+        "https://dpdp.projecttech4dev.org",
+    ]
+    origin  = frappe.request.headers.get("Origin", "")
+    referer = frappe.request.headers.get("Referer", "")
+    source  = origin or referer
+    if source and not any(source.startswith(a) for a in allowed):
+        frappe.throw("Unauthorized", frappe.PermissionError)
 
 # ─────────────────────────────────────────────────────────────────
 # METHOD 1 — get_recommendations
@@ -46,6 +61,7 @@ def _parse_sectors(sector_raw):
 def get_recommendations(org_name, sector, org_size, beneficiaries,
                         total_score, max_score, section_scores, answers):
     try:
+        _validate_origin()
         import anthropic
 
         api_key = frappe.conf.get("anthropic_api_key")
@@ -237,6 +253,7 @@ def store_assessment(org_name, org_email, contact_name, sector, org_size,
                      score_usage, score_rights, score_governance,
                      answers_json, recommendations=""):
     try:
+        _validate_origin()
         if not org_name or not org_email:
             return {"status": "error", "message": "Missing required fields"}
 
@@ -334,6 +351,7 @@ def submit_consult_request(org_name, contact_name, email,
                            sector="", org_size="", service_interest="",
                            message="", phone=""):
     try:
+        _validate_origin()
         if not org_name or not contact_name or not email:
             frappe.throw("Organisation name, contact name, and email are required.")
 
