@@ -21,3 +21,5 @@ fixtures = [
         ]]]
     }
 ]
+
+web_include_css = ["/assets/dpdp_tool/css/dpdp.css"]
