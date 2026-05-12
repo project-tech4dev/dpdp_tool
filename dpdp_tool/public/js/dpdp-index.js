@@ -5,7 +5,7 @@
    Requires: Chart.js (CDN), frappe-web.min.js
 ─────────────────────────────────────────── */
 'use strict';
-
+const FU = '';
 const DL=['Data Collection & Consent','Data Storage & Security','Data Usage & Sharing','Rights of Individuals','Governance & Processes'];
 const DK=['avg_consent','avg_storage','avg_usage','avg_rights','avg_governance'];
 let CI={};
@@ -87,8 +87,9 @@ async function submitConsult(){
   try{
     const sectors=Array.from(document.querySelectorAll('#cf-sectors input:checked')).map(cb=>cb.value);
     const cp=new URLSearchParams({org_name:org,contact_name:name,email,sector:JSON.stringify(sectors),org_size:document.getElementById('cf-size').value,service_interest:document.getElementById('cf-svc').value,message:document.getElementById('cf-msg').value});
-    await fetch(`${FU}/api/method/dpdp_tool.api.submit_consult_request`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Frappe-CSRF-Token':getCsrfToken()},body:cp});
-  }catch(e){}
+    const cr=await fetch(`${FU}/api/method/dpdp_tool.api.submit_consult_request`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Frappe-CSRF-Token':getCsrfToken()},body:cp});
+    const cj=await cr.json();console.log('Consult result:',cj.message);
+  }catch(e){console.error('submitConsult failed:',e);}
   document.getElementById('cf-inner').style.display='none';
   document.getElementById('cf-success').style.display='block';
 }
