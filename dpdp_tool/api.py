@@ -106,9 +106,10 @@ ASSESSMENT RESPONSES
 
 INSTRUCTIONS
 - Staff are stretched. Every action must be concrete and time-boxed.
-- Name who in a small-to-mid NGO would own each task.
+- Name who in the NGO would own each task based on the size and sector.
 - Reference specific DPDP Act sections and penalties to convey urgency.
 - Where the organisation works across multiple sectors, note sector-specific data risks for each.
+- Where the organisation works across beneficiaries (e.g. children), note sector-specific data risks for each.
 - Flag where one action covers multiple compliance gaps.
 - Prioritise the lowest-scoring sections first.
 
@@ -150,7 +151,9 @@ def _fallback(section_scores, total_score):
     gaps = sorted(section_scores.items(), key=lambda x: x[1] or 0)[:2]
     gap_names = [g[0].replace("_", " ").title() for g in gaps]
 
-    return f"""## Executive Summary
+    return f"""(Note: Fallback sumamry due to Ai failure) 
+    
+## Executive Summary
 
 Your organisation scored **{total_score}/50** on the DPDP Act 2023 readiness assessment. The most significant gaps are in **{", ".join(gap_names)}**. With structured effort of roughly one half-day per month, meaningful compliance progress is achievable within 90 days.
 
