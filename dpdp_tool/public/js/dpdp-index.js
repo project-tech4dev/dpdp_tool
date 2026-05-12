@@ -10,6 +10,10 @@ const DL=['Data Collection & Consent','Data Storage & Security','Data Usage & Sh
 const DK=['avg_consent','avg_storage','avg_usage','avg_rights','avg_governance'];
 let CI={};
 
+function getCsrfToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : 'fetch';
+}
 async function loadDB(){
   try{
     const r=await fetch(`${FU}/api/method/dpdp_tool.api.get_sector_insights`,{headers:{'Accept':'application/json'}});
@@ -81,7 +85,7 @@ async function submitConsult(){
   if(!org||!name||!email){alert('Please fill in organisation name, your name, and email.');return;}
   const btn=document.querySelector('.fsub');btn.textContent='Submitting…';btn.disabled=true;
   try{
-    await fetch(`${FU}/api/method/dpdp_tool.api.submit_consult_request`,{method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':frappe.csrf_token},body:JSON.stringify({org_name:org,contact_name:name,email,sector:document.getElementById('cf-sector').value,org_size:document.getElementById('cf-size').value,service_interest:document.getElementById('cf-svc').value,message:document.getElementById('cf-msg').value})});
+    await fetch(`${FU}/api/method/dpdp_tool.api.submit_consult_request`,{method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token': getCsrfToken()},body:JSON.stringify({org_name:org,contact_name:name,email,sector:document.getElementById('cf-sector').value,org_size:document.getElementById('cf-size').value,service_interest:document.getElementById('cf-svc').value,message:document.getElementById('cf-msg').value})});
   }catch(e){}
   document.getElementById('cf-inner').style.display='none';
   document.getElementById('cf-success').style.display='block';

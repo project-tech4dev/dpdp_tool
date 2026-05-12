@@ -105,6 +105,11 @@ const Q = [
    o:[["Yes — an annual or periodic review process is in place",2],["Partially — reviews happen occasionally but not systematically",1],["No / Not Sure",0]]},
 ];
 
+function getCsrfToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : 'fetch';
+}
+
 const SEC_COUNTS = [5,5,5,5,5];
 
 // ══ STATE ══════════════════════════════════════════════════════════
@@ -282,7 +287,7 @@ async function fetchReco(secScores,total){
       answers:buildAnswerSummary()
     };
     const res=await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations`,{
-      method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':frappe.csrf_token},
+      method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token': getCsrfToken()},
       body:JSON.stringify(payload)
     });
     const j=await res.json();clearInterval(t);
@@ -324,7 +329,7 @@ function fallbackReco(secScores,total){
 async function storeInFrappe(secScores,total){
   try{
     await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.store_assessment`,{
-      method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token':frappe.csrf_token},
+      method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token': getCsrfToken()},
       body:JSON.stringify({
         org_name:org.org,org_email:org.email,contact_name:org.name,
         sector:org.sector,org_size:org.size,beneficiaries:org.bene,
