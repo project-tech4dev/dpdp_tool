@@ -244,8 +244,8 @@ h2.sh{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3.5vw,2.7rem
 .fsub:hover{background:#CC5225}
 .fsuc{display:none;text-align:center;padding:2rem .5rem}
 .fsuc-i{font-size:2rem;margin-bottom:.75rem}
-.fsuc-t{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#fff;margin-bottom:.5rem}
-.fsuc-s{font-size:.83rem;color:rgba(255,255,255,.52);line-height:1.7;margin-bottom:1rem}
+.fsuc-t{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--ink);margin-bottom:.5rem}
+.fsuc-s{font-size:.83rem;color:var(--ink);line-height:1.7;margin-bottom:1rem}
 .fsuc-a{color:#7EB8F0;font-size:.85rem;text-decoration:none;font-weight:500}
 .fsuc-a:hover{text-decoration:underline}
 
