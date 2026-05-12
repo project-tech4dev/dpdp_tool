@@ -42,7 +42,7 @@ def _parse_sectors(sector_raw):
 # METHOD 1 — get_recommendations
 # ─────────────────────────────────────────────────────────────────
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def get_recommendations(org_name, sector, org_size, beneficiaries,
                         total_score, max_score, section_scores, answers):
     try:
@@ -207,7 +207,7 @@ Connect with a Tech4Dev DPDP Advisor for a sector-specific implementation plan."
 # METHOD 2 — store_assessment
 # ─────────────────────────────────────────────────────────────────
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def store_assessment(org_name, org_email, contact_name, sector, org_size,
                      beneficiaries, total_score, score_consent, score_storage,
                      score_usage, score_rights, score_governance,
@@ -248,7 +248,7 @@ def store_assessment(org_name, org_email, contact_name, sector, org_size,
 # Multi-sector orgs contribute to each sector they listed.
 # ─────────────────────────────────────────────────────────────────
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def get_sector_insights():
     try:
         rows = frappe.db.sql("""
@@ -305,7 +305,7 @@ def get_sector_insights():
 # METHOD 4 — submit_consult_request
 # ─────────────────────────────────────────────────────────────────
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def submit_consult_request(org_name, contact_name, email,
                            sector="", org_size="", service_interest="",
                            message="", phone=""):

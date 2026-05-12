@@ -295,10 +295,7 @@ async function fetchReco(secScores,total){
     p.append('max_score',payload.max_score);
     p.append('section_scores',JSON.stringify(payload.section_scores));
     p.append('answers',payload.answers);
-    const res=await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations`,{
-      method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Frappe-CSRF-Token':getCsrfToken()},
-      body:p
-    });
+    const res = await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations?${p}`);
     const j=await res.json();clearInterval(t);
     reco=j.message?.recommendations||'';
     if(!reco)throw new Error('empty');
@@ -353,14 +350,7 @@ async function storeInFrappe(secScores, total) {
       answers_json:  JSON.stringify(answers),
       recommendations: reco || ''
     });
-    const res = await fetch('/api/method/dpdp_tool.api.store_assessment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Frappe-CSRF-Token': getCsrfToken()
-      },
-      body: params
-    });
+    const res = await fetch(`/api/method/dpdp_tool.api.store_assessment?${params}`);
     const j = await res.json();
     console.log('Stored:', j.message?.docname);
   } catch(e) { console.error('storeInFrappe:', e); }
