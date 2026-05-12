@@ -177,7 +177,7 @@ def _fallback(section_scores, total_score):
     gaps = sorted(section_scores.items(), key=lambda x: x[1] or 0)[:2]
     gap_names = [g[0].replace("_", " ").title() for g in gaps]
 
-    return f"""(Note: Fallback sumamry due to Ai failure) 
+    return f"""(Note: Fallback sumamry due to AI failure) 
     
 ## Executive Summary
 
@@ -299,7 +299,7 @@ def get_sector_insights():
 
         results = []
         for sector, entries in buckets.items():
-            if len(entries) < 3:
+            if len(entries) < 1:
                 continue
 
             def avg(field):
