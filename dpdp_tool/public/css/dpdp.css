@@ -387,7 +387,7 @@ nav{background:var(--navy);height:64px;display:flex;align-items:center;justify-c
 .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none}
 .nav-logo img{height:30px;filter:brightness(0) invert(1);opacity:.88}
 .nav-div{width:1px;height:20px;background:rgba(255,255,255,.2)}
-.nav-label{font-size:.78rem;color:rgba(255,255,255,.65)}
+.nav-label{font-size:1.5rem;color:rgba(255,255,255,.65)}
 .nav-back{color:rgba(255,255,255,.55);font-size:.82rem;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .18s}
 .nav-back:hover{color:#fff}
 
