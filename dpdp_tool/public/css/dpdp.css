@@ -231,7 +231,7 @@ h2.sh{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3.5vw,2.7rem
 .ti-d{font-size:.79rem;color:var(--muted);line-height:1.65}
 .cform{background:var(--navy);border-radius:8px;padding:2.5rem}
 .cform h3{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:300;color:#fff;margin-bottom:.4rem}
-.cform>p{font-size:.82rem;color:rgba(255,255,255,.52);margin-bottom:1.75rem}
+.cform p{font-size:.82rem;color:rgba(255,255,255,.52);margin-bottom:1.75rem}
 .frow{display:flex;flex-direction:column;gap:.9rem}
 .fg{display:flex;flex-direction:column;gap:5px}
 .fg label{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.68)}
