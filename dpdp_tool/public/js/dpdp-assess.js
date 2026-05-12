@@ -286,9 +286,18 @@ async function fetchReco(secScores,total){
       },
       answers:buildAnswerSummary()
     };
+    const p=new URLSearchParams();
+    p.append('org_name',payload.org_name);
+    p.append('sector',JSON.stringify(Array.isArray(payload.sector)?payload.sector:[payload.sector]));
+    p.append('org_size',payload.org_size);
+    p.append('beneficiaries',payload.beneficiaries||'');
+    p.append('total_score',payload.total_score);
+    p.append('max_score',payload.max_score);
+    p.append('section_scores',JSON.stringify(payload.section_scores));
+    p.append('answers',payload.answers);
     const res=await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations`,{
-      method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token': getCsrfToken()},
-      body:JSON.stringify(payload)
+      method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Frappe-CSRF-Token':getCsrfToken()},
+      body:p
     });
     const j=await res.json();clearInterval(t);
     reco=j.message?.recommendations||'';
@@ -326,20 +335,35 @@ function fallbackReco(secScores,total){
   return`## Executive Summary\n\nYour organisation scored **${total} out of 50** on the DPDP Act 2023 readiness assessment. Your three priority gaps are in **${gaps.map(g=>g.label).join(', ')}**. Focused effort across the next 90 days can make meaningful progress.\n\n## 30-Day Priority Actions\n\n**1. ${gaps[0]?.label}** — Start by documenting your current practices. Assign a named person to own data protection and draft a one-page interim policy.\n\n**2. Review consent documentation** — Check all data collection forms against the DPDP notice requirements: purpose, retention period, rights, and contact details.\n\n**3. Map your data landscape** — Create a simple spreadsheet listing every category of personal data, where it is stored, and who has access.\n\n## 90-Day Compliance Foundation\n\n- Approve a written data protection policy\n- Train all programme staff on DPDP basics (2-hour session)\n- Sign Data Processing Agreements with key technology vendors\n- Establish a grievance mechanism and communicate it to beneficiaries\n- Conduct a basic security review of your key systems\n\n## 1-Year Programme\n\n- Annual DPDP compliance review at board meeting\n- Refresh consent forms when programmes change\n- Test your breach response plan annually\n- Review vendor DPAs at contract renewal\n\n*Contact Tech4Dev for a personalised implementation plan.*`;
 }
 
-async function storeInFrappe(secScores,total){
-  try{
-    await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.store_assessment`,{
-      method:'POST',headers:{'Content-Type':'application/json','X-Frappe-CSRF-Token': getCsrfToken()},
-      body:JSON.stringify({
-        org_name:org.org,org_email:org.email,contact_name:org.name,
-        sector:org.sector,org_size:org.size,beneficiaries:org.bene,
-        total_score:total,
-        score_consent:secScores[0],score_storage:secScores[1],score_usage:secScores[2],
-        score_rights:secScores[3],score_governance:secScores[4],
-        answers_json:JSON.stringify(answers),recommendations:reco
-      })
+async function storeInFrappe(secScores, total) {
+  try {
+    const params = new URLSearchParams({
+      org_name:      org.org,
+      org_email:     org.email,
+      contact_name:  org.name,
+      sector:        JSON.stringify(Array.isArray(org.sector) ? org.sector : [org.sector]),
+      org_size:      org.size,
+      beneficiaries: org.bene || '',
+      total_score:   total,
+      score_consent:    secScores[0] || 0,
+      score_storage:    secScores[1] || 0,
+      score_usage:      secScores[2] || 0,
+      score_rights:     secScores[3] || 0,
+      score_governance: secScores[4] || 0,
+      answers_json:  JSON.stringify(answers),
+      recommendations: reco || ''
     });
-  }catch(e){}
+    const res = await fetch('/api/method/dpdp_tool.api.store_assessment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Frappe-CSRF-Token': getCsrfToken()
+      },
+      body: params
+    });
+    const j = await res.json();
+    console.log('Stored:', j.message?.docname);
+  } catch(e) { console.error('storeInFrappe:', e); }
 }
 
 // ══ PDF ════════════════════════════════════════════════════════════
