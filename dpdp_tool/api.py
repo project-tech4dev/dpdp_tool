@@ -43,7 +43,6 @@ def _parse_sectors(sector_raw):
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True)
-@frappe.rate_limit(key="ip", limit=10, seconds=3600)
 def get_recommendations(org_name, sector, org_size, beneficiaries,
                         total_score, max_score, section_scores, answers):
     try:
@@ -209,7 +208,6 @@ Connect with a Tech4Dev DPDP Advisor for a sector-specific implementation plan."
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True)
-@frappe.rate_limit(key="ip", limit=10, seconds=3600)
 def store_assessment(org_name, org_email, contact_name, sector, org_size,
                      beneficiaries, total_score, score_consent, score_storage,
                      score_usage, score_rights, score_governance,
@@ -308,7 +306,6 @@ def get_sector_insights():
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True)
-@frappe.rate_limit(key="ip", limit=5, seconds=3600)
 def submit_consult_request(org_name, contact_name, email,
                            sector="", org_size="", service_interest="",
                            message="", phone=""):
