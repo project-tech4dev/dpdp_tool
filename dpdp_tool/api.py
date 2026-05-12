@@ -59,8 +59,8 @@ def get_recommendations(org_name, sector, org_size, beneficiaries,
 
         client = anthropic.Anthropic(api_key=api_key)
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=3000,
+            model="claude-sonnet-4-6",
+            max_tokens=10000,
             messages=[{"role": "user", "content": _build_prompt(
                 org_name, sector_str, org_size, beneficiaries,
                 int(float(total_score)), int(float(max_score)),
@@ -89,55 +89,82 @@ def _build_prompt(org_name, sector, org_size, beneficiaries,
         f"- Governance & Processes:     {section_scores.get('governance', 0)}/10",
     ])
 
-    return f"""You are a DPDP Act 2023 compliance advisor for Indian NGOs and social sector organisations.
-
-ORGANISATION
-- Sector(s): {sector}
-- Size: {org_size}
-- Beneficiaries: {beneficiaries or "Not specified"}
-- Overall score: {total_score}/{max_score}
-
-SECTION SCORES (each out of 10 — 5 questions x 2 pts)
+    return f"""You are a senior DPDP Act 2023 compliance advisor specialising exclusively in Indian NGOs and social sector organisations. You have deep knowledge of:
+- The Digital Personal Data Protection Act 2023 and DPDP Rules 2025
+- How small and mid-sized NGOs actually operate in India — stretched staff, multiple funders, field programmes, government partnerships
+- The specific data risks that arise in each social sector (health, education, livelihoods, gender/SRHR, humanitarian, disability)
+- The Data Protection Board of India's enforcement priorities and penalty schedule
+ 
+You are reviewing a self-assessment submitted by a {org_size} organisation working in **{sector}**, with primary beneficiaries: **{beneficiaries or "not specified"}**.
+ 
+ASSESSMENT RESULTS
+Overall score: {total_score}/{max_score} points
+ 
+Section scores (each out of 10, scored across 5 questions at 2 pts each):
 {sec_lines}
-
-ASSESSMENT RESPONSES
+ 
+Priority order for this organisation: (lowest scores first)
+ 
+INDIVIDUAL QUESTION RESPONSES
 {answers}
-
-INSTRUCTIONS
-- Staff are stretched. Every action must be concrete and time-boxed.
-- Name who in the NGO would own each task based on the size and sector.
-- Reference specific DPDP Act sections and penalties to convey urgency.
-- Where the organisation works across multiple sectors, note sector-specific data risks for each.
-- Where the organisation works across beneficiaries (e.g. children), note sector-specific data risks for each.
-- Flag where one action covers multiple compliance gaps.
-- Prioritise the lowest-scoring sections first.
-
-FORMAT (use exactly these headings):
-
+ 
+YOUR TASK
+Produce a substantive, personalised compliance roadmap. This document will be read by the organisation's leadership — it must be specific enough to act on without any additional guidance.
+ 
+CRITICAL INSTRUCTIONS
+1. Be specific to THIS organisation — reference their sector(s), size, and beneficiary profile throughout. Generic advice is not acceptable.
+2. For beneficiaries involving children (under 18), explicitly address Section 9 obligations in every relevant action.
+3. Where the organisation works across multiple sectors, name the specific data risk for each sector separately — do not bundle them.
+4. Name realistic roles for a {org_size} NGO (e.g. for under 20 staff: ED, Programme Lead, Admin/Finance Officer, Field Coordinator — not abstract titles like "DPO").
+5. Every action must explain WHY it matters with a specific DPDP Act section or Rule number and the exact penalty range.
+6. The HOW must be detailed enough that someone with no legal background can start tomorrow — include what to write, who to call, what tool to use, what the output looks like.
+7. Flag explicitly where completing one action satisfies multiple DPDP obligations.
+8. Prioritise the two lowest-scoring sections.
+9. Tone: direct, supportive, non-judgmental. These organisations are trying to do right by their communities.
+ 
+FORMAT — use exactly these headings, in this order:
+ 
 ## Executive Summary
-3-4 sentences. State score, name the two biggest risks given their sector(s) and beneficiary profile, honest sentence on realistic effort.
-
+4–5 sentences. State the overall score and what it means in plain language. Name the two most critical gaps specific to their sector and beneficiary profile. Explain what the real-world risk is if these gaps are not addressed (not just the legal penalty — the actual harm to beneficiaries). Close with an honest, realistic sentence on the effort required.
+ 
+## What Your Scores Tell Us
+A short paragraph (4–6 sentences) interpreting the pattern of scores — what the combination of high and low scores reveals about this organisation's current state. Be analytical: what did they get right, what has been neglected, and why might that be given their sector and size? This gives leadership a diagnostic frame before the action list.
+ 
 ## 30-Day Priority Actions
-4-5 items. For each:
-**[Task name]**
-- Who: [Role in small/mid NGO]
-- Time: [Realistic hours]
-- Why urgent: [DPDP section + penalty]
-- How: [2-3 sentences of specific, actionable guidance]
-
+Start with the two lowest-scoring sections. 4–5 items total. For each:
+ 
+**[Specific task name — not generic]**
+- **Who:** [Specific role for a {org_size} NGO]
+- **Why this cannot wait:** [Exact DPDP Act section + penalty amount + specific real-world consequence for their beneficiaries if this fails]
+- **How:** [3–4 sentences of step-by-step practical guidance. Name specific tools, documents, or processes. Include what the finished output looks like.]
+- **Covers multiple gaps:** [Only include this line if true — name which other obligations this action satisfies]
+ 
 ## 90-Day Compliance Foundation
-5 items. For each:
+5 items that build on the 30-day actions. For each:
+ 
+**[Specific task name]**
+- **Who leads:** [Role]
+- **Why this matters:** [DPDP Act section + consequence specific to their sector]
+- **How:** [3–4 sentences of practical guidance with concrete steps]
+- **Done when:** [Specific, tangible deliverable — a signed document, a completed spreadsheet, a trained staff group, not vague milestones]
+ 
+## 1-Year Compliance Habits
+4 items — each must be attached to an existing organisational moment (annual board meeting, staff retreat, programme review, funder report, contract renewal). These are recurring practices, not one-time tasks.
+ 
 **[Task name]**
-- Who leads: [Role]
-- Effort: [Hours]
-- Done when: [Concrete deliverable]
-
-## 1-Year Habits
-4 items attached to existing calendar moments.
-**[Task name]** -- When: [Existing moment] . Who: [Role] . Time: [e.g. 1 hour/year]
-
-## Key Risk Areas for {sector} Organisations
-Three specific data risks for these sector(s), each with DPDP Act provision and realistic consequence."""
+- **When:** [Specific existing moment in the organisation's calendar]
+- **Who:** [Role]
+- **Why:** [One sentence on what degrades if this lapses]
+- **What to do:** [2–3 sentences of specific annual action]
+ 
+## Key Data Risks for {sector} Organisations
+Three risks specific to this organisation's sector(s) and beneficiary profile. For each, go beyond naming the risk — explain the realistic scenario in which it manifests for an organisation like this one.
+ 
+**[Risk name]**
+- **The scenario:** [2–3 sentences describing exactly how this risk arises in practice for a {org_size} {sector} organisation — name the specific programme activity, tool, or process where the breach could occur]
+- **DPDP Act provision:** [Section and Rule number]
+- **Penalty:** [Exact penalty range]
+- **What makes this sector particularly exposed:** [One sentence on why {sector} organisations face heightened risk on this specific issue compared to other NGOs]"""
 
 
 def _fallback(section_scores, total_score):
@@ -160,43 +187,40 @@ Your organisation scored **{total_score}/50** on the DPDP Act 2023 readiness ass
 
 **Designate a data protection owner**
 - Who: Executive Director or Senior Programme Manager
-- Time: 2 hours
 - Why urgent: The DPDP Act holds Data Fiduciaries accountable (Section 8). Without a named owner no compliance work can proceed.
 - How: Name a person, document their mandate in a one-page terms of reference, share with the board at the next meeting.
 
 **Audit your consent forms**
 - Who: Programme Manager
-- Time: 3 hours
 - Why urgent: Invalid consent is a direct DPDP violation (Section 6). Penalties up to Rs.250 crore apply.
 - How: Check every form against four elements: purpose, retention period, rights explained, contact details. Update the three most-used forms first.
 
 **Create a basic data inventory**
 - Who: Programme Manager + IT person
-- Time: 3-4 hours
 - Why urgent: You cannot protect data you have not mapped.
 - How: One spreadsheet row per data type: what it is, where stored, who has access, how long kept.
 
 ## 90-Day Compliance Foundation
 
-**Draft a Data Protection Policy** -- ED . 4-6 hours . Done when: approved 1-page policy shared with all staff
+**Draft a Data Protection Policy** -- ED .  Done when: approved 1-page policy shared with all staff
 
-**Train staff on DPDP basics** -- Programme Head . 2 hours . Done when: session held and documented
+**Train staff on DPDP basics** -- Programme Head .  Done when: session held and documented
 
-**Sign DPAs with key vendors** -- ED/Finance . 2 hours per vendor . Done when: signed agreements filed for top 3 processors
+**Sign DPAs with key vendors** -- ED/Finance Head .  Done when: signed agreements filed for top 3 processors
 
-**Establish a grievance mechanism** -- Programme Manager . 1 hour . Done when: named email and response protocol documented
+**Establish a grievance mechanism** -- Programme Manager .  Done when: named email and response protocol documented
 
-**Document a breach response procedure** -- ED . 2 hours . Done when: one-page checklist exists
+**Document a breach response procedure** -- ED/Programme Manager . Done when: one-page checklist exists
 
 ## 1-Year Habits
 
-**Annual compliance review** -- When: AGM . Who: ED . Time: 1 hour/year
+**Annual compliance review** -- When: AGM . Who: ED . 
 
-**Consent form refresh** -- When: New programme launch . Who: Programme Manager . Time: 2 hours
+**Consent form refresh** -- When: New programme launch . Who: Programme Manager . 
 
-**Staff DPDP refresher** -- When: Annual staff retreat . Who: HR/Programme Head . Time: 1 hour
+**Staff DPDP refresher** -- When: Annual staff retreat . Who: HR/Programme Head . 
 
-**Vendor DPA check** -- When: Contract renewals . Who: Finance/ED . Time: 1 hour per vendor
+**Vendor DPA check** -- When: Contract renewals . Who: Finance/ED . 
 
 ## Key Risk Areas
 

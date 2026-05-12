@@ -221,8 +221,7 @@ async function submitAssessment(){
 
   renderSGrid(secScores);
   renderQBreakdown();
-  fetchReco(secScores,total);
-  storeInFrappe(secScores,total);
+  fetchReco(secScores,total).then(()=>storeInFrappe(secScores,total));
 }
 
 function animateScore(id,target){
@@ -275,35 +274,35 @@ async function fetchReco(secScores,total){
   let si=0;const stepEl=document.getElementById('reco-step');
   const t=setInterval(()=>{si=(si+1)%steps.length;if(stepEl)stepEl.textContent=steps[si];},2800);
 
-  try{
-    const maxSec=SEC_COUNTS[0]*2;
-    const payload={
-      org_name:org.org,sector:org.sector,org_size:org.size,beneficiaries:org.bene,
-      total_score:total,max_score:Q.reduce((s,q)=>s+q.o.reduce((m,o)=>Math.max(m,o[1]),0),0),
-      section_scores:{
-        consent:secScores[0],storage:secScores[1],usage:secScores[2],
-        rights:secScores[3],governance:secScores[4]
-      },
-      answers:buildAnswerSummary()
-    };
-    const p=new URLSearchParams();
-    p.append('org_name',payload.org_name);
-    p.append('sector',JSON.stringify(Array.isArray(payload.sector)?payload.sector:[payload.sector]));
-    p.append('org_size',payload.org_size);
-    p.append('beneficiaries',payload.beneficiaries||'');
-    p.append('total_score',payload.total_score);
-    p.append('max_score',payload.max_score);
-    p.append('section_scores',JSON.stringify(payload.section_scores));
-    p.append('answers',payload.answers);
-    const res = await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations?${p}`);
-    const j=await res.json();clearInterval(t);
-    reco=j.message?.recommendations||'';
-    if(!reco)throw new Error('empty');
-    renderReco(reco);
-  }catch(e){
-    clearInterval(t);reco=fallbackReco(secScores,total);renderReco(reco);
-  }
-  document.getElementById('btn-pdf').disabled=false;
+  return new Promise(async(resolve)=>{
+    try{
+      const payload={
+        org_name:org.org,sector:org.sector,org_size:org.size,beneficiaries:org.bene,
+        total_score:total,max_score:Q.reduce((s,q)=>s+q.o.reduce((m,o)=>Math.max(m,o[1]),0),0),
+        section_scores:{consent:secScores[0],storage:secScores[1],usage:secScores[2],rights:secScores[3],governance:secScores[4]},
+        answers:buildAnswerSummary()
+      };
+      const p=new URLSearchParams();
+      p.append('org_name',payload.org_name);
+      p.append('sector',JSON.stringify(Array.isArray(payload.sector)?payload.sector:[payload.sector]));
+      p.append('org_size',payload.org_size);
+      p.append('beneficiaries',payload.beneficiaries||'');
+      p.append('total_score',payload.total_score);
+      p.append('max_score',payload.max_score);
+      p.append('section_scores',JSON.stringify(payload.section_scores));
+      p.append('answers',payload.answers);
+      const res=await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations?${p}`);
+      const j=await res.json();
+      clearInterval(t);
+      reco=j.message?.recommendations||'';
+      if(!reco)throw new Error('empty');
+      renderReco(reco);
+    }catch(e){
+      clearInterval(t);reco=fallbackReco(secScores,total);renderReco(reco);
+    }
+    document.getElementById('btn-pdf').disabled=false;
+    resolve();
+  });
 }
 
 function buildAnswerSummary(){
