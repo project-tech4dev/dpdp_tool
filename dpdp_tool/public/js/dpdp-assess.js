@@ -347,7 +347,7 @@ async function storeInFrappe(secScores, total) {
       score_usage:      secScores[2] || 0,
       score_rights:     secScores[3] || 0,
       score_governance: secScores[4] || 0,
-      answers_json:  JSON.stringify(buildAnswerSummary()),
+      answers_json:  buildAnswerSummary(),
       recommendations: reco || ''
     });
     const res = await fetch(`/api/method/dpdp_tool.api.store_assessment?${params}`);
