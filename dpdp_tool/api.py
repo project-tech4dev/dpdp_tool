@@ -126,7 +126,7 @@ Section scores (each out of 10):
 {sec_lines}
   
 ━━━ INDIVIDUAL QUESTION RESPONSES ━━━
-
+{answers}
  
 ━━━ YOUR TASK ━━━
  
