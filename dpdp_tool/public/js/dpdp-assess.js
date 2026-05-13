@@ -297,7 +297,9 @@ async function fetchReco(secScores,total){
       if(!reco)throw new Error('empty');
       renderReco(reco);
     }catch(e){
-      clearInterval(t);reco=fallbackReco(secScores,total);renderReco(reco);
+      clearInterval(t);
+      console.error('[fetchReco] failed:', e.message, e);
+      reco = fallbackReco(secScores, total); renderReco(reco);
     }
     document.getElementById('btn-pdf').disabled=false;
     resolve();

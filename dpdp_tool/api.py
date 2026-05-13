@@ -105,7 +105,7 @@ def _build_prompt(sector, org_size, beneficiaries,
         f"- Governance & Processes:     {section_scores.get('governance', 0)}/10",
     ])
 
-    return f"""You are a senior DPDP Act 2023 compliance advisor specialising exclusively in Indian NGOs and social sector organisations. You have deep knowledge of:
+    prompt = f"""You are a senior DPDP Act 2023 compliance advisor specialising exclusively in Indian NGOs and social sector organisations. You have deep knowledge of:
 - The Digital Personal Data Protection Act 2023 and DPDP Rules 2025
 - How NGOs actually operate in India — stretched staff, multiple funders, field programmes, government partnerships
 - The specific data risks that arise in each social sector (health, education, livelihoods, gender/SRHR, humanitarian, disability)
@@ -203,6 +203,10 @@ Three risks specific to this organisation's sector(s) and beneficiary profile. F
 - **Penalty:** [Exact penalty range]
 - **Why {sector} organisations face heightened exposure:** [One sentence on the sector-specific factor that makes this risk more acute than for other NGO types]
 """
+    frappe.logger("dpdp").info(
+            "\n" + "=" * 80 + "\n[DPDP] _build_prompt output\n" + "=" * 80 + "\n" + prompt + "\n" + "=" * 80
+        )
+    return prompt
 
 def _fallback(section_scores, total_score):
     if isinstance(section_scores, str):
