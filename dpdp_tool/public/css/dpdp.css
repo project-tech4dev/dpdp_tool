@@ -487,7 +487,7 @@ nav{background:var(--navy);height:64px;display:flex;align-items:center;justify-c
 .result-hero{background:var(--navy);border-radius:8px;padding:2.25rem;margin-bottom:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
 .rh-left h2{font-family:"Cormorant Garamond",serif;font-size:clamp(1.4rem,3vw,1.9rem);font-weight:300;color:#fff;margin-bottom:.35rem}
 .rh-org{font-size:.79rem;color:rgba(255,255,255,.42);margin-bottom:1rem}
-.rh-band{display:inline-block;padding:4px 12px;border-radius:3px;font-size:.73rem;font-weight:500}
+.rh-band{display:inline-block;padding:4px 12px;border-radius:3px;font-size:1.2rem;font-weight:500}
 .rh-score{font-family:"Cormorant Garamond",serif;font-size:4rem;font-weight:300;color:#7EB8F0;line-height:1}
 .rh-score-lbl{font-size:.73rem;color:rgba(255,255,255,.38);margin-top:4px}
 

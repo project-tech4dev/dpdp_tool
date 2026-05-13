@@ -283,7 +283,6 @@ async function fetchReco(secScores,total){
         answers:buildAnswerSummary()
       };
       const p=new URLSearchParams();
-      p.append('org_name',payload.org_name);
       p.append('sector',JSON.stringify(Array.isArray(payload.sector)?payload.sector:[payload.sector]));
       p.append('org_size',payload.org_size);
       p.append('beneficiaries',payload.beneficiaries||'');

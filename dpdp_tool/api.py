@@ -58,7 +58,7 @@ def _validate_origin():
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
-def get_recommendations(org_name, sector, org_size, beneficiaries,
+def get_recommendations( sector, org_size, beneficiaries,
                         total_score, max_score, section_scores, answers):
     try:
         _validate_origin()
@@ -78,7 +78,7 @@ def get_recommendations(org_name, sector, org_size, beneficiaries,
             model="claude-sonnet-4-6",
             max_tokens=10000,
             messages=[{"role": "user", "content": _build_prompt(
-                org_name, sector_str, org_size, beneficiaries,
+                sector_str, org_size, beneficiaries,
                 int(float(total_score)), int(float(max_score)),
                 section_scores, answers
             )}]
@@ -94,7 +94,7 @@ def get_recommendations(org_name, sector, org_size, beneficiaries,
         }
 
 
-def _build_prompt(org_name, sector, org_size, beneficiaries,
+def _build_prompt( sector, org_size, beneficiaries,
                   total_score, max_score, section_scores, answers):
 
     sec_lines = "\n".join([
@@ -105,67 +105,126 @@ def _build_prompt(org_name, sector, org_size, beneficiaries,
         f"- Governance & Processes:     {section_scores.get('governance', 0)}/10",
     ])
 
-    return f"""You are a senior DPDP Act 2023 compliance advisor specialising exclusively in Indian NGOs and social sector organisations. You have deep knowledge of:
+    return f"""You are a senior DPDP Act 2023 compliance advisor specialising exclusively \
+in Indian NGOs and social sector organisations. You have deep knowledge of:
 - The Digital Personal Data Protection Act 2023 and DPDP Rules 2025
-- How small and mid-sized NGOs actually operate in India — stretched staff, multiple funders, field programmes, government partnerships
-- The specific data risks that arise in each social sector (health, education, livelihoods, gender/SRHR, humanitarian, disability)
+- How NGOs actually operate in India — stretched staff, multiple \
+funders, field programmes, government partnerships
+- The specific data risks that arise in each social sector (health, education, \
+livelihoods, gender/SRHR, humanitarian, disability)
 - The Data Protection Board of India's enforcement priorities and penalty schedule
  
-You are reviewing a self-assessment submitted by a {org_size} organisation working in **{sector}**, with primary beneficiaries: **{beneficiaries or "not specified"}**.
+You are reviewing a self-assessment submitted by a {org_size} organisation working in \
+**{sector}**, with primary beneficiaries: **{beneficiaries}**.
  
-ASSESSMENT RESULTS
-Overall score: {total_score}/{max_score} points
+━━━ ASSESSMENT RESULTS ━━━
  
-Section scores (each out of 10, scored across 5 questions at 2 pts each):
+Overall score:  {total_score}/{max_score} points 
+Readiness to DPDP compliance is classified under 
+0–20 · High Risk
+21–35 · Basic Readiness
+36–45 · Moderate Readiness
+46–50 · Strong Readiness
+ 
+Section scores (each out of 10):
 {sec_lines}
  
-Priority order for this organisation: (lowest scores first)
  
-INDIVIDUAL QUESTION RESPONSES
-{answers}
+━━━ INDIVIDUAL QUESTION RESPONSES ━━━
  
-YOUR TASK
-Produce a substantive, personalised compliance roadmap. This document will be read by the organisation's leadership — it must be specific enough to act on without any additional guidance.
+{answers_block}
  
-CRITICAL INSTRUCTIONS
-1. Be specific to THIS organisation — reference their sector(s), size, and beneficiary profile throughout. Generic advice is not acceptable.
-2. For beneficiaries involving children (under 18), explicitly address Section 9 obligations in every relevant action.
-3. Where the organisation works across multiple sectors, name the specific data risk for each sector separately — do not bundle them.
-4. Name realistic roles for a {org_size} NGO (e.g. for under 20 staff: ED, Programme Lead, Admin/Finance Officer, Field Coordinator — not abstract titles like "DPO").
-5. Every action must explain WHY it matters with a specific DPDP Act section or Rule number and the exact penalty range.
-6. The HOW must be detailed enough that someone with no legal background can start tomorrow — include what to write, who to call, what tool to use, what the output looks like.
-7. Flag explicitly where completing one action satisfies multiple DPDP obligations.
-8. Prioritise the two lowest-scoring sections.
-9. Tone: direct, supportive, non-judgmental. These organisations are trying to do right by their communities.
+━━━ YOUR TASK ━━━
  
-FORMAT — use exactly these headings, in this order:
+Produce a substantive, personalised compliance roadmap that this organisation's \
+leadership can act on without any additional guidance. \
+Target length: 1,200–1,800 words. Be specific; be direct; be useful.
+ 
+━━━ CRITICAL INSTRUCTIONS ━━━
+ 
+1. CITE ONLY REAL DPDP ACT SECTIONS AND RULE NUMBERS. Do not invent or approximate \
+provisions. If you are unsure of the exact section, describe the obligation in plain \
+language and flag it as "check with legal counsel."
+ 
+2. Be specific to THIS organisation throughout — reference their sector(s), {org_size} \
+size, and beneficiary profile in every section. Generic advice is not acceptable.
+ 
+3. Use the individual question responses above to ground your advice. Where an answer \
+is "Partially" or "No", name the specific gap the question reveals and address it \
+directly — do not generate generic advice that ignores what they actually said.
+ 
+4. If beneficiaries include anyone under 18, address Section 9 obligations in every \
+relevant action. Do not assume all beneficiaries are adults unless explicitly stated.
+ 
+5. Where the organisation works across multiple sectors, name the specific data risk for \
+each sector separately — do not bundle them.
+ 
+6. Use realistic role titles for a {org_size} NGO. For organisations with fewer than \
+20 staff: Executive Director, Programme Lead, Admin/Finance Officer, Field Coordinator. \
+For 20–50 staff: add Operations Manager, M&E Officer. Do not use abstract titles like \
+"DPO" unless the organisation is legally required to appoint one.
+ 
+7. Every action must state:
+   (a) WHY it matters — cite a specific DPDP Act section or Rule number and the exact \
+penalty range.
+   (b) HOW to do it — concrete enough that someone with no legal background can start \
+tomorrow. Name what to write, who to call, which tool to use, what the finished output \
+looks like.
+ 
+8. Calibrate urgency to the score band based on score out of the total score. \
+A score under 40 % warrants stronger language and tighter timelines than a score above 70 %.
+ 
+9. Prioritise the two lowest-scoring sections identified in the priority order above. \
+These must anchor both the 30-Day and 90-Day sections.
+ 
+10. If an action satisfies more than one DPDP obligation, say so explicitly under \
+"Covers multiple gaps" — but only when genuinely true.
+ 
+11. Tone: direct, supportive, non-judgmental. These organisations are trying to do \
+right by their communities.
+ 
+━━━ FORMAT — use exactly these headings, in this order ━━━
  
 ## Executive Summary
-4–5 sentences. State the overall score and what it means in plain language. Name the two most critical gaps specific to their sector and beneficiary profile. Explain what the real-world risk is if these gaps are not addressed (not just the legal penalty — the actual harm to beneficiaries). Close with an honest, realistic sentence on the effort required.
+4–5 sentences. State the overall score and what it means in plain language. Name the \
+two most critical gaps specific to {sector} work and the {beneficiaries} profile. \
+Explain the real-world risk if these gaps are not addressed — not just the legal penalty, \
+but the actual harm to beneficiaries. Close with an honest, realistic sentence on the \
+effort required.
  
 ## What Your Scores Tell Us
-A short paragraph (4–6 sentences) interpreting the pattern of scores — what the combination of high and low scores reveals about this organisation's current state. Be analytical: what did they get right, what has been neglected, and why might that be given their sector and size? This gives leadership a diagnostic frame before the action list.
+4–6 sentences interpreting the pattern of scores analytically. What does the combination \
+of high and low scores reveal about this organisation's current state? What did they get \
+right, and what has been neglected — drawing directly on their question-by-question \
+responses? Give leadership a diagnostic frame before the action list.
  
 ## 30-Day Priority Actions
-Start with the two lowest-scoring sections. 4–5 items total. For each:
+Start with the two lowest-scoring sections from the priority order. 4–5 items total. \
+For each:
  
 **[Specific task name — not generic]**
-- **Who:** [Specific role for a {org_size} NGO]
-- **Why this cannot wait:** [Exact DPDP Act section + penalty amount + specific real-world consequence for their beneficiaries if this fails]
-- **How:** [3–4 sentences of step-by-step practical guidance. Name specific tools, documents, or processes. Include what the finished output looks like.]
-- **Covers multiple gaps:** [Only include this line if true — name which other obligations this action satisfies]
+- **Who:** [Specific role appropriate for a {org_size} NGO]
+- **Why this cannot wait:** [Exact DPDP Act section + penalty amount + specific \
+real-world consequence for {beneficiaries} if this fails]
+- **How:** [3–4 sentences of step-by-step practical guidance. Name specific tools, \
+template documents, or processes. Describe what the finished output looks like.]
+- **Covers multiple gaps:** [Only include this line when true — name which other \
+obligations this action satisfies]
  
 ## 90-Day Compliance Foundation
 5 items that build on the 30-day actions. For each:
  
 **[Specific task name]**
 - **Who leads:** [Role]
-- **Why this matters:** [DPDP Act section + consequence specific to their sector]
+- **Why this matters:** [DPDP Act section + consequence specific to {sector} work]
 - **How:** [3–4 sentences of practical guidance with concrete steps]
-- **Done when:** [Specific, tangible deliverable — a signed document, a completed spreadsheet, a trained staff group, not vague milestones]
+- **Done when:** [Specific, tangible deliverable — a signed document, a completed \
+register, a trained staff group — not a vague milestone]
  
 ## 1-Year Compliance Habits
-4 items — each must be attached to an existing organisational moment (annual board meeting, staff retreat, programme review, funder report, contract renewal). These are recurring practices, not one-time tasks.
+4 items. Each must be attached to an existing organisational moment \
+(annual board meeting, staff retreat, programme review, funder report, contract renewal). \
+These are recurring practices, not one-time tasks.
  
 **[Task name]**
 - **When:** [Specific existing moment in the organisation's calendar]
@@ -174,14 +233,19 @@ Start with the two lowest-scoring sections. 4–5 items total. For each:
 - **What to do:** [2–3 sentences of specific annual action]
  
 ## Key Data Risks for {sector} Organisations
-Three risks specific to this organisation's sector(s) and beneficiary profile. For each, go beyond naming the risk — explain the realistic scenario in which it manifests for an organisation like this one.
+Three risks specific to this organisation's sector(s) and beneficiary profile. For each, \
+go beyond naming the risk — describe the realistic scenario in which it manifests.
  
 **[Risk name]**
-- **The scenario:** [2–3 sentences describing exactly how this risk arises in practice for a {org_size} {sector} organisation — name the specific programme activity, tool, or process where the breach could occur]
-- **DPDP Act provision:** [Section and Rule number]
+- **The scenario:** [2–3 sentences describing exactly how this risk arises in practice \
+for a {org_size} {sector} organisation — name the specific programme activity, tool, \
+or process where the breach could occur]
+- **DPDP Act provision:** [Section and Rule number — only cite provisions you are \
+certain exist]
 - **Penalty:** [Exact penalty range]
-- **What makes this sector particularly exposed:** [One sentence on why {sector} organisations face heightened risk on this specific issue compared to other NGOs]"""
-
+- **Why {sector} organisations face heightened exposure:** [One sentence on the \
+sector-specific factor that makes this risk more acute than for other NGO types]
+"""
 
 def _fallback(section_scores, total_score):
     if isinstance(section_scores, str):
@@ -197,7 +261,7 @@ def _fallback(section_scores, total_score):
     
 ## Executive Summary
 
-Your organisation scored **{total_score}/50** on the DPDP Act 2023 readiness assessment. The most significant gaps are in **{", ".join(gap_names)}**. With structured effort of roughly one half-day per month, meaningful compliance progress is achievable within 90 days.
+Your organisation scored **{total_score}/50** on the DPDP Act 2023 readiness assessment. The most significant gaps are in **{", ".join(gap_names)}**. 
 
 ## 30-Day Priority Actions
 
