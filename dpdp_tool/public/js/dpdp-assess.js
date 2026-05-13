@@ -299,7 +299,7 @@ async function fetchReco(secScores,total){
     }catch(e){
       clearInterval(t);
       console.error('[fetchReco] failed:', e.message, e);
-      reco = fallbackReco(secScores, total); renderReco(reco);
+//      reco = fallbackReco(secScores, total); renderReco(reco);
     }
     document.getElementById('btn-pdf').disabled=false;
     resolve();
