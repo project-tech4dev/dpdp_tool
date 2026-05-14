@@ -60,6 +60,11 @@ def _validate_origin():
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def get_recommendations( sector, org_size, beneficiaries,
                         total_score, max_score, section_scores, answers):
+    """
+    Called via POST (JSON body) from the JS to avoid URL-length limits on the
+    large `answers` payload.  Frappe populates form_dict from JSON body
+    automatically when Content-Type is application/json.
+    """
     try:
         _validate_origin()
         import anthropic
@@ -307,6 +312,33 @@ def store_assessment(org_name, org_email, contact_name, sector, org_size,
     except Exception as e:
         frappe.log_error(f"DPDP store error: {e}", "DPDP API")
         return {"status": "error"}
+
+
+# ─────────────────────────────────────────────────────────────────
+# METHOD 2b — patch_assessment_reco
+# Called after Claude responds to attach the recommendation text to the
+# already-stored doc.  Keeps the two concerns separate so we know exactly
+# which call failed if something goes wrong.
+# ─────────────────────────────────────────────────────────────────
+
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+def patch_assessment_reco(docname, recommendations):
+    """Patch recommendations onto an existing DPDP Assessment doc."""
+    try:
+        _validate_origin()
+        if not docname:
+            return {"status": "error", "message": "docname required"}
+
+        doc = frappe.get_doc("DPDP Assessment", docname)
+        doc.recommendations = recommendations or ""
+        doc.save(ignore_permissions=True)
+        frappe.db.commit()
+        frappe.logger("dpdp").info(f"[DPDP] patch_assessment_reco: patched {docname}")
+        return {"status": "ok", "docname": docname}
+
+    except Exception as e:
+        frappe.log_error(f"DPDP patch reco error ({docname}): {e}", "DPDP API")
+        return {"status": "error", "message": str(e)}
 
 
 # ─────────────────────────────────────────────────────────────────

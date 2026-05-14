@@ -105,11 +105,6 @@ const Q = [
    o:[["Yes — an annual or periodic review process is in place",2],["Partially — reviews happen occasionally but not systematically",1],["No / Not Sure",0]]},
 ];
 
-function getCsrfToken() {
-  const match = document.cookie.match(/csrftoken=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : 'fetch';
-}
-
 const SEC_COUNTS = [5,5,5,5,5];
 
 // ══ STATE ══════════════════════════════════════════════════════════
@@ -221,7 +216,15 @@ async function submitAssessment(){
 
   renderSGrid(secScores);
   renderQBreakdown();
-  fetchReco(secScores,total).then(()=>storeInFrappe(secScores,total));
+
+  // ── Step 1: persist to Frappe immediately (no reco yet) ──────────
+  // This guarantees the submission is recorded before the slow Claude call.
+  // storeInFrappe returns the docname so we can patch reco in afterwards.
+  const docname = await storeInFrappe(secScores, total, '');
+  console.log('[submit] stored docname:', docname);
+
+  // ── Step 2: call Claude, then patch reco onto the stored doc ──────
+  await fetchReco(secScores, total, docname);
 }
 
 function animateScore(id,target){
@@ -269,41 +272,47 @@ function renderQBreakdown(){
 }
 
 // ══ FRAPPE + CLAUDE ════════════════════════════════════════════════
-async function fetchReco(secScores,total){
+// docname: the already-stored Frappe record to patch once reco arrives.
+async function fetchReco(secScores, total, docname){
   const steps=['Analysing your responses…','Mapping gaps to DPDP Act sections…','Generating your 30-day priority actions…','Building your 90-day roadmap…','Preparing your 1-year plan…'];
   let si=0;const stepEl=document.getElementById('reco-step');
   const t=setInterval(()=>{si=(si+1)%steps.length;if(stepEl)stepEl.textContent=steps[si];},2800);
 
-  return new Promise(async(resolve)=>{
-    try{
-      const payload={
-        org_name:org.org,sector:org.sector,org_size:org.size,beneficiaries:org.bene,
-        total_score:total,max_score:Q.reduce((s,q)=>s+q.o.reduce((m,o)=>Math.max(m,o[1]),0),0),
-        section_scores:{consent:secScores[0],storage:secScores[1],usage:secScores[2],rights:secScores[3],governance:secScores[4]},
-        answers:buildAnswerSummary()
-      };
-      const p=new URLSearchParams();
-      p.append('sector',JSON.stringify(Array.isArray(payload.sector)?payload.sector:[payload.sector]));
-      p.append('org_size',payload.org_size);
-      p.append('beneficiaries',payload.beneficiaries||'');
-      p.append('total_score',payload.total_score);
-      p.append('max_score',payload.max_score);
-      p.append('section_scores',JSON.stringify(payload.section_scores));
-      p.append('answers',payload.answers);
-      const res=await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations?${p}`);
-      const j=await res.json();
-      clearInterval(t);
-      reco=j.message?.recommendations||'';
-      if(!reco)throw new Error('empty');
-      renderReco(reco);
-    }catch(e){
-      clearInterval(t);
-      console.error('[fetchReco] failed:', e.message, e);
-//      reco = fallbackReco(secScores, total); renderReco(reco);
-    }
-    document.getElementById('btn-pdf').disabled=false;
-    resolve();
-  });
+  try{
+    // POST avoids URL-length limits from the large answers payload.
+    const payload={
+      org_name:org.org,sector:JSON.stringify(Array.isArray(org.sector)?org.sector:[org.sector]),
+      org_size:org.size,beneficiaries:org.bene||'',
+      total_score:total,
+      max_score:Q.reduce((s,q)=>s+q.o.reduce((m,o)=>Math.max(m,o[1]),0),0),
+      section_scores:JSON.stringify({consent:secScores[0],storage:secScores[1],usage:secScores[2],rights:secScores[3],governance:secScores[4]}),
+      answers:buildAnswerSummary()
+    };
+    const res=await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.get_recommendations`,{
+      method:'POST',
+      headers:{'X-Frappe-CSRF-Token':'fetch'},
+      body:new URLSearchParams(payload)
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const j=await res.json();
+    clearInterval(t);
+    reco=j.message?.recommendations||'';
+    if(!reco) throw new Error('empty response from Claude');
+    renderReco(reco);
+    console.log('[fetchReco] success, status:', j.message?.status);
+  }catch(e){
+    clearInterval(t);
+    console.error('[fetchReco] failed — using fallback:', e.message, e);
+    reco=fallbackReco(secScores,total);
+    renderReco(reco);
+  }
+
+  // ── Patch reco onto the already-stored Frappe doc ─────────────────
+  if(docname){
+    await patchRecoInFrappe(docname, reco);
+  }
+
+  document.getElementById('btn-pdf').disabled=false;
 }
 
 function buildAnswerSummary(){
@@ -332,9 +341,9 @@ function fallbackReco(secScores,total){
   return`## Executive Summary\n\nYour organisation scored **${total} out of 50** on the DPDP Act 2023 readiness assessment. Your three priority gaps are in **${gaps.map(g=>g.label).join(', ')}**. Focused effort across the next 90 days can make meaningful progress.\n\n## 30-Day Priority Actions\n\n**1. ${gaps[0]?.label}** — Start by documenting your current practices. Assign a named person to own data protection and draft a one-page interim policy.\n\n**2. Review consent documentation** — Check all data collection forms against the DPDP notice requirements: purpose, retention period, rights, and contact details.\n\n**3. Map your data landscape** — Create a simple spreadsheet listing every category of personal data, where it is stored, and who has access.\n\n## 90-Day Compliance Foundation\n\n- Approve a written data protection policy\n- Train all programme staff on DPDP basics (2-hour session)\n- Sign Data Processing Agreements with key technology vendors\n- Establish a grievance mechanism and communicate it to beneficiaries\n- Conduct a basic security review of your key systems\n\n## 1-Year Programme\n\n- Annual DPDP compliance review at board meeting\n- Refresh consent forms when programmes change\n- Test your breach response plan annually\n- Review vendor DPAs at contract renewal\n\n*Contact Tech4Dev for a personalised implementation plan.*`;
 }
 
-async function storeInFrappe(secScores, total) {
+async function storeInFrappe(secScores, total, recoText) {
   try {
-    const params = new URLSearchParams({
+    const body = {
       org_name:      org.org,
       org_email:     org.email,
       contact_name:  org.name,
@@ -348,12 +357,36 @@ async function storeInFrappe(secScores, total) {
       score_rights:     secScores[3] || 0,
       score_governance: secScores[4] || 0,
       answers_json:  buildAnswerSummary(),
-      recommendations: reco || ''
+      recommendations: recoText || ''
+    };
+    const res = await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.store_assessment`, {
+      method: 'POST',
+      headers: {'X-Frappe-CSRF-Token':'fetch'},
+      body: new URLSearchParams(body)
     });
-    const res = await fetch(`/api/method/dpdp_tool.api.store_assessment?${params}`);
     const j = await res.json();
-    console.log('Stored:', j.message?.docname);
-  } catch(e) { console.error('storeInFrappe:', e); }
+    const docname = j.message?.docname || null;
+    console.log('[storeInFrappe] stored:', docname);
+    return docname;
+  } catch(e) {
+    console.error('[storeInFrappe] failed:', e);
+    return null;
+  }
+}
+
+// Patches the reco text onto an already-stored doc once Claude responds.
+async function patchRecoInFrappe(docname, recoText) {
+  try {
+    const res = await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.patch_assessment_reco`, {
+      method: 'POST',
+      headers: {'X-Frappe-CSRF-Token':'fetch'},
+      body: new URLSearchParams({docname, recommendations: recoText || ''})
+    });
+    const j = await res.json();
+    console.log('[patchReco] result:', j.message?.status);
+  } catch(e) {
+    console.error('[patchRecoInFrappe] failed:', e);
+  }
 }
 
 // ══ PDF ════════════════════════════════════════════════════════════
