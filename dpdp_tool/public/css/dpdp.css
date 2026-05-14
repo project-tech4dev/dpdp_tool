@@ -236,7 +236,7 @@ h2.sh{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3.5vw,2.7rem
 .fg{display:flex;flex-direction:column;gap:5px}
 .fg label{font-size:.72rem;font-weight:500;color:var(--ink)}
 #cf-inner .fg label{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.68)}
-.fg input,.fg select,.fg textarea{padding:10px 13px;border:1px solid rgba(255,255,255,.14);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.85rem;background:var(--paper);color:#fff;outline:none;width:100%;transition:border-color .18s}
+.fg input,.fg select,.fg textarea{padding:10px 13px;border:1px solid rgba(255,255,255,.14);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.85rem;background:var(--paper);color:var(--ink);outline:none;width:100%;transition:border-color .18s}
 .fg input::placeholder,.fg textarea::placeholder{color:var(--ink)}
 .fg select option{background:var(--navy)}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:rgba(126,184,240,.5)}
