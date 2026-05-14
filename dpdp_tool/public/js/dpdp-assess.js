@@ -279,8 +279,8 @@ async function fetchReco(secScores, total, docname){
   const t=setInterval(()=>{si=(si+1)%steps.length;if(stepEl)stepEl.textContent=steps[si];},2800);
 
   try{
-    // POST avoids URL-length limits from the large answers payload.
     const payload={
+      docname,
       org_name:org.org,sector:JSON.stringify(Array.isArray(org.sector)?org.sector:[org.sector]),
       org_size:org.size,beneficiaries:org.bene||'',
       total_score:total,
@@ -296,10 +296,16 @@ async function fetchReco(secScores, total, docname){
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const j=await res.json();
     clearInterval(t);
-    reco=j.message?.recommendations||'';
-    if(!reco) throw new Error('empty response from Claude');
-    renderReco(reco);
-    console.log('[fetchReco] success, status:', j.message?.status);
+
+    if(j.message?.status==='queued'){
+      // Job enqueued — poll until Claude writes the result to the doc
+      await pollForReco(docname, secScores, total);
+    } else {
+      // Unexpected direct response — handle gracefully
+      reco=j.message?.recommendations||'';
+      if(!reco) throw new Error('empty direct response');
+      renderReco(reco);
+    }
   }catch(e){
     clearInterval(t);
     console.error('[fetchReco] failed — using fallback:', e.message, e);
@@ -307,12 +313,38 @@ async function fetchReco(secScores, total, docname){
     renderReco(reco);
   }
 
-  // ── Patch reco onto the already-stored Frappe doc ─────────────────
-  if(docname){
-    await patchRecoInFrappe(docname, reco);
-  }
-
   document.getElementById('btn-pdf').disabled=false;
+}
+
+// Polls check_reco every 4 seconds until the background job writes the reco.
+// Times out after 3 minutes and falls back to the client-side fallback.
+async function pollForReco(docname, secScores, total){
+  const MAX_POLLS=45; // 45 × 4 s = 3 minutes
+  for(let i=0;i<MAX_POLLS;i++){
+    await new Promise(r=>setTimeout(r,4000));
+    try{
+      const res=await fetch(
+        `${FRAPPE_URL}/api/method/dpdp_tool.api.check_reco?docname=${encodeURIComponent(docname)}`,
+        {headers:{'X-Frappe-CSRF-Token':'fetch'}}
+      );
+      const j=await res.json();
+      console.log(`[pollForReco] poll ${i+1}:`,j.message?.status);
+      if(j.message?.status==='ok'){
+        reco=j.message.recommendations;
+        renderReco(reco);
+        return;
+      }
+      if(j.message?.status==='error'){
+        throw new Error(j.message?.message||'check_reco error');
+      }
+    }catch(e){
+      console.warn(`[pollForReco] poll ${i+1} error:`,e.message);
+    }
+  }
+  // All polls exhausted — render client-side fallback
+  console.warn('[pollForReco] timed out after 3 minutes');
+  reco=fallbackReco(secScores,total);
+  renderReco(reco);
 }
 
 function buildAnswerSummary(){
@@ -371,21 +403,6 @@ async function storeInFrappe(secScores, total, recoText) {
   } catch(e) {
     console.error('[storeInFrappe] failed:', e);
     return null;
-  }
-}
-
-// Patches the reco text onto an already-stored doc once Claude responds.
-async function patchRecoInFrappe(docname, recoText) {
-  try {
-    const res = await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.patch_assessment_reco`, {
-      method: 'POST',
-      headers: {'X-Frappe-CSRF-Token':'fetch'},
-      body: new URLSearchParams({docname, recommendations: recoText || ''})
-    });
-    const j = await res.json();
-    console.log('[patchReco] result:', j.message?.status);
-  } catch(e) {
-    console.error('[patchRecoInFrappe] failed:', e);
   }
 }
 

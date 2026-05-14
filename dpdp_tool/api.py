@@ -58,20 +58,48 @@ def _validate_origin():
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
-def get_recommendations( sector, org_size, beneficiaries,
+def get_recommendations(docname, sector, org_size, beneficiaries,
                         total_score, max_score, section_scores, answers):
     """
-    Called via POST (JSON body) from the JS to avoid URL-length limits on the
-    large `answers` payload.  Frappe populates form_dict from JSON body
-    automatically when Content-Type is application/json.
+    Enqueues the Claude call as a background job and returns immediately so
+    Frappe Cloud's 60-second nginx timeout is never hit.
+    JS polls check_reco(docname) until the job writes the result to the doc.
     """
     try:
         _validate_origin()
+        if not docname:
+            frappe.throw("docname required to queue recommendation job")
+
+        frappe.enqueue(
+            "dpdp_tool.api._run_recommendation_job",
+            queue="long",
+            timeout=600,
+            docname=docname,
+            sector=sector,
+            org_size=org_size,
+            beneficiaries=beneficiaries,
+            total_score=total_score,
+            max_score=max_score,
+            section_scores=section_scores,
+            answers=answers,
+        )
+        frappe.logger("dpdp").info(f"[DPDP] queued recommendation job for {docname}")
+        return {"status": "queued", "docname": docname}
+
+    except Exception as e:
+        frappe.log_error(f"DPDP queue error: {e}", "DPDP API")
+        return {"status": "error", "message": str(e)}
+
+
+def _run_recommendation_job(docname, sector, org_size, beneficiaries,
+                            total_score, max_score, section_scores, answers):
+    """Background worker — runs outside the request cycle, no nginx timeout."""
+    try:
         import anthropic
 
         api_key = frappe.conf.get("anthropic_api_key")
         if not api_key:
-            frappe.throw("API configuration missing. Contact administrator.")
+            raise ValueError("anthropic_api_key not set in site config")
 
         if isinstance(section_scores, str):
             section_scores = json.loads(section_scores)
@@ -88,15 +116,45 @@ def get_recommendations( sector, org_size, beneficiaries,
                 section_scores, answers
             )}]
         )
-        recommendations = response.content[0].text
-        return {"recommendations": recommendations, "status": "ok"}
+        reco = response.content[0].text
+        frappe.logger("dpdp").info(f"[DPDP] job complete for {docname}, writing reco")
 
     except Exception as e:
-        frappe.log_error(f"DPDP recommendation error: {e}", "DPDP API")
-        return {
-            "recommendations": _fallback(section_scores, total_score),
-            "status": "fallback"
-        }
+        frappe.log_error(f"DPDP job error ({docname}): {e}", "DPDP API")
+        reco = _fallback(section_scores, total_score)
+        frappe.logger("dpdp").info(f"[DPDP] job fallback written for {docname}")
+
+    # Write result to doc regardless of success or fallback
+    try:
+        doc = frappe.get_doc("DPDP Assessment", docname)
+        doc.recommendations = reco
+        doc.save(ignore_permissions=True)
+        frappe.db.commit()
+    except Exception as e:
+        frappe.log_error(f"DPDP job doc-save error ({docname}): {e}", "DPDP API")
+
+
+# ─────────────────────────────────────────────────────────────────
+# METHOD 1b — check_reco
+# Lightweight poll endpoint — just reads the doc, no heavy lifting.
+# ─────────────────────────────────────────────────────────────────
+
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
+def check_reco(docname):
+    """Returns {status: pending} until the background job writes recommendations."""
+    try:
+        _validate_origin()
+        if not docname:
+            return {"status": "error", "message": "docname required"}
+
+        doc = frappe.get_doc("DPDP Assessment", docname)
+        if doc.recommendations:
+            return {"status": "ok", "recommendations": doc.recommendations}
+        return {"status": "pending"}
+
+    except Exception as e:
+        frappe.log_error(f"DPDP check_reco error ({docname}): {e}", "DPDP API")
+        return {"status": "error", "message": str(e)}
 
 
 def _build_prompt(sector, org_size, beneficiaries,
