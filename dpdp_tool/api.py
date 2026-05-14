@@ -281,7 +281,7 @@ def _fallback(section_scores, total_score):
     gaps = sorted(section_scores.items(), key=lambda x: x[1] or 0)[:2]
     gap_names = [g[0].replace("_", " ").title() for g in gaps]
 
-    return f"""(Note: Fallback sumamry due to AI failure) 
+    return f"""## Standard Recommendations (AI Failure!!!) 
     
 ## Executive Summary
 
