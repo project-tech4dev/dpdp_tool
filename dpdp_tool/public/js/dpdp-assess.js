@@ -156,7 +156,6 @@ function renderQ(idx){
         <div class="opt${sel===oi?' sel':''}" onclick="selectOpt(${idx},${oi})">
           <div class="opt-radio"></div>
           <div class="opt-label">${opt[0]}</div>
-          <div class="opt-pts">${opt[1]} pt${opt[1]!==1?'s':''}</div>
         </div>`).join('')}
       </div>
     </div>`;
