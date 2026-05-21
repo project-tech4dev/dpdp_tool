@@ -196,6 +196,7 @@ function resumeFromAuto(){
 function discardAuto(key){
   localStorage.removeItem(key);
   document.getElementById('resume-prompt')?.remove();
+  document.querySelector('.org-form').style.display='';
 }
 
 // ══ NAV ════════════════════════════════════════════════════════════
@@ -229,6 +230,8 @@ window.addEventListener('beforeunload',e=>{
       <button onclick="discardAuto('${found.key}')" class="btn-prev" style="padding:5px 12px;font-size:.80rem">Start fresh</button>
     </span>`;
   document.querySelector('.intro-wrap').prepend(banner);
+  // Hide the org form until they choose Start fresh
+  document.querySelector('.org-form').style.display='none';
 })();
 
 function startAssessment(){
