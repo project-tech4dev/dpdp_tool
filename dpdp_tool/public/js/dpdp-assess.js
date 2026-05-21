@@ -152,39 +152,49 @@ function loadSession(email){
 }
 
 function clearSession(){
-  const key = getSessionKey();
+  const key=getSessionKey();
   if(key) localStorage.removeItem(key);
 }
 
-function resumeSession(email){
-  const saved = loadSession(email);
-  if(!saved) return;
-  // Restore form fields
-  if(saved.org.org)   document.getElementById('i-org').value   = saved.org.org;
-  if(saved.org.name)  document.getElementById('i-name').value  = saved.org.name;
-  if(saved.org.email) document.getElementById('i-email').value = saved.org.email;
-  if(saved.org.size)  document.getElementById('i-size').value  = saved.org.size;
-  if(saved.org.bene)  document.getElementById('i-bene').value  = saved.org.bene;
-  // Restore sector checkboxes
+function findLatestSession(){
+  let best=null;
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    if(!key.startsWith(S_VER)) continue;
+    try{
+      const data=JSON.parse(localStorage.getItem(key));
+      if(!data||Date.now()-data.savedAt>S_TTL){localStorage.removeItem(key);continue;}
+      if(!data.answers.some(a=>a!==null)) continue;
+      if(!best||data.savedAt>best.data.savedAt) best={key,data};
+    }catch{}
+  }
+  return best;
+}
+
+function restoreSession(saved){
+  if(saved.org.org)   document.getElementById('i-org').value  =saved.org.org;
+  if(saved.org.name)  document.getElementById('i-name').value =saved.org.name;
+  if(saved.org.email) document.getElementById('i-email').value=saved.org.email;
+  if(saved.org.size)  document.getElementById('i-size').value =saved.org.size;
+  if(saved.org.bene)  document.getElementById('i-bene').value =saved.org.bene;
   document.querySelectorAll('#sector-checkboxes input[type=checkbox]').forEach(cb=>{
-    cb.checked = (saved.org.sector||[]).includes(cb.value);
+    cb.checked=(saved.org.sector||[]).includes(cb.value);
   });
-  // Restore state
-  answers = saved.answers;
-  currentQ = saved.currentQ;
-  org = saved.org;
-  // Clean up prompt
+  answers=saved.answers;currentQ=saved.currentQ;org=saved.org;
   document.getElementById('resume-prompt')?.remove();
-  // Update banner
-  const warn = document.getElementById('session-warn');
-  if(warn) warn.textContent = '✓ Session resumed — progress is auto-saved';
+  const warn=document.getElementById('session-warn');
+  if(warn) warn.textContent='✓ Session resumed — progress is auto-saved';
   showScreen('s-assess');
   renderQ(currentQ);
 }
 
-function discardSession(){
-  const email = document.getElementById('i-email')?.value?.trim().toLowerCase();
-  if(email) localStorage.removeItem(S_VER + email);
+function resumeFromAuto(){
+  const found=findLatestSession();
+  if(found) restoreSession(found.data);
+}
+
+function discardAuto(key){
+  localStorage.removeItem(key);
   document.getElementById('resume-prompt')?.remove();
 }
 
@@ -196,36 +206,30 @@ function showScreen(id){
 }
 let currentScreen='s-intro';
 
-// Only warn on unload if there's no saved session (email not entered yet)
 window.addEventListener('beforeunload',e=>{
-  if(currentScreen==='s-assess' && !getSessionKey()){
-    e.preventDefault();e.returnValue='';
-  }
+  if(currentScreen==='s-assess'&&!getSessionKey()){e.preventDefault();e.returnValue='';}
 });
 
-// Email blur → check for existing session and show resume prompt
-window.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('i-email').addEventListener('blur',function(){
-    const email = this.value.trim();
-    if(!email) return;
-    const saved = loadSession(email);
-    if(!saved || !saved.answers.some(a=>a!==null)) return;
-    const answered = saved.answers.filter(a=>a!==null).length;
-    const pct = Math.round(answered / saved.answers.length * 100);
-    document.getElementById('resume-prompt')?.remove();
-    const prompt = document.createElement('div');
-    prompt.id = 'resume-prompt';
-    prompt.className = 'session-warn';
-    prompt.style.cssText = 'margin-top:.5rem;justify-content:space-between;flex-wrap:wrap;gap:.5rem';
-    prompt.innerHTML = `
-      <span>✓ Session found — <strong>${pct}% complete</strong> (${answered} of ${saved.answers.length} answered)</span>
-      <span style="display:flex;gap:.5rem;flex-shrink:0">
-        <button onclick="resumeSession('${email}')" class="btn-next" style="padding:5px 12px;font-size:.80rem">Resume</button>
-        <button onclick="discardSession()" class="btn-prev" style="padding:5px 12px;font-size:.80rem">Start fresh</button>
-      </span>`;
-    this.closest('.fg').after(prompt);
-  });
-});
+// ── Auto-detect session on page load ────────────────────────────
+(function checkOnLoad(){
+  const found=findLatestSession();
+  if(!found) return;
+  const saved=found.data;
+  const answered=saved.answers.filter(a=>a!==null).length;
+  const pct=Math.round(answered/saved.answers.length*100);
+  const name=saved.org.name||saved.org.org||'';
+  const banner=document.createElement('div');
+  banner.id='resume-prompt';
+  banner.className='session-warn';
+  banner.style.cssText='margin-bottom:1.5rem;justify-content:space-between;flex-wrap:wrap;gap:.5rem';
+  banner.innerHTML=`
+    <span>Welcome back${name?' <strong>'+name+'</strong> —':' —'} <strong>${pct}% complete</strong> (${answered} of ${saved.answers.length} answered)</span>
+    <span style="display:flex;gap:.5rem;flex-shrink:0">
+      <button onclick="resumeFromAuto()" class="btn-next" style="padding:5px 12px;font-size:.80rem">Resume →</button>
+      <button onclick="discardAuto('${found.key}')" class="btn-prev" style="padding:5px 12px;font-size:.80rem">Start fresh</button>
+    </span>`;
+  document.querySelector('.intro-wrap').prepend(banner);
+})();
 
 function startAssessment(){
   const o=document.getElementById('i-org').value.trim();
