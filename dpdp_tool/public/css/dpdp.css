@@ -265,6 +265,7 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   nav{padding:0 2rem}
   .hero{padding:4.5rem 2rem 4rem}
   section,#why-ngo{padding:4.5rem 2rem}
+  .assess-hero{padding:2.5rem 2rem 2rem}
   .hero-grid{gap:2.5rem}
   .wsplit{gap:3rem}
   .csplit{gap:3rem}
@@ -331,7 +332,7 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 /* Assess hero */
 .assess-hero{background:var(--navy);padding:3rem 3rem 2.5rem;position:relative;overflow:hidden}
 .assess-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 75% 50%,rgba(29,111,184,.22) 0%,transparent 65%);pointer-events:none}
-.assess-hero-inner{max-width:1040px;margin:0 auto;position:relative}
+.assess-hero-inner{max-width:1200px;margin:0 auto;position:relative}
 .a-tag{display:inline-flex;align-items:center;gap:8px;font-family:"Outfit",sans-serif;font-size:.80rem;color:var(--sky);letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(126,184,240,.28);padding:4px 12px;border-radius:2px;margin-bottom:1.25rem}
 .a-h1{font-size:clamp(1.6rem,3.2vw,2.4rem);font-weight:300;color:#fff;line-height:1.15;margin-bottom:.75rem}
 .a-h1 em{color:var(--sky);font-style:italic}
