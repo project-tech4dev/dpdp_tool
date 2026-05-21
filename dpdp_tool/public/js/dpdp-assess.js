@@ -114,6 +114,80 @@ let currentQ = 0;
 let reco = '';
 const FRAPPE_URL = '';
 
+// ══ SESSION STORAGE ════════════════════════════════════════════════
+const S_VER = 'dpdp_v1_';
+const S_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function getSessionKey(){
+  const e = document.getElementById('i-email')?.value?.trim().toLowerCase();
+  return e ? S_VER + e : null;
+}
+
+function saveSession(){
+  const key = getSessionKey();
+  if(!key) return;
+  const sectors = Array.from(document.querySelectorAll('#sector-checkboxes input:checked')).map(cb=>cb.value);
+  localStorage.setItem(key, JSON.stringify({
+    answers, currentQ,
+    org:{
+      org:    document.getElementById('i-org')?.value   || '',
+      name:   document.getElementById('i-name')?.value  || '',
+      email:  document.getElementById('i-email')?.value || '',
+      sector: sectors,
+      size:   document.getElementById('i-size')?.value  || '',
+      bene:   document.getElementById('i-bene')?.value  || '',
+    },
+    savedAt: Date.now()
+  }));
+}
+
+function loadSession(email){
+  try{
+    const raw = localStorage.getItem(S_VER + email.trim().toLowerCase());
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    if(Date.now() - data.savedAt > S_TTL){ localStorage.removeItem(S_VER + email.trim().toLowerCase()); return null; }
+    return data;
+  }catch{ return null; }
+}
+
+function clearSession(){
+  const key = getSessionKey();
+  if(key) localStorage.removeItem(key);
+}
+
+function resumeSession(email){
+  const saved = loadSession(email);
+  if(!saved) return;
+  // Restore form fields
+  if(saved.org.org)   document.getElementById('i-org').value   = saved.org.org;
+  if(saved.org.name)  document.getElementById('i-name').value  = saved.org.name;
+  if(saved.org.email) document.getElementById('i-email').value = saved.org.email;
+  if(saved.org.size)  document.getElementById('i-size').value  = saved.org.size;
+  if(saved.org.bene)  document.getElementById('i-bene').value  = saved.org.bene;
+  // Restore sector checkboxes
+  document.querySelectorAll('#sector-checkboxes input[type=checkbox]').forEach(cb=>{
+    cb.checked = (saved.org.sector||[]).includes(cb.value);
+  });
+  // Restore state
+  answers = saved.answers;
+  currentQ = saved.currentQ;
+  org = saved.org;
+  // Clean up prompt
+  document.getElementById('resume-prompt')?.remove();
+  // Update banner
+  const warn = document.getElementById('session-warn');
+  if(warn) warn.textContent = '✓ Session resumed — progress is auto-saved';
+  showScreen('s-assess');
+  renderQ(currentQ);
+}
+
+function discardSession(){
+  const email = document.getElementById('i-email')?.value?.trim().toLowerCase();
+  if(email) localStorage.removeItem(S_VER + email);
+  document.getElementById('resume-prompt')?.remove();
+}
+
 // ══ NAV ════════════════════════════════════════════════════════════
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -121,7 +195,37 @@ function showScreen(id){
   currentScreen=id;window.scrollTo(0,0);
 }
 let currentScreen='s-intro';
-window.addEventListener('beforeunload',e=>{if(currentScreen==='s-assess'){e.preventDefault();e.returnValue='';}});
+
+// Only warn on unload if there's no saved session (email not entered yet)
+window.addEventListener('beforeunload',e=>{
+  if(currentScreen==='s-assess' && !getSessionKey()){
+    e.preventDefault();e.returnValue='';
+  }
+});
+
+// Email blur → check for existing session and show resume prompt
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('i-email').addEventListener('blur',function(){
+    const email = this.value.trim();
+    if(!email) return;
+    const saved = loadSession(email);
+    if(!saved || !saved.answers.some(a=>a!==null)) return;
+    const answered = saved.answers.filter(a=>a!==null).length;
+    const pct = Math.round(answered / saved.answers.length * 100);
+    document.getElementById('resume-prompt')?.remove();
+    const prompt = document.createElement('div');
+    prompt.id = 'resume-prompt';
+    prompt.className = 'session-warn';
+    prompt.style.cssText = 'margin-top:.5rem;justify-content:space-between;flex-wrap:wrap;gap:.5rem';
+    prompt.innerHTML = `
+      <span>✓ Session found — <strong>${pct}% complete</strong> (${answered} of ${saved.answers.length} answered)</span>
+      <span style="display:flex;gap:.5rem;flex-shrink:0">
+        <button onclick="resumeSession('${email}')" class="btn-next" style="padding:5px 12px;font-size:.80rem">Resume</button>
+        <button onclick="discardSession()" class="btn-prev" style="padding:5px 12px;font-size:.80rem">Start fresh</button>
+      </span>`;
+    this.closest('.fg').after(prompt);
+  });
+});
 
 function startAssessment(){
   const o=document.getElementById('i-org').value.trim();
@@ -132,6 +236,7 @@ function startAssessment(){
   if(!o||!n||!e||sc.length===0||!sz){alert('Please fill in all required fields and select at least one sector.');return;}
   org={org:o,name:n,email:e,sector:sc,size:sz,bene:document.getElementById('i-bene').value.trim()};
   showScreen('s-assess');currentQ=0;renderQ(0);
+  saveSession();
 }
 
 // ══ RENDER QUESTION ════════════════════════════════════════════════
@@ -163,27 +268,12 @@ function renderQ(idx){
   document.getElementById('btn-prev').style.visibility=idx===0?'hidden':'visible';
   document.getElementById('btn-next').textContent=idx===tot-1?'Submit →':'Next →';
   document.getElementById('btn-next').disabled=(sel===null);
-  updateStrip(idx);
 }
 
-function selectOpt(qIdx,oi){answers[qIdx]=oi;renderQ(qIdx);}
+function selectOpt(qIdx,oi){answers[qIdx]=oi;renderQ(qIdx);saveSession();}
 
-function nextQ(){if(answers[currentQ]===null)return;if(currentQ===Q.length-1){submitAssessment();}else{currentQ++;renderQ(currentQ);}}
-function prevQ(){if(currentQ>0){currentQ--;renderQ(currentQ);}}
-
-function updateStrip(cur){
-  const strip=document.getElementById('ss-strip');
-  const firstDone=answers.slice(0,5).every(a=>a!==null);
-  if(!firstDone){strip.classList.remove('vis');return;}
-  strip.classList.add('vis');
-  const {secScores}=calcScores();
-  document.getElementById('ss-bars').innerHTML=SECTIONS.map((sec,i)=>{
-    const sc=secScores[i];if(sc===null)return'';
-    const maxSec=SEC_COUNTS[i]*2;const pct=Math.round((sc/maxSec)*100);
-    const col=pct>=70?'var(--blue)':pct>=40?'var(--amber)':'var(--red)';
-    return`<div class="ss-row"><div class="ss-label">${sec.label}</div><div class="ss-track"><div class="ss-fill" style="width:${pct}%;background:${col}"></div></div><div class="ss-pct">${pct}%</div></div>`;
-  }).join('');
-}
+function nextQ(){if(answers[currentQ]===null)return;if(currentQ===Q.length-1){submitAssessment();}else{currentQ++;renderQ(currentQ);saveSession();}}
+function prevQ(){if(currentQ>0){currentQ--;renderQ(currentQ);saveSession();}}
 
 // ══ SCORING ════════════════════════════════════════════════════════
 function calcScores(){
@@ -201,6 +291,7 @@ function calcScores(){
 
 // ══ SUBMIT ═════════════════════════════════════════════════════════
 async function submitAssessment(){
+  clearSession();
   const{secScores,total}=calcScores();
   showScreen('s-result');
 
@@ -262,7 +353,7 @@ function renderQBreakdown(){
         const lbl=pts===2?'Yes':pts===1?'Partially':'No';
         return`<div class="qb-row">
           <div class="qb-pip" style="background:${pip}"></div>
-          <div class="qb-q">${q.t.substring(0,85)}${q.t.length>85?'…':''}</div>
+          <div class="qb-q">${q.t}</div>
           <div class="qb-ans ${cls}">${lbl}</div>
         </div>`;
       }).join('')}</div>
@@ -509,6 +600,7 @@ function generatePDF(){
 }
 
 function restartAssessment(){
+  clearSession();
   answers=new Array(Q.length).fill(null);currentQ=0;reco='';
   document.getElementById('btn-pdf').disabled=true;
   showScreen('s-intro');

@@ -8,7 +8,8 @@ no_cache: 1
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DPDP Self-Assessment — Tech4Dev</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -49,7 +50,7 @@ no_cache: 1
       </div>
       <div class="fg"><label>Work Email *</label><input type="email" id="i-email" placeholder="you@organisation.org"></div>
       <div class="fg" style="grid-column:1/-1">
-        <label>Sector(s) * <span style="font-weight:400;color:var(--muted);font-size:.75rem">(select all that apply)</span></label>
+        <label>Sector(s) * <span style="font-weight:400;color:var(--muted);font-size:.80rem">(select all that apply)</span></label>
         <div class="sector-checkboxes" id="sector-checkboxes">
           <label class="sector-cb"><input type="checkbox" value="Health &amp; Nutrition"> Health &amp; Nutrition</label>
           <label class="sector-cb"><input type="checkbox" value="Education"> Education</label>
@@ -80,7 +81,7 @@ no_cache: 1
 <!-- ══ ASSESS ═════════════════════════════════════════════════════ -->
 <div id="s-assess" class="screen">
   <div class="assess-wrap">
-    <div class="session-warn">⚠ Progress is not saved — please complete in one session</div>
+    <div class="session-warn" id="session-warn">⚠ Progress is auto-saved — you can resume anytime using your email</div>
     <div class="prog-hdr">
       <div class="prog-sec" id="prog-sec">Section 1 of 5</div>
       <div class="prog-cnt" id="prog-cnt">Question 1 of 25</div>
