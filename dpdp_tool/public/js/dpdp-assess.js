@@ -370,8 +370,10 @@ function renderQBreakdown(){
         const pip=pts===2?'var(--blue)':pts===1?'var(--amber)':'var(--red)';
         const cls=pts===2?'ans-yes':pts===1?'ans-part':'ans-no';
         const lbl=pts===2?'Yes':pts===1?'Partially':'No';
-        return`<div class="qb-row">
-          <div class="qb-pip" style="background:${pip}"></div>
+        const chipCls=pts===2?'chip-yes':pts===1?'chip-part':'chip-no';
+        const whyText=(q.w||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        return`<div class="qb-row"${whyText?` data-why="${whyText}"`:''}> 
+          <div class="q-num-chip ${chipCls}">Q${gi+1}</div>
           <div class="qb-q">${q.t}</div>
           <div class="qb-ans ${cls}">${lbl}</div>
         </div>`;
@@ -640,6 +642,34 @@ function viewReport(){
   if(saved.recoHTML) recoEl.innerHTML=saved.recoHTML;
   else recoEl.innerHTML='<p style="color:var(--muted);padding:1rem 0">Roadmap not cached — please retake to regenerate.</p>';
 }
+
+// ── Why-text tooltip on qb-row hover ────────────────────────────
+(function initWhyTip(){
+  const tip=document.createElement('div');
+  tip.id='q-tip';
+  document.body.appendChild(tip);
+  let cur=null;
+  document.addEventListener('mouseover',e=>{
+    const row=e.target.closest('.qb-row[data-why]');
+    if(!row||!row.dataset.why){tip.style.opacity='0';cur=null;return;}
+    if(row===cur) return;
+    cur=row;
+    tip.textContent=row.dataset.why;
+    const r=row.getBoundingClientRect();
+    tip.style.opacity='0';
+    tip.style.left=r.left+'px';
+    tip.style.top=(r.bottom+window.scrollY+6)+'px';
+    tip.style.width=r.width+'px';
+    requestAnimationFrame(()=>tip.style.opacity='1');
+  });
+  document.addEventListener('mouseout',e=>{
+    const row=e.target.closest('.qb-row[data-why]');
+    if(!row) return;
+    if(!e.relatedTarget||!e.relatedTarget.closest('.qb-row[data-why]')){
+      tip.style.opacity='0';cur=null;
+    }
+  });
+})();
 
 function restartAssessment(){
   clearSession();
