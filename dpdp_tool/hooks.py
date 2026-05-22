@@ -8,7 +8,7 @@ app_color       = "#1D6FB8"
 app_email       = "dpdp@projecttech4dev.org"
 app_license     = "MIT"
 
-# Fixtures — DocType definitions auto-applied on bench migrate.
+# Fixtures — DocType definitions and Email Templates auto-applied on bench migrate.
 # After changing a DocType via Desk, run:
 #   bench --site dpdp.projecttech4dev.org export-fixtures
 # then commit the updated JSON files.
@@ -18,6 +18,12 @@ fixtures = [
         "filters": [["name", "in", [
             "DPDP Assessment",
             "DPDP Consult Request"
+        ]]]
+    },
+    {
+        "dt": "Email Template",
+        "filters": [["name", "in", [
+            "DPDP Assessment Report"
         ]]]
     }
 ]
