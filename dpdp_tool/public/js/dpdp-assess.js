@@ -112,6 +112,7 @@ let org={};
 let answers = new Array(Q.length).fill(null);
 let currentQ = 0;
 let reco = '';
+let _autoSession = null; // holds auto-detected session on load
 const FRAPPE_URL = '';
 
 // ══ SESSION STORAGE ════════════════════════════════════════════════
@@ -124,11 +125,14 @@ function getSessionKey(){
 }
 
 function saveSession(){
-  const key = getSessionKey();
+  const key=getSessionKey();
   if(!key) return;
-  const sectors = Array.from(document.querySelectorAll('#sector-checkboxes input:checked')).map(cb=>cb.value);
+  const sectors=Array.from(document.querySelectorAll('#sector-checkboxes input:checked')).map(cb=>cb.value);
+  const completed=currentScreen==='s-result';
+  const recoEl=document.getElementById('reco-content');
   localStorage.setItem(key, JSON.stringify({
-    answers, currentQ,
+    answers, currentQ, completed,
+    recoHTML: completed&&recoEl ? recoEl.innerHTML : '',
     org:{
       org:    document.getElementById('i-org')?.value   || '',
       name:   document.getElementById('i-name')?.value  || '',
@@ -215,22 +219,31 @@ window.addEventListener('beforeunload',e=>{
 (function checkOnLoad(){
   const found=findLatestSession();
   if(!found) return;
+  _autoSession=found;
   const saved=found.data;
-  const answered=saved.answers.filter(a=>a!==null).length;
-  const pct=Math.round(answered/saved.answers.length*100);
   const name=saved.org.name||saved.org.org||'';
   const banner=document.createElement('div');
   banner.id='resume-prompt';
   banner.className='session-warn';
   banner.style.cssText='margin-bottom:1.5rem;justify-content:space-between;flex-wrap:wrap;gap:.5rem';
-  banner.innerHTML=`
-    <span>Welcome back${name?' <strong>'+name+'</strong> —':' —'} <strong>${pct}% complete</strong> (${answered} of ${saved.answers.length} answered)</span>
-    <span style="display:flex;gap:.5rem;flex-shrink:0">
-      <button onclick="resumeFromAuto()" class="btn-next" style="padding:5px 12px;font-size:.80rem">Resume →</button>
-      <button onclick="discardAuto('${found.key}')" class="btn-prev" style="padding:5px 12px;font-size:.80rem">Start fresh</button>
-    </span>`;
+  if(saved.completed){
+    banner.innerHTML=`
+      <span>Welcome back${name?' <strong>'+name+'</strong> —':' —'} your assessment is complete. View your report or start fresh.</span>
+      <span style="display:flex;gap:.5rem;flex-shrink:0">
+        <button onclick="viewReport()" class="btn-next" style="padding:5px 12px;font-size:.80rem">View Report →</button>
+        <button onclick="discardAuto('${found.key}')" class="btn-prev" style="padding:5px 12px;font-size:.80rem">Start fresh</button>
+      </span>`;
+  } else {
+    const answered=saved.answers.filter(a=>a!==null).length;
+    const pct=Math.round(answered/saved.answers.length*100);
+    banner.innerHTML=`
+      <span>Welcome back${name?' <strong>'+name+'</strong> —':' —'} <strong>${pct}% complete</strong> (${answered} of ${saved.answers.length} answered)</span>
+      <span style="display:flex;gap:.5rem;flex-shrink:0">
+        <button onclick="resumeFromAuto()" class="btn-next" style="padding:5px 12px;font-size:.80rem">Resume →</button>
+        <button onclick="discardAuto('${found.key}')" class="btn-prev" style="padding:5px 12px;font-size:.80rem">Start fresh</button>
+      </span>`;
+  }
   document.querySelector('.intro-wrap').prepend(banner);
-  // Hide the org form until they choose Start fresh
   document.querySelector('.org-form').style.display='none';
 })();
 
@@ -298,7 +311,6 @@ function calcScores(){
 
 // ══ SUBMIT ═════════════════════════════════════════════════════════
 async function submitAssessment(){
-  clearSession();
   const{secScores,total}=calcScores();
   showScreen('s-result');
 
@@ -411,6 +423,7 @@ async function fetchReco(secScores, total, docname){
   }
 
   document.getElementById('btn-pdf').disabled=false;
+  saveSession(); // persist completed results + recoHTML
 }
 
 // Polls check_reco every 4 seconds until the background job writes the reco.
@@ -606,9 +619,32 @@ function generatePDF(){
   doc.save(`DPDP_${org.org.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
+function viewReport(){
+  if(!_autoSession) return;
+  const saved=_autoSession.data;
+  answers=saved.answers; org=saved.org; reco=saved.reco||'';
+  if(saved.org.email) document.getElementById('i-email').value=saved.org.email;
+  const{secScores,total}=calcScores();
+  showScreen('s-result');
+  document.getElementById('rh-org').textContent=`${org.org} · ${(Array.isArray(org.sector)?org.sector.join(', '):org.sector)||''} · ${org.size}`;
+  document.getElementById('rh-score').textContent=total;
+  const band=document.getElementById('rh-band');
+  if(total>=46){band.textContent='🟢 Strong Readiness';band.style.background='rgba(22,101,52,.15)';band.style.color='#166534';}
+  else if(total>=36){band.textContent='🟠 Moderate Readiness';band.style.background='rgba(234,88,12,.12)';band.style.color='#9a3412';}
+  else if(total>=21){band.textContent='🟡 Basic Readiness — Needs Work';band.style.background='rgba(146,64,14,.12)';band.style.color='#78350f';}
+  else{band.textContent='🔴 High Risk — Not Ready';band.style.background='rgba(185,28,28,.12)';band.style.color='#991b1b';}
+  renderSGrid(secScores);
+  renderQBreakdown();
+  document.getElementById('btn-pdf').disabled=false;
+  const recoEl=document.getElementById('reco-content');
+  if(saved.recoHTML) recoEl.innerHTML=saved.recoHTML;
+  else recoEl.innerHTML='<p style="color:var(--muted);padding:1rem 0">Roadmap not cached — please retake to regenerate.</p>';
+}
+
 function restartAssessment(){
   clearSession();
   answers=new Array(Q.length).fill(null);currentQ=0;reco='';
   document.getElementById('btn-pdf').disabled=true;
   showScreen('s-intro');
+  document.querySelector('.org-form').style.display='';
 }
