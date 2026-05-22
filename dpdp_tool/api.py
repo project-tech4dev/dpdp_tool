@@ -447,11 +447,24 @@ def generate_and_attach_pdf(docname):
 # EMAIL
 # ─────────────────────────────────────────────────────────────────
 
+def _render_email_template(template_name, args):
+    """
+    Fetch an Email Template from the doctype and render it with Jinja.
+    Bypasses Frappe's sendmail template= file-path lookup entirely.
+    Returns rendered HTML string, or None if the template does not exist.
+    """
+    try:
+        tmpl = frappe.get_doc("Email Template", template_name)
+        from frappe.utils.jinja import render_template
+        return render_template(tmpl.response_html or tmpl.response or "", args)
+    except Exception:
+        return None
+
+
 def _send_report_email(doc, file_doc):
     """
     Email the completed report with PDF attached.
-    Reads file bytes directly — more reliable than fid lookup
-    which can fail if the File record isn't fully committed yet.
+    Renders Email Template from doctype (not file path).
     """
     cfg  = _get_config()
     band = next(
@@ -459,7 +472,7 @@ def _send_report_email(doc, file_doc):
         cfg["scoring"]["bands"][-1]
     )
 
-    # Read PDF bytes directly from disk — guaranteed attachment delivery
+    # Read PDF bytes directly from disk
     try:
         file_path = frappe.get_doc("File", file_doc.name).get_full_path()
         with open(file_path, "rb") as f:
@@ -467,11 +480,26 @@ def _send_report_email(doc, file_doc):
         attachments = [{"fname": file_doc.file_name, "fcontent": pdf_bytes}]
         frappe.logger("dpdp").info(f"[DPDP] PDF read OK: {len(pdf_bytes)} bytes for {doc.name}")
     except Exception as e:
-        frappe.log_error(f"[DPDP] PDF read failed, falling back to fid ({file_doc.name}): {e}",
-                         "DPDP Email Attachment")
+        frappe.log_error(f"[DPDP] PDF read failed, falling back to fid: {e}", "DPDP Email")
         attachments = [{"fname": file_doc.file_name, "fid": file_doc.name}]
 
-    # CC from site config — e.g. "dpdp@projecttech4dev.org" or comma-separated
+    args = {
+        "doc":        doc,
+        "band_label": band["label"],
+        "band_emoji": band["emoji"],
+        "site_url":   frappe.utils.get_url(),
+    }
+
+    # Render from doctype — no file path lookup
+    html = _render_email_template("DPDP Assessment Report", args)
+    if not html:
+        html = (
+            f"Dear {doc.contact_name or doc.org_name},<br><br>"
+            f"Your DPDP Readiness Report is attached.<br><br>"
+            f"Score: {doc.total_score}/50 — {band['emoji']} {band['label']}<br><br>"
+            f"Tech4Dev DPDP Navigator"
+        )
+
     cc_raw = frappe.conf.get("dpdp_report_cc_email") or ""
     cc     = [e.strip() for e in cc_raw.split(",") if e.strip()]
 
@@ -479,13 +507,7 @@ def _send_report_email(doc, file_doc):
         recipients=[doc.org_email],
         cc=cc or None,
         subject=f"Your DPDP Readiness Report — {doc.org_name}",
-        template="DPDP Assessment Report",
-        args={
-            "doc":        doc,
-            "band_label": band["label"],
-            "band_emoji": band["emoji"],
-            "site_url":   frappe.utils.get_url(),
-        },
+        message=html,
         attachments=attachments,
         now=True,
     )
@@ -584,9 +606,7 @@ def submit_consult_request(org_name, contact_name, email,
 def _send_consult_notification(doc):
     """
     Send internal notification to Tech4Dev team on new consult request.
-    Recipient configured via site_config: dpdp_consult_notify_email
-    Falls back to dpdp@projecttech4dev.org if not set.
-    Queued (not now=True) so it appears in the mail queue for debugging.
+    Renders Email Template from doctype (not file path).
     """
     try:
         notify_email = (
@@ -594,46 +614,30 @@ def _send_consult_notification(doc):
             or "dpdp@projecttech4dev.org"
         )
 
-        # Check if the Email Template exists — use it if available,
-        # fall back to inline message so email always sends regardless
-        template_exists = frappe.db.exists(
-            "Email Template", "DPDP Consult Request Internal"
+        args = {"doc": doc, "site_url": frappe.utils.get_url()}
+
+        # Render from doctype — avoids Frappe's file-path lookup
+        html = _render_email_template("DPDP Consult Request Internal", args)
+        if not html:
+            html = (
+                f"<b>New DPDP Consult Request</b><br><br>"
+                f"<b>Organisation:</b> {doc.org_name}<br>"
+                f"<b>Contact:</b> {doc.contact_name}<br>"
+                f"<b>Email:</b> {doc.email}<br>"
+                f"<b>Phone:</b> {doc.phone or chr(8212)}<br>"
+                f"<b>Sector:</b> {doc.sector or chr(8212)}<br>"
+                f"<b>Size:</b> {doc.org_size or chr(8212)}<br>"
+                f"<b>Service Interest:</b> {doc.service_interest or chr(8212)}<br><br>"
+                f"<b>Message:</b><br>{doc.message or '(none)'}<br><br>"
+                f"<a href='{frappe.utils.get_url()}/app/dpdp-consult-request/{doc.name}'>"
+                f"View in Frappe Desk</a>"
+            )
+
+        frappe.sendmail(
+            recipients=[notify_email],
+            subject=f"New DPDP Consult Request — {doc.org_name}",
+            message=html,
         )
-
-        if template_exists:
-            frappe.sendmail(
-                recipients=[notify_email],
-                subject=f"New DPDP Consult Request — {doc.org_name}",
-                template="DPDP Consult Request Internal",
-                args={
-                    "doc":      doc,
-                    "site_url": frappe.utils.get_url(),
-                },
-            )
-        else:
-            # Plaintext fallback — works without the Email Template fixture
-            frappe.sendmail(
-                recipients=[notify_email],
-                subject=f"New DPDP Consult Request — {doc.org_name}",
-                message=(
-                    f"<b>New DPDP Consult Request</b><br><br>"
-                    f"<b>Organisation:</b> {doc.org_name}<br>"
-                    f"<b>Contact:</b> {doc.contact_name}<br>"
-                    f"<b>Email:</b> {doc.email}<br>"
-                    f"<b>Phone:</b> {doc.phone or '—'}<br>"
-                    f"<b>Sector:</b> {doc.sector or '—'}<br>"
-                    f"<b>Size:</b> {doc.org_size or '—'}<br>"
-                    f"<b>Service Interest:</b> {doc.service_interest or '—'}<br><br>"
-                    f"<b>Message:</b><br>{doc.message or '(none)'}<br><br>"
-                    f"<a href='{frappe.utils.get_url()}/app/dpdp-consult-request/{doc.name}'>"
-                    f"View in Frappe Desk →</a>"
-                ),
-            )
-            frappe.logger("dpdp").warning(
-                "[DPDP] Email Template 'DPDP Consult Request Internal' not found — "
-                "sent plaintext fallback. Run bench migrate to load the fixture."
-            )
-
         frappe.logger("dpdp").info(
             f"[DPDP] consult notification queued to {notify_email} for {doc.name}"
         )
