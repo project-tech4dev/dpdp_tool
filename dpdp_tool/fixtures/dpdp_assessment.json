@@ -43,7 +43,7 @@
         "fieldtype": "Select",
         "label": "Organisation Size",
         "reqd": 0,
-        "options": "\nUnder 20 staff\n20\u2013100 staff\n100\u2013500 staff\n500+ staff"
+        "options": "\nUnder 20 staff\n20-100 staff\n100-500 staff\n500+ staff"
       },
       {
         "fieldname": "beneficiaries",
