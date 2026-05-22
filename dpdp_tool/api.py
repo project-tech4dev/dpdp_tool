@@ -584,29 +584,61 @@ def submit_consult_request(org_name, contact_name, email,
 def _send_consult_notification(doc):
     """
     Send internal notification to Tech4Dev team on new consult request.
-    Recipient is set via site_config: dpdp_consult_notify_email
-    Falls back to dpdp@projecttech4dev.org if not configured.
+    Recipient configured via site_config: dpdp_consult_notify_email
+    Falls back to dpdp@projecttech4dev.org if not set.
+    Queued (not now=True) so it appears in the mail queue for debugging.
     """
     try:
         notify_email = (
             frappe.conf.get("dpdp_consult_notify_email")
             or "dpdp@projecttech4dev.org"
         )
-        frappe.sendmail(
-            recipients=[notify_email],
-            subject=f"New DPDP Consult Request — {doc.org_name}",
-            template="DPDP Consult Request Internal",
-            args={
-                "doc":      doc,
-                "site_url": frappe.utils.get_url(),
-            },
-            now=True,
+
+        # Check if the Email Template exists — use it if available,
+        # fall back to inline message so email always sends regardless
+        template_exists = frappe.db.exists(
+            "Email Template", "DPDP Consult Request Internal"
         )
+
+        if template_exists:
+            frappe.sendmail(
+                recipients=[notify_email],
+                subject=f"New DPDP Consult Request — {doc.org_name}",
+                template="DPDP Consult Request Internal",
+                args={
+                    "doc":      doc,
+                    "site_url": frappe.utils.get_url(),
+                },
+            )
+        else:
+            # Plaintext fallback — works without the Email Template fixture
+            frappe.sendmail(
+                recipients=[notify_email],
+                subject=f"New DPDP Consult Request — {doc.org_name}",
+                message=(
+                    f"<b>New DPDP Consult Request</b><br><br>"
+                    f"<b>Organisation:</b> {doc.org_name}<br>"
+                    f"<b>Contact:</b> {doc.contact_name}<br>"
+                    f"<b>Email:</b> {doc.email}<br>"
+                    f"<b>Phone:</b> {doc.phone or '—'}<br>"
+                    f"<b>Sector:</b> {doc.sector or '—'}<br>"
+                    f"<b>Size:</b> {doc.org_size or '—'}<br>"
+                    f"<b>Service Interest:</b> {doc.service_interest or '—'}<br><br>"
+                    f"<b>Message:</b><br>{doc.message or '(none)'}<br><br>"
+                    f"<a href='{frappe.utils.get_url()}/app/dpdp-consult-request/{doc.name}'>"
+                    f"View in Frappe Desk →</a>"
+                ),
+            )
+            frappe.logger("dpdp").warning(
+                "[DPDP] Email Template 'DPDP Consult Request Internal' not found — "
+                "sent plaintext fallback. Run bench migrate to load the fixture."
+            )
+
         frappe.logger("dpdp").info(
-            f"[DPDP] consult notification sent to {notify_email} for {doc.name}"
+            f"[DPDP] consult notification queued to {notify_email} for {doc.name}"
         )
+
     except Exception as e:
-        # Non-fatal — doc is already saved, just log the failure
         frappe.log_error(
             f"[DPDP] consult notification failed for {doc.name}: {e}",
             "DPDP Consult Notification"
