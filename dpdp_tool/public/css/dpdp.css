@@ -523,20 +523,6 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 .reco-status-spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(146,64,14,.25);border-top-color:var(--amber);animation:spin .8s linear infinite;flex-shrink:0}
 #reco-status-text{font-size:.85rem;color:var(--amber);line-height:1.5}
 
-/* ── PRIORITY BAND ── */
-.priority-band{margin-bottom:1.75rem}
-.pb-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
-.pb-col{border-radius:6px;padding:1rem 1.1rem;border:1px solid var(--border)}
-.pb-now{background:var(--red-lt);border-color:rgba(185,28,28,.2)}
-.pb-plan{background:var(--amber-lt);border-color:rgba(146,64,14,.2)}
-.pb-monitor{background:rgba(22,101,52,.07);border-color:rgba(22,101,52,.2)}
-.pb-label{font-family:"Outfit",sans-serif;font-size:.80rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.6rem}
-.pb-now .pb-label{color:var(--red)}
-.pb-plan .pb-label{color:var(--amber)}
-.pb-monitor .pb-label{color:#166534}
-.pb-item{font-size:.85rem;color:var(--ink);padding:2px 0;line-height:1.5}
-.pb-empty{font-size:.85rem;color:var(--muted);font-style:italic}
-
 /* ── ROADMAP PENDING ── */
 .roadmap-pending{padding:2.5rem 1rem;text-align:center;color:var(--muted);font-size:.85rem;line-height:1.7}
 
@@ -572,5 +558,34 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 /* ── RESPONSIVE TABS ── */
 @media(max-width:600px){
   .tab{padding:.65rem .75rem;font-size:.80rem}
-  .pb-grid{grid-template-columns:1fr}
+}
+
+/* ── ACCORDION (roadmap time periods) ── */
+.accordion{border:1px solid var(--border);border-radius:6px;margin-bottom:.75rem;overflow:hidden}
+.accordion-btn{width:100%;display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;background:var(--paper);border:none;cursor:pointer;font-size:.90rem;font-weight:500;color:var(--ink);text-align:left;transition:background .2s}
+.accordion-btn:hover{background:var(--blue-lt)}
+.accordion-btn.open{background:var(--navy-lt);color:var(--navy)}
+.acc-chevron{font-size:.80rem;color:var(--muted);flex-shrink:0}
+.accordion-body{display:none;padding:1.25rem;border-top:1px solid var(--border)}
+.accordion-body.open{display:block}
+
+/* ── ORG PROFILE CARD ── */
+.org-profile-card{background:var(--navy);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:1.25rem}
+.org-profile-title{font-family:"Outfit",sans-serif;font-size:.80rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.85rem}
+.org-profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 1.25rem}
+.op-full{grid-column:1/-1}
+.op-label{font-family:"Outfit",sans-serif;font-size:.80rem;color:rgba(255,255,255,.45);display:block;margin-bottom:2px}
+.op-val{font-size:.90rem;color:#fff;display:block}
+
+/* ── ROADMAP TABLE HDR ── */
+.roadmap-table-hdr{font-family:"Outfit",sans-serif;font-size:.80rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;padding-top:.25rem}
+
+/* ── MARKDOWN LINKS AND FOOTNOTES ── */
+.md-link{color:var(--blue);text-decoration:underline;text-underline-offset:2px}
+.md-link:hover{color:var(--navy)}
+.md-footnote{font-size:.80rem;color:var(--muted);font-style:italic;line-height:1.55;margin:.25rem 0}
+
+/* ── RESPONSIVE ROADMAP ── */
+@media(max-width:600px){
+  .org-profile-grid{grid-template-columns:1fr}
 }

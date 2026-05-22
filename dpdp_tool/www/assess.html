@@ -119,16 +119,24 @@ no_cache: 1
     </div>
 
     <div class="tab-bar">
-      <button class="tab active" data-tab="tab-summary"   onclick="switchTab(this)">Summary</button>
-      <button class="tab"        data-tab="tab-roadmap"   onclick="switchTab(this)">Roadmap</button>
-      <button class="tab"        data-tab="tab-breakdown" onclick="switchTab(this)">Breakdown</button>
-      <button class="tab"        data-tab="tab-glossary"  onclick="switchTab(this)">Glossary and References</button>
+      <button class="tab active" data-tab="tab-assessment" onclick="switchTab(this)">Assessment</button>
+      <button class="tab"        data-tab="tab-summary"    onclick="switchTab(this)">Summary</button>
+      <button class="tab"        data-tab="tab-roadmap"    onclick="switchTab(this)">Roadmap</button>
+      <button class="tab"        data-tab="tab-glossary"   onclick="switchTab(this)">Glossary &amp; References</button>
     </div>
 
-    <!-- Tab: Summary -->
-    <div class="tab-panel active" id="tab-summary">
+    <!-- Tab: Assessment — scores + breakdown, visible immediately on submit -->
+    <div class="tab-panel active" id="tab-assessment">
       <div class="sgrid" id="sgrid"></div>
-      <div class="priority-band" id="priority-band"></div>
+      <div class="qb-box">
+        <h3>Question-by-question breakdown</h3>
+        <p>Your responses across all 25 questions. Hover any row to see the compliance rationale.</p>
+        <div class="qb-secs" id="qb-secs"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Summary — executive summary (AI Call 1) -->
+    <div class="tab-panel" id="tab-summary">
       <div class="reco-box">
         <div class="reco-hdr">
           <div class="reco-icon">📊</div>
@@ -147,38 +155,30 @@ no_cache: 1
       </div>
     </div>
 
-    <!-- Tab: Roadmap -->
+    <!-- Tab: Roadmap — org profile + summary table + accordions (AI Call 2) -->
     <div class="tab-panel" id="tab-roadmap">
       <div class="reco-box">
         <div class="reco-hdr">
           <div class="reco-icon">🗺️</div>
           <div class="reco-hdr-text">
             <h3>30 / 90 / 365-Day Action Roadmap</h3>
-            <p>Prioritised actions for your specific gap profile</p>
+            <p>Prioritised actions for your specific gap profile — emailed to you on completion</p>
           </div>
         </div>
-        <div id="roadmap-content">
-          <div class="roadmap-pending" id="roadmap-pending">
-            <div class="reco-spinner" style="margin:0 auto 1rem"></div>
-            <p style="text-align:center;color:var(--muted);font-size:.85rem">
-              Your action roadmap is being generated in the background.<br>
-              It will appear here when ready and will be emailed to <strong id="roadmap-email"></strong>.
-            </p>
-          </div>
+        <div id="roadmap-org-profile"></div>
+        <div id="roadmap-summary-table"></div>
+        <div id="roadmap-accordions"></div>
+        <div class="roadmap-pending" id="roadmap-pending">
+          <div class="reco-spinner" style="margin:0 auto 1rem"></div>
+          <p style="text-align:center;color:var(--muted);font-size:.85rem">
+            Your action roadmap is being generated in the background.<br>
+            It will appear here when ready and will be emailed to <strong id="roadmap-email"></strong>.
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Tab: Breakdown -->
-    <div class="tab-panel" id="tab-breakdown">
-      <div class="qb-box">
-        <h3>Question-by-question breakdown</h3>
-        <p>Your responses across all 25 questions. Hover any row to see the compliance rationale.</p>
-        <div class="qb-secs" id="qb-secs"></div>
-      </div>
-    </div>
-
-    <!-- Tab: Glossary and References -->
+    <!-- Tab: Glossary & References -->
     <div class="tab-panel" id="tab-glossary">
       <div class="glossary-box" id="glossary-box"></div>
       <div class="refs-box" id="refs-box"></div>

@@ -166,7 +166,6 @@ function viewReport() {
   showScreen('s-result');
   setResultHero(total);
   renderSGrid(secScores);
-  renderPriorityBand(secScores);
   renderQBreakdown();
   renderGlossary();
   renderReferences();
@@ -328,7 +327,6 @@ async function submitAssessment() {
   // Render static content immediately
   setResultHero(total);
   renderSGrid(secScores);
-  renderPriorityBand(secScores);
   renderQBreakdown();
   renderGlossary();
   renderReferences();
@@ -382,7 +380,9 @@ function animateScore(id, target) {
 
 // ── RENDER RESULTS ───────────────────────────────────────────────────
 function renderSGrid(secScores) {
-  document.getElementById('sgrid').innerHTML = SECTIONS.map((sec, i) => {
+  const sgEl = document.getElementById('sgrid');
+  if (!sgEl) return;
+  sgEl.innerHTML = SECTIONS.map((sec, i) => {
     const raw = secScores[i] !== null ? secScores[i] : 0;
     const maxSec = SEC_COUNTS[i] * 2;
     const pct = Math.round((raw / maxSec) * 100);
@@ -397,33 +397,11 @@ function renderSGrid(secScores) {
   }).join('');
 }
 
-function renderPriorityBand(secScores) {
-  const bands = { now: [], plan: [], monitor: [] };
-  SECTIONS.forEach((sec, i) => {
-    const pct = Math.round(((secScores[i] || 0) / (SEC_COUNTS[i] * 2)) * 100);
-    if (pct < 40) bands.now.push(sec.label);
-    else if (pct < 70) bands.plan.push(sec.label);
-    else bands.monitor.push(sec.label);
-  });
-  const col = (items, cls) => items.length
-    ? items.map(s => `<div class="pb-item">${s}</div>`).join('')
-    : `<div class="pb-empty">None</div>`;
-  document.getElementById('priority-band').innerHTML = `
-    <div class="pb-grid">
-      <div class="pb-col pb-now">
-        <div class="pb-label">Address Now</div>${col(bands.now)}
-      </div>
-      <div class="pb-col pb-plan">
-        <div class="pb-label">Plan &amp; Improve</div>${col(bands.plan)}
-      </div>
-      <div class="pb-col pb-monitor">
-        <div class="pb-label">Monitor</div>${col(bands.monitor)}
-      </div>
-    </div>`;
-}
 
 function renderQBreakdown() {
-  document.getElementById('qb-secs').innerHTML = SECTIONS.map((sec, si) => {
+  const qbEl = document.getElementById('qb-secs');
+  if (!qbEl) return;
+  qbEl.innerHTML = SECTIONS.map((sec, si) => {
     const qs = Q.filter(q => q.s === si);
     return `<div>
       <div class="qb-sec-title">Section ${si + 1} — ${sec.label}</div>
@@ -446,26 +424,28 @@ function renderQBreakdown() {
 }
 
 function renderGlossary() {
-  if (!CFG?.glossary) return;
+  const el = document.getElementById('glossary-box');
+  if (!el || !CFG?.glossary) return;
   document.getElementById('glossary-box').innerHTML = `
     <h3>Key Terms</h3>
     <div class="glossary-list">
       ${CFG.glossary.map(g => `
         <div class="glossary-item">
-          <div class="glossary-term">${g.term}<span class="glossary-ref">${g.reference}</span></div>
+          <div class="glossary-term">${g.term} <span class="glossary-ref">· ${g.reference}</span></div>
           <div class="glossary-def">${g.definition}</div>
         </div>`).join('')}
     </div>`;
 }
 
 function renderReferences() {
-  if (!CFG?.references) return;
+  const el = document.getElementById('refs-box');
+  if (!el || !CFG?.references) return;
   document.getElementById('refs-box').innerHTML = `
     <h3>Further Reading</h3>
     <div class="refs-list">
       ${CFG.references.map(r => `
         <a href="${r.url}" target="_blank" rel="noopener" class="ref-link">
-          <span>${r.title}</span>
+          <span class="ref-title">${r.title}</span>
           ${r.note ? `<span class="ref-note">${r.note}</span>` : ''}
         </a>`).join('')}
     </div>`;
@@ -495,7 +475,7 @@ function buildAnswerSummary() {
 
 async function storeInFrappe(secScores, total) {
   // Field names match existing DPDP Assessment DocType exactly.
-  // store_assessment now also enqueues both AI background jobs server-side.
+  console.log('[storeInFrappe] called, FRAPPE_URL:', FRAPPE_URL || '(relative)');
   try {
     const body = {
       org_name:         org.org,
@@ -512,15 +492,27 @@ async function storeInFrappe(secScores, total) {
       score_governance: secScores[4] || 0,
       answers_json:     buildAnswerSummary(),
     };
+    console.log('[storeInFrappe] posting to:', `${FRAPPE_URL}/api/method/dpdp_tool.api.store_assessment`);
     const res = await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.store_assessment`, {
       method: 'POST',
       headers: { 'X-Frappe-CSRF-Token': 'fetch' },
       body: new URLSearchParams(body)
     });
+    console.log('[storeInFrappe] response status:', res.status, res.statusText);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('[storeInFrappe] non-OK response body:', text.slice(0, 300));
+      return null;
+    }
     const j = await res.json();
+    console.log('[storeInFrappe] response json:', j);
+    if (j.message?.status === 'error') {
+      console.error('[storeInFrappe] API error:', j.message);
+      return null;
+    }
     return j.message?.docname || null;
   } catch(e) {
-    console.error('[storeInFrappe]', e);
+    console.error('[storeInFrappe] exception:', e);
     return null;
   }
 }
@@ -593,32 +585,36 @@ function renderSummary(md) {
   document.getElementById('summary-content').innerHTML = markdownToHTML(md);
 }
 
-function renderRoadmap(md) {
-  document.getElementById('roadmap-content').innerHTML = markdownToHTML(md);
-}
+
 
 // Minimal markdown renderer for bullet/heading/table output from Claude
 function markdownToHTML(md) {
   if (!md) return '';
   let html = md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    // Tables
+    // Links [text](url) — before italic so surrounding * still works
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="md-link">$1</a>')
+    // Tables (handle separator row and data rows)
     .replace(/\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)*)/g, (_, header, rows) => {
       const th = header.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
-      const trs = rows.trim().split('\n').map(r =>
+      const trs = rows.trim().split('\n').filter(r => r.includes('|')).map(r =>
         '<tr>' + r.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('') + '</tr>'
       ).join('');
       return `<div class="md-table-wrap"><table class="md-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></div>`;
     })
+    // Footnotes (* text at line start, not **bold**)
+    .replace(/^\* ([^*\n].+)$/gm, '<p class="md-footnote">* $1</p>')
     // Headings
     .replace(/^### (.+)$/gm, '<h4 class="md-h3">$1</h4>')
     .replace(/^## (.+)$/gm,  '<h3 class="md-h2">$1</h3>')
     .replace(/^# (.+)$/gm,   '<h2 class="md-h1">$1</h2>')
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Bullet lists
+    // Bold (before italic)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+    // Bullets — only - prefix (not * which is footnote/italic)
     .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    .replace(/(<li>[\s\S]*?<\/li>\n?)+/g, '<ul>$&</ul>')
     // Paragraphs
     .replace(/\n\n+/g, '</p><p>')
     .trim();
@@ -848,7 +844,6 @@ function viewReport() {
   showScreen('s-result');
   setResultHero(total);
   renderSGrid(secScores);
-  renderPriorityBand(secScores);
   renderQBreakdown();
   renderGlossary();
   renderReferences();
@@ -867,6 +862,78 @@ function restartAssessment() {
   document.getElementById('btn-pdf').disabled = true;
   showScreen('s-intro');
   document.querySelector('.org-form').style.display = '';
+}
+
+// ── ROADMAP RENDERING ──────────────────────────────────────────────
+function renderRoadmapOrgProfile() {
+  const el = document.getElementById('roadmap-org-profile');
+  if (!el) return;
+  const sectors = Array.isArray(org.sector) ? org.sector.join(', ') : (org.sector || '');
+  el.innerHTML = `
+    <div class="org-profile-card">
+      <div class="org-profile-title">Organisation Profile</div>
+      <div class="org-profile-grid">
+        <div><span class="op-label">Organisation</span><span class="op-val">${org.org}</span></div>
+        <div><span class="op-label">Contact</span><span class="op-val">${org.name}</span></div>
+        <div><span class="op-label">Sector(s)</span><span class="op-val">${sectors}</span></div>
+        <div><span class="op-label">Size</span><span class="op-val">${org.size}</span></div>
+        ${org.bene ? `<div class="op-full"><span class="op-label">Beneficiaries</span><span class="op-val">${org.bene}</span></div>` : ''}
+      </div>
+    </div>`;
+}
+
+function parseRoadmapSections(md) {
+  const out = {};
+  const parts = md.split(/^## /m);
+  for (const part of parts) {
+    if (!part.trim()) continue;
+    const nl   = part.indexOf('\n');
+    const head = nl === -1 ? part : part.slice(0, nl);
+    const body = nl === -1 ? '' : part.slice(nl + 1).trim();
+    const h    = head.toLowerCase();
+    if      (h.includes('30'))                                   out['30']    = body;
+    else if (h.includes('90'))                                   out['90']    = body;
+    else if (h.includes('365') || h.includes('year'))            out['365']   = body;
+    else if (h.includes('summary') || h.includes('table'))       out['table'] = body;
+  }
+  return out;
+}
+
+function renderRoadmap(md) {
+  document.getElementById('roadmap-pending')?.remove();
+  renderRoadmapOrgProfile();
+  const secs = parseRoadmapSections(md);
+  // Summary table at top
+  const tableEl = document.getElementById('roadmap-summary-table');
+  if (tableEl && secs.table) {
+    tableEl.innerHTML = `<div class="roadmap-table-hdr">Action Summary</div>${markdownToHTML(secs.table)}`;
+  }
+  // Accordions for each time period
+  const periods = [
+    {key:'30',  label:'30-Day Actions'},
+    {key:'90',  label:'90-Day Actions'},
+    {key:'365', label:'365-Day / 1-Year Actions'},
+  ];
+  const acc = document.getElementById('roadmap-accordions');
+  if (!acc) return;
+  acc.innerHTML = periods.filter(p => secs[p.key]).map((p, i) => `
+    <div class="accordion">
+      <button class="accordion-btn${i===0?' open':''}" onclick="toggleAccordion(this)">
+        <span>${p.label}</span><span class="acc-chevron">${i===0?'▲':'▼'}</span>
+      </button>
+      <div class="accordion-body${i===0?' open':''}">
+        ${markdownToHTML(secs[p.key])}
+      </div>
+    </div>`).join('');
+}
+
+function toggleAccordion(btn) {
+  const body    = btn.nextElementSibling;
+  const chevron = btn.querySelector('.acc-chevron');
+  const isOpen  = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  if (chevron) chevron.textContent = isOpen ? '▼' : '▲';
 }
 
 // ── TOOLTIP (why text on hover) ──────────────────────────────────────

@@ -23,7 +23,8 @@ fixtures = [
     {
         "dt": "Email Template",
         "filters": [["name", "in", [
-            "DPDP Assessment Report"
+            "DPDP Assessment Report",
+            "DPDP Consult Request Internal"
         ]]]
     }
 ]

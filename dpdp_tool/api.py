@@ -448,13 +448,36 @@ def generate_and_attach_pdf(docname):
 # ─────────────────────────────────────────────────────────────────
 
 def _send_report_email(doc, file_doc):
+    """
+    Email the completed report with PDF attached.
+    Reads file bytes directly — more reliable than fid lookup
+    which can fail if the File record isn't fully committed yet.
+    """
     cfg  = _get_config()
     band = next(
         (b for b in cfg["scoring"]["bands"] if doc.total_score >= b["min"]),
         cfg["scoring"]["bands"][-1]
     )
+
+    # Read PDF bytes directly from disk — guaranteed attachment delivery
+    try:
+        file_path = frappe.get_doc("File", file_doc.name).get_full_path()
+        with open(file_path, "rb") as f:
+            pdf_bytes = f.read()
+        attachments = [{"fname": file_doc.file_name, "fcontent": pdf_bytes}]
+        frappe.logger("dpdp").info(f"[DPDP] PDF read OK: {len(pdf_bytes)} bytes for {doc.name}")
+    except Exception as e:
+        frappe.log_error(f"[DPDP] PDF read failed, falling back to fid ({file_doc.name}): {e}",
+                         "DPDP Email Attachment")
+        attachments = [{"fname": file_doc.file_name, "fid": file_doc.name}]
+
+    # CC from site config — e.g. "dpdp@projecttech4dev.org" or comma-separated
+    cc_raw = frappe.conf.get("dpdp_report_cc_email") or ""
+    cc     = [e.strip() for e in cc_raw.split(",") if e.strip()]
+
     frappe.sendmail(
         recipients=[doc.org_email],
+        cc=cc or None,
         subject=f"Your DPDP Readiness Report — {doc.org_name}",
         template="DPDP Assessment Report",
         args={
@@ -463,7 +486,8 @@ def _send_report_email(doc, file_doc):
             "band_emoji": band["emoji"],
             "site_url":   frappe.utils.get_url(),
         },
-        attachments=[{"fname": file_doc.file_name, "fid": file_doc.name}]
+        attachments=attachments,
+        now=True,
     )
 
 
@@ -546,11 +570,47 @@ def submit_consult_request(org_name, contact_name, email,
         doc.submitted_on     = datetime.now()
         doc.insert(ignore_permissions=True)
         frappe.db.commit()
+
+        # Notify internal team
+        _send_consult_notification(doc)
+
         return {"status": "ok"}
 
     except Exception as e:
         frappe.log_error(f"DPDP consult error: {e}", "DPDP API")
         return {"status": "error", "message": str(e)}
+
+
+def _send_consult_notification(doc):
+    """
+    Send internal notification to Tech4Dev team on new consult request.
+    Recipient is set via site_config: dpdp_consult_notify_email
+    Falls back to dpdp@projecttech4dev.org if not configured.
+    """
+    try:
+        notify_email = (
+            frappe.conf.get("dpdp_consult_notify_email")
+            or "dpdp@projecttech4dev.org"
+        )
+        frappe.sendmail(
+            recipients=[notify_email],
+            subject=f"New DPDP Consult Request — {doc.org_name}",
+            template="DPDP Consult Request Internal",
+            args={
+                "doc":      doc,
+                "site_url": frappe.utils.get_url(),
+            },
+            now=True,
+        )
+        frappe.logger("dpdp").info(
+            f"[DPDP] consult notification sent to {notify_email} for {doc.name}"
+        )
+    except Exception as e:
+        # Non-fatal — doc is already saved, just log the failure
+        frappe.log_error(
+            f"[DPDP] consult notification failed for {doc.name}: {e}",
+            "DPDP Consult Notification"
+        )
 
 
 # ─────────────────────────────────────────────────────────────────
