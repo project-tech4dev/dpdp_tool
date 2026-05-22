@@ -357,10 +357,10 @@ function setResultHero(total) {
   animateScore('rh-score', total);
   const bandEl = document.getElementById('rh-band');
   const styles = {
-    green:  ['rgba(22,101,52,.15)',  '#166534'],
-    amber:  ['rgba(234,88,12,.12)',  '#9a3412'],
-    orange: ['rgba(146,64,14,.12)', '#78350f'],
-    red:    ['rgba(185,28,28,.12)',  '#991b1b']
+    green:  ['rgba(22,101,52,.22)',  'rgba(255,255,255,.92)'],
+    amber:  ['rgba(234,88,12,.22)',  'rgba(255,255,255,.92)'],
+    orange: ['rgba(146,64,14,.22)', 'rgba(255,255,255,.92)'],
+    red:    ['rgba(185,28,28,.22)',  'rgba(255,255,255,.92)']
   };
   const [bg, fg] = styles[band.color] || styles.red;
   bandEl.textContent = `${band.emoji} ${band.label}`;
@@ -865,22 +865,6 @@ function restartAssessment() {
 }
 
 // ── ROADMAP RENDERING ──────────────────────────────────────────────
-function renderRoadmapOrgProfile() {
-  const el = document.getElementById('roadmap-org-profile');
-  if (!el) return;
-  const sectors = Array.isArray(org.sector) ? org.sector.join(', ') : (org.sector || '');
-  el.innerHTML = `
-    <div class="org-profile-card">
-      <div class="org-profile-title">Organisation Profile</div>
-      <div class="org-profile-grid">
-        <div><span class="op-label">Organisation</span><span class="op-val">${org.org}</span></div>
-        <div><span class="op-label">Contact</span><span class="op-val">${org.name}</span></div>
-        <div><span class="op-label">Sector(s)</span><span class="op-val">${sectors}</span></div>
-        <div><span class="op-label">Size</span><span class="op-val">${org.size}</span></div>
-        ${org.bene ? `<div class="op-full"><span class="op-label">Beneficiaries</span><span class="op-val">${org.bene}</span></div>` : ''}
-      </div>
-    </div>`;
-}
 
 function parseRoadmapSections(md) {
   const out = {};
@@ -901,7 +885,6 @@ function parseRoadmapSections(md) {
 
 function renderRoadmap(md) {
   document.getElementById('roadmap-pending')?.remove();
-  renderRoadmapOrgProfile();
   const secs = parseRoadmapSections(md);
   // Summary table at top
   const tableEl = document.getElementById('roadmap-summary-table');

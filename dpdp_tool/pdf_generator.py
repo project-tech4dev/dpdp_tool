@@ -352,7 +352,7 @@ def generate_assessment_pdf(doc, cfg):
       <img class="cover-logo" src="{LOGO_URL}" alt="Tech4Dev">
     </div>
     <div class="cover-title">DPDP Compliance<br>Readiness Report</div>
-    <div class="cover-score">{doc.total_score}/50</div>
+    <div class="cover-score">{int(doc.total_score)}/50</div>
     <div class="cover-score-lbl">Overall readiness score</div>
     <div class="cover-org">{doc.org_name}</div>
     <div class="cover-meta">{doc.sector} · {doc.org_size}</div>
@@ -382,21 +382,6 @@ def generate_assessment_pdf(doc, cfg):
 <div class="page-break">
 <div class="page-hdr"><span>DPDP Readiness Report · {doc.org_name.upper()}</span></div>
 <h1 class="section">Action Roadmap</h1>
-
-<div class="org-profile-pdf">
-  <div class="op-pdf-label">Organisation Profile</div>
-  <table class="op-pdf-table">
-    <tr>
-      <td class="op-pdf-key">Organisation</td><td>{doc.org_name}</td>
-      <td class="op-pdf-key">Contact</td><td>{doc.contact_name or '—'}</td>
-    </tr>
-    <tr>
-      <td class="op-pdf-key">Sector(s)</td><td>{doc.sector or '—'}</td>
-      <td class="op-pdf-key">Size</td><td>{doc.org_size or '—'}</td>
-    </tr>
-    {bene_row}
-  </table>
-</div>
 
 {roadmap_body_html}
 </div>
