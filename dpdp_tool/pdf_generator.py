@@ -23,27 +23,9 @@ LOGO_URL = (
     '/2024/05/13b5fab9b3d478788afed54141951357.png'
 )
 
-def _get_pdf_css(org_name):
-    hdr = f"DPDP READINESS REPORT · {org_name.upper()[:40]}"
-    return f"""
-@page {{
-  size: A4;
-  margin: 26mm 18mm 20mm 18mm;
-  @top-left   {{ content: ""; background: #1A2B4A; }}
-  @top-center {{ content: "{hdr}"; background: #1A2B4A; color: #fff; font-size: 6.5pt; letter-spacing: .06em; font-family: Helvetica, sans-serif; vertical-align: middle; }}
-  @top-right  {{ content: ""; background: #1A2B4A; }}
-  @bottom-left  {{ content: "Tech4Dev · DPDP Readiness Navigator · dpdp.projecttech4dev.org"; font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }}
-  @bottom-right {{ content: "Page " counter(page) " of " counter(pages); font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }}
-}}
-@page cover {{
-  margin: 0;
-  @top-left   {{ content: normal; background: transparent; }}
-  @top-center {{ content: normal; background: transparent; }}
-  @top-right  {{ content: normal; background: transparent; }}
-  @bottom-left  {{ content: none; }}
-  @bottom-right {{ content: none; }}
-}}
-
+STATIC_CSS = """
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A; line-height: 1.55; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A; line-height: 1.55; }
 
@@ -136,9 +118,35 @@ h2.subsection { font-size: 10pt; font-weight: 700; color: #1D6FB8; margin: 6mm 0
 .ref-note  { font-size: 7.5pt; color: #4A5568; font-style: italic; }
 
 /* ── PAGE BREAKS ── */
-.page-break { page-break-before: always; }
-"""
+.page-break { page-break-before: always; }"""
 
+
+def _get_pdf_css(org_name):
+    """
+    Build full PDF CSS. The @page rule is an f-string (needs org_name).
+    Static CSS is a plain string — no brace escaping required.
+    """
+    hdr = f"DPDP READINESS REPORT \u00b7 {org_name.upper()[:40]}"
+    page_css = (
+        "@page {\n"
+        "  size: A4;\n"
+        "  margin: 26mm 18mm 20mm 18mm;\n"
+        f'  @top-left   {{ content: \"\"; background: #1A2B4A; }}\n'
+        f'  @top-center {{ content: \"{hdr}\"; background: #1A2B4A; color: #fff; font-size: 6.5pt; letter-spacing: .06em; font-family: Helvetica, sans-serif; vertical-align: middle; }}\n'
+        f'  @top-right  {{ content: \"\"; background: #1A2B4A; }}\n'
+        "  @bottom-left  { content: \"Tech4Dev \u00b7 DPDP Readiness Navigator \u00b7 dpdp.projecttech4dev.org\"; font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }\n"
+        "  @bottom-right { content: \"Page \" counter(page) \" of \" counter(pages); font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }\n"
+        "}\n"
+        "@page cover {\n"
+        "  margin: 0;\n"
+        "  @top-left   { content: normal; background: transparent; }\n"
+        "  @top-center { content: normal; background: transparent; }\n"
+        "  @top-right  { content: normal; background: transparent; }\n"
+        "  @bottom-left  { content: none; }\n"
+        "  @bottom-right { content: none; }\n"
+        "}\n"
+    )
+    return page_css + STATIC_CSS
 
 # ─────────────────────────────────────────────────────────────────
 # HELPERS
