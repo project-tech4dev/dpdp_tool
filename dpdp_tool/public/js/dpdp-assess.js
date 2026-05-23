@@ -75,13 +75,15 @@ function saveSession() {
   const key = getSessionKey();
   if (!key) return;
   const sectors = Array.from(document.querySelectorAll('#sector-checkboxes input:checked')).map(cb => cb.value);
-  const completed = currentScreen === 's-result';
-  const summaryEl = document.getElementById('summary-content');
-  const roadmapEl = document.getElementById('roadmap-content');
+  const completed      = currentScreen === 's-result';
+  const summaryEl      = document.getElementById('summary-content');
+  const roadmapTableEl = document.getElementById('roadmap-summary-table');
+  const roadmapAccEl   = document.getElementById('roadmap-accordions');
   localStorage.setItem(key, JSON.stringify({
     answers, currentQ, completed,
-    summaryHTML: completed && summaryEl ? summaryEl.innerHTML : '',
-    roadmapHTML: completed && roadmapEl ? roadmapEl.innerHTML : '',
+    summaryHTML:      completed && summaryEl      ? summaryEl.innerHTML      : '',
+    roadmapTableHTML: completed && roadmapTableEl ? roadmapTableEl.innerHTML : '',
+    roadmapAccHTML:   completed && roadmapAccEl   ? roadmapAccEl.innerHTML   : '',
     pdfUrl: _pdfUrl || '',
     org: {
       org:    document.getElementById('i-org')?.value   || '',
@@ -170,7 +172,11 @@ function viewReport() {
   renderGlossary();
   renderReferences();
   if (saved.summaryHTML) document.getElementById('summary-content').innerHTML = saved.summaryHTML;
-  if (saved.roadmapHTML) document.getElementById('roadmap-content').innerHTML = saved.roadmapHTML;
+  if (saved.roadmapTableHTML || saved.roadmapAccHTML) {
+    document.getElementById('roadmap-pending')?.remove();
+    if (saved.roadmapTableHTML) document.getElementById('roadmap-summary-table').innerHTML = saved.roadmapTableHTML;
+    if (saved.roadmapAccHTML)   document.getElementById('roadmap-accordions').innerHTML   = saved.roadmapAccHTML;
+  }
   if (_pdfUrl) {
     const btn = document.getElementById('btn-pdf');
     btn.disabled = false;
@@ -545,13 +551,14 @@ async function fetchSummary(secScores, total) {
 async function fetchRoadmap(secScores, total) {
   try {
     if (!_docname) throw new Error('no docname');
-    await pollForField('roadmap-content', 'action_roadmap', _docname, null, renderRoadmap);
+    await pollForField('roadmap-accordions', 'action_roadmap', _docname, null, renderRoadmap);
     setStatusBar(false);
     saveSession();
   } catch(e) {
     console.error('[fetchRoadmap]', e);
     setStatusBar(false);
-    document.getElementById('roadmap-content').innerHTML =
+    document.getElementById('roadmap-pending')?.remove();
+    document.getElementById('roadmap-accordions').innerHTML =
       `<p style="color:var(--muted);padding:1rem 0">Roadmap generation failed. Check your email — we may have emailed it already.</p>`;
   }
 }
@@ -770,7 +777,8 @@ function generatePDFFallback() {
   }
 
   // Page: Action Roadmap
-  const roadmapText = document.getElementById('roadmap-content')?.innerText || '';
+  const roadmapAccEl = document.getElementById('roadmap-accordions');
+  const roadmapText = roadmapAccEl ? roadmapAccEl.innerText : '';
   if (roadmapText && roadmapText.length > 50) {
     doc.addPage(); hdr(doc.getNumberOfPages()); y = 22;
     doc.setTextColor(26,43,74); doc.setFontSize(15); doc.setFont('helvetica','bold');
@@ -850,7 +858,11 @@ function viewReport() {
   const emailEl = document.getElementById('roadmap-email');
   if (emailEl) emailEl.textContent = org.email;
   if (saved.summaryHTML) document.getElementById('summary-content').innerHTML = saved.summaryHTML;
-  if (saved.roadmapHTML) document.getElementById('roadmap-content').innerHTML = saved.roadmapHTML;
+  if (saved.roadmapTableHTML || saved.roadmapAccHTML) {
+    document.getElementById('roadmap-pending')?.remove();
+    if (saved.roadmapTableHTML) document.getElementById('roadmap-summary-table').innerHTML = saved.roadmapTableHTML;
+    if (saved.roadmapAccHTML)   document.getElementById('roadmap-accordions').innerHTML   = saved.roadmapAccHTML;
+  }
   if (_pdfUrl) document.getElementById('btn-pdf').disabled = false;
 }
 
