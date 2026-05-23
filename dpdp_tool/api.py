@@ -633,11 +633,16 @@ def _send_consult_notification(doc):
             frappe.log_error("STEP 2b — using fallback HTML", "DPDP Debug")
 
         frappe.log_error(f"STEP 3 — calling sendmail to {notify_email}", "DPDP Debug")
-        frappe.sendmail(
-            recipients=[notify_email],
-            subject=f"New DPDP Consult Request - {doc.org_name}",
-            message=html
-        )
+        try:
+            frappe.sendmail(
+                recipients=[notify_email],
+                subject=f"New DPDP Consult Request - {doc.org_name}",
+                message=str(html),
+                delayed=False,
+            )
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "DPDP Email Failure")
+            raise
         frappe.log_error(f"STEP 4 — sendmail completed for {doc.name}", "DPDP Debug")
 
     except Exception as e:
