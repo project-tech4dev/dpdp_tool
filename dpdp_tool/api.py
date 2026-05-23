@@ -496,7 +496,7 @@ def _send_report_email(doc, file_doc):
         html = (
             f"Dear {doc.contact_name or doc.org_name},<br><br>"
             f"Your DPDP Readiness Report is attached.<br><br>"
-            f"Score: {doc.total_score}/50 — {band['emoji']} {band['label']}<br><br>"
+            f"Score: {doc.total_score}/50 - {band['emoji']} {band['label']}<br><br>"
             f"Tech4Dev DPDP Navigator"
         )
 
@@ -506,7 +506,7 @@ def _send_report_email(doc, file_doc):
     frappe.sendmail(
         recipients=[doc.org_email],
         cc=cc or None,
-        subject=f"Your DPDP Readiness Report — {doc.org_name}",
+        subject=f"Your DPDP Readiness Report - {doc.org_name}",
         message=html,
         attachments=attachments,
         now=True,
@@ -635,9 +635,8 @@ def _send_consult_notification(doc):
         frappe.log_error(f"STEP 3 — calling sendmail to {notify_email}", "DPDP Debug")
         frappe.sendmail(
             recipients=[notify_email],
-            subject=f"New DPDP Consult Request — {doc.org_name}",
-            message=html,
-            now=True,
+            subject=f"New DPDP Consult Request - {doc.org_name}",
+            message=html
         )
         frappe.log_error(f"STEP 4 — sendmail completed for {doc.name}", "DPDP Debug")
 
@@ -646,7 +645,6 @@ def _send_consult_notification(doc):
             f"[DPDP] consult notification failed for {doc.name}: {e}",
             "DPDP Consult Notification"
         )
-
 
 # ─────────────────────────────────────────────────────────────────
 # PROMPTS
