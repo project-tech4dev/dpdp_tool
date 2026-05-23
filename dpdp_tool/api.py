@@ -567,7 +567,7 @@ def get_sector_insights():
 
 
 # ─────────────────────────────────────────────────────────────────
-# METHOD 4 — submit_consult_request  (unchanged)
+# METHOD 4 — submit_consult_request
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
@@ -592,62 +592,12 @@ def submit_consult_request(org_name, contact_name, email,
         doc.submitted_on     = datetime.now()
         doc.insert(ignore_permissions=True)
         frappe.db.commit()
-
-        # Notify internal team
-        _send_consult_notification(doc)
-
         return {"status": "ok"}
 
     except Exception as e:
         frappe.log_error(f"DPDP consult error: {e}", "DPDP API")
         return {"status": "error", "message": str(e)}
 
-
-def _send_consult_notification(doc):
-    try:
-        notify_email = (
-            frappe.conf.get("dpdp_consult_notify_email")
-            or "dpdp@projecttech4dev.org"
-        )
-
-        args = {"doc": doc, "site_url": frappe.utils.get_url()}
-
-        html = _render_email_template("DPDP Consult Request Internal", args)
-
-        if not html:
-            html = (
-                f"<b>New DPDP Consult Request</b><br><br>"
-                f"<b>Organisation:</b> {doc.org_name}<br>"
-                f"<b>Contact:</b> {doc.contact_name}<br>"
-                f"<b>Email:</b> {doc.email}<br>"
-                f"<b>Phone:</b> {doc.phone or chr(8212)}<br>"
-                f"<b>Sector:</b> {doc.sector or chr(8212)}<br>"
-                f"<b>Size:</b> {doc.org_size or chr(8212)}<br>"
-                f"<b>Service Interest:</b> {doc.service_interest or chr(8212)}<br><br>"
-                f"<b>Message:</b><br>{doc.message or '(none)'}<br><br>"
-                f"<a href='{frappe.utils.get_url()}/app/dpdp-consult-request/{doc.name}'>"
-                f"View in Frappe Desk</a>"
-            )
-
-        frappe.log_error(f"STEP 3 — calling sendmail to {notify_email}", "DPDP Debug")
-        try:
-            frappe.sendmail(
-                recipients=["vinod@projecttech4dev.org"],
-                cc=None,
-                subject=f"New DPDP Consult Request - {doc.org_name}",
-                message=f"New consult request from {doc.org_name} - {doc.contact_name} - {doc.email}",
-                now=True,
-            )
-                
-        except Exception:
-            frappe.log_error(frappe.get_traceback(), "DPDP Email Failure")
-            raise
-
-    except Exception as e:
-        frappe.log_error(
-            f"[DPDP] consult notification failed for {doc.name}: {e}",
-            "DPDP Consult Notification"
-        )
 
 # ─────────────────────────────────────────────────────────────────
 # PROMPTS
