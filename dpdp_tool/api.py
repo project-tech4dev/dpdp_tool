@@ -635,7 +635,7 @@ def _send_consult_notification(doc):
                 recipients=["vinod@projecttech4dev.org"],
                 subject=f"New DPDP Consult Request - {doc.org_name}",
                 message=f"New consult request from {doc.org_name} - {doc.contact_name} - {doc.email}",
-                delayed=False,
+                delayed=False
             )
         except Exception:
             frappe.log_error(frappe.get_traceback(), "DPDP Email Failure")
