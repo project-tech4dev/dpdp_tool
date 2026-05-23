@@ -609,12 +609,10 @@ def _send_consult_notification(doc):
             frappe.conf.get("dpdp_consult_notify_email")
             or "dpdp@projecttech4dev.org"
         )
-        frappe.log_error(f"STEP 1 — notify_email: {notify_email}", "DPDP Debug")
 
         args = {"doc": doc, "site_url": frappe.utils.get_url()}
 
         html = _render_email_template("DPDP Consult Request Internal", args)
-        frappe.log_error(f"STEP 2 — html rendered: {bool(html)}", "DPDP Debug")
 
         if not html:
             html = (
@@ -630,20 +628,18 @@ def _send_consult_notification(doc):
                 f"<a href='{frappe.utils.get_url()}/app/dpdp-consult-request/{doc.name}'>"
                 f"View in Frappe Desk</a>"
             )
-            frappe.log_error("STEP 2b — using fallback HTML", "DPDP Debug")
 
         frappe.log_error(f"STEP 3 — calling sendmail to {notify_email}", "DPDP Debug")
         try:
             frappe.sendmail(
-                recipients=[notify_email],
+                recipients=["vinod@projecttech4dev.org"],
                 subject=f"New DPDP Consult Request - {doc.org_name}",
-                message=str(html),
+                message=f"New consult request from {doc.org_name} - {doc.contact_name} - {doc.email}",
                 delayed=False,
             )
         except Exception:
             frappe.log_error(frappe.get_traceback(), "DPDP Email Failure")
             raise
-        frappe.log_error(f"STEP 4 — sendmail completed for {doc.name}", "DPDP Debug")
 
     except Exception as e:
         frappe.log_error(
