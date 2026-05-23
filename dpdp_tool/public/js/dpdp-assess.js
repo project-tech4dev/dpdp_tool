@@ -899,12 +899,12 @@ function renderRoadmap(md) {
   ];
   const acc = document.getElementById('roadmap-accordions');
   if (!acc) return;
-  acc.innerHTML = periods.filter(p => secs[p.key]).map((p, i) => `
+  acc.innerHTML = periods.filter(p => secs[p.key]).map((p) => `
     <div class="accordion">
-      <button class="accordion-btn${i===0?' open':''}" onclick="toggleAccordion(this)">
-        <span>${p.label}</span><span class="acc-chevron">${i===0?'▲':'▼'}</span>
+      <button class="accordion-btn" onclick="toggleAccordion(this)">
+        <span>${p.label}</span><span class="acc-chevron">▼</span>
       </button>
-      <div class="accordion-body${i===0?' open':''}">
+      <div class="accordion-body">
         ${markdownToHTML(secs[p.key])}
       </div>
     </div>`).join('');
@@ -914,9 +914,24 @@ function toggleAccordion(btn) {
   const body    = btn.nextElementSibling;
   const chevron = btn.querySelector('.acc-chevron');
   const isOpen  = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  btn.classList.toggle('open', !isOpen);
-  if (chevron) chevron.textContent = isOpen ? '▼' : '▲';
+
+  // Close all accordions in the same container first
+  const container = btn.closest('#roadmap-accordions');
+  if (container) {
+    container.querySelectorAll('.accordion-btn').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+      const c = b.querySelector('.acc-chevron');
+      if (c) c.textContent = '▼';
+    });
+  }
+
+  // Open the clicked one only if it was previously closed
+  if (!isOpen) {
+    body.classList.add('open');
+    btn.classList.add('open');
+    if (chevron) chevron.textContent = '▲';
+  }
 }
 
 // ── TOOLTIP (why text on hover) ──────────────────────────────────────
