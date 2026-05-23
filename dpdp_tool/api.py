@@ -299,6 +299,35 @@ def patch_assessment_reco(docname, recommendations):
 
 
 # ─────────────────────────────────────────────────────────────────
+# DESK ACTION ENDPOINTS — whitelisted wrappers for background jobs
+# Called by the Client Script buttons on the DPDP Assessment form.
+# ─────────────────────────────────────────────────────────────────
+
+@frappe.whitelist()
+def rerun_ai_calls(docname):
+    """Enqueue both AI calls again. Called from Desk 'Re-run AI Analysis' button."""
+    frappe.enqueue(
+        "dpdp_tool.api.run_summary_call",
+        docname=docname, queue="short", timeout=180, is_async=True
+    )
+    frappe.enqueue(
+        "dpdp_tool.api.run_roadmap_call",
+        docname=docname, queue="long", timeout=360, is_async=True
+    )
+    return {"status": "queued"}
+
+
+@frappe.whitelist()
+def regenerate_pdf(docname):
+    """Enqueue PDF regeneration only. Called from Desk 'Regenerate PDF' button."""
+    frappe.enqueue(
+        "dpdp_tool.api.generate_and_attach_pdf",
+        docname=docname, queue="short", timeout=180, is_async=True
+    )
+    return {"status": "queued"}
+
+
+# ─────────────────────────────────────────────────────────────────
 # NEW BACKGROUND JOBS — 2-call architecture
 # ─────────────────────────────────────────────────────────────────
 
@@ -426,7 +455,7 @@ def run_roadmap_call(docname):
             "dpdp_tool.api.generate_and_attach_pdf",
             docname=docname,
             queue="short",
-            timeout=300,
+            timeout=180,
             is_async=True
         )
 
