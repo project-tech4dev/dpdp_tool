@@ -337,15 +337,30 @@ def run_summary_call(docname):
     except Exception as e:
         frappe.log_error(f"[DPDP] summary call failed for {docname}: {e}",
                          "DPDP Summary Error")
-        # Don't update status to Failed — roadmap call may still succeed
+        # Notify team — roadmap call will still run independently
+        try:
+            doc = frappe.get_doc("DPDP Assessment", docname)
+            notify = frappe.conf.get("dpdp_report_cc_email") or "dpdp@projecttech4dev.org"
+            frappe.sendmail(
+                recipients=[notify],
+                subject=f"[DPDP] Summary generation failed — {doc.org_name}",
+                message=(
+                    f"The AI summary call failed for assessment <b>{docname}</b>.<br><br>"
+                    f"<b>Organisation:</b> {doc.org_name}<br>"
+                    f"<b>Assessor:</b> {doc.contact_name} ({doc.org_email})<br>"
+                    f"<b>Error:</b> {e}<br><br>"
+                    f"The roadmap call will still run. The summary tab will be blank.<br><br>"
+                    f"<a href='{frappe.utils.get_url()}/app/dpdp-assessment/{docname}'>View in Frappe Desk</a>"
+                ),
+            )
+        except Exception:
+            pass  # non-fatal
 
 
 def run_roadmap_call(docname):
     """
     Background job: Call 2 — comprehensive action roadmap.
-    Uses the existing well-tested _build_prompt with gap questions only.
-    On success, triggers PDF generation + email.
-    Updates status to 'Roadmap Ready' then 'Processed' after PDF.
+    PDF generation is always triggered in finally — even if AI call fails.
     """
     try:
         import anthropic
@@ -356,12 +371,9 @@ def run_roadmap_call(docname):
 
         doc    = frappe.get_doc("DPDP Assessment", docname)
         scores = _section_scores_from_doc(doc)
-
-        # Parse answers to build gap-only context (reduces tokens)
-        answers_raw  = doc.answers_json or "[]"
-        gap_summary  = _build_gap_answers(answers_raw)
-
-        prompt = _build_roadmap_prompt(doc, scores, gap_summary)
+        answers_raw = doc.answers_json or "[]"
+        gap_summary = _build_gap_answers(answers_raw)
+        prompt      = _build_roadmap_prompt(doc, scores, gap_summary)
 
         client  = anthropic.Anthropic(api_key=api_key)
         message = client.messages.create(
@@ -378,15 +390,6 @@ def run_roadmap_call(docname):
         frappe.db.commit()
         frappe.logger("dpdp").info(f"[DPDP] roadmap ready for {docname}")
 
-        # Trigger PDF generation (waits for both AI outputs)
-        frappe.enqueue(
-            "dpdp_tool.api.generate_and_attach_pdf",
-            docname=docname,
-            queue="short",
-            timeout=180,
-            is_async=True
-        )
-
     except Exception as e:
         frappe.log_error(f"[DPDP] roadmap call failed for {docname}: {e}",
                          "DPDP Roadmap Error")
@@ -395,6 +398,37 @@ def run_roadmap_call(docname):
             "failed_reason": (existing + f"\nRoadmap: {e}").strip()
         })
         frappe.db.commit()
+
+        # Notify team that roadmap AI failed
+        try:
+            doc = frappe.get_doc("DPDP Assessment", docname)
+            notify = frappe.conf.get("dpdp_report_cc_email") or "dpdp@projecttech4dev.org"
+            frappe.sendmail(
+                recipients=[notify],
+                subject=f"[DPDP] Roadmap generation failed — {doc.org_name}",
+                message=(
+                    f"The AI roadmap call failed for assessment <b>{docname}</b>.<br><br>"
+                    f"<b>Organisation:</b> {doc.org_name}<br>"
+                    f"<b>Assessor:</b> {doc.contact_name} ({doc.org_email})<br>"
+                    f"<b>Error:</b> {e}<br><br>"
+                    f"The PDF will still be generated and emailed with the executive summary only. "
+                    f"The roadmap section will be blank.<br><br>"
+                    f"<a href='{frappe.utils.get_url()}/app/dpdp-assessment/{docname}'>View in Frappe Desk</a>"
+                ),
+            )
+        except Exception:
+            pass  # non-fatal
+
+    finally:
+        # Always generate and email the PDF — even if roadmap AI failed
+        # PDF will include whatever is available (summary only if roadmap failed)
+        frappe.enqueue(
+            "dpdp_tool.api.generate_and_attach_pdf",
+            docname=docname,
+            queue="short",
+            timeout=300,
+            is_async=True
+        )
 
 
 def generate_and_attach_pdf(docname):
@@ -496,7 +530,7 @@ def _send_report_email(doc, file_doc):
         html = (
             f"Dear {doc.contact_name or doc.org_name},<br><br>"
             f"Your DPDP Readiness Report is attached.<br><br>"
-            f"Score: {doc.total_score}/50 - {band['emoji']} {band['label']}<br><br>"
+            f"Score: {doc.total_score}/50 — {band['emoji']} {band['label']}<br><br>"
             f"Tech4Dev DPDP Navigator"
         )
 
@@ -506,7 +540,7 @@ def _send_report_email(doc, file_doc):
     frappe.sendmail(
         recipients=[doc.org_email],
         cc=cc or None,
-        subject=f"Your DPDP Readiness Report - {doc.org_name}",
+        subject=f"Your DPDP Readiness Report — {doc.org_name}",
         message=html,
         attachments=attachments,
         now=True,
@@ -567,7 +601,7 @@ def get_sector_insights():
 
 
 # ─────────────────────────────────────────────────────────────────
-# METHOD 4 — submit_consult_request
+# METHOD 4 — submit_consult_request  (unchanged)
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
@@ -592,11 +626,57 @@ def submit_consult_request(org_name, contact_name, email,
         doc.submitted_on     = datetime.now()
         doc.insert(ignore_permissions=True)
         frappe.db.commit()
+
         return {"status": "ok"}
 
     except Exception as e:
         frappe.log_error(f"DPDP consult error: {e}", "DPDP API")
         return {"status": "error", "message": str(e)}
+
+
+def _send_consult_notification(doc):
+    try:
+        notify_email = (
+            frappe.conf.get("dpdp_consult_notify_email")
+            or "dpdp@projecttech4dev.org"
+        )
+        frappe.log_error(f"STEP 1 — notify_email: {notify_email}", "DPDP Debug")
+
+        args = {"doc": doc, "site_url": frappe.utils.get_url()}
+
+        html = _render_email_template("DPDP Consult Request Internal", args)
+        frappe.log_error(f"STEP 2 — html rendered: {bool(html)}", "DPDP Debug")
+
+        if not html:
+            html = (
+                f"<b>New DPDP Consult Request</b><br><br>"
+                f"<b>Organisation:</b> {doc.org_name}<br>"
+                f"<b>Contact:</b> {doc.contact_name}<br>"
+                f"<b>Email:</b> {doc.email}<br>"
+                f"<b>Phone:</b> {doc.phone or chr(8212)}<br>"
+                f"<b>Sector:</b> {doc.sector or chr(8212)}<br>"
+                f"<b>Size:</b> {doc.org_size or chr(8212)}<br>"
+                f"<b>Service Interest:</b> {doc.service_interest or chr(8212)}<br><br>"
+                f"<b>Message:</b><br>{doc.message or '(none)'}<br><br>"
+                f"<a href='{frappe.utils.get_url()}/app/dpdp-consult-request/{doc.name}'>"
+                f"View in Frappe Desk</a>"
+            )
+            frappe.log_error("STEP 2b — using fallback HTML", "DPDP Debug")
+
+        frappe.log_error(f"STEP 3 — calling sendmail to {notify_email}", "DPDP Debug")
+        frappe.sendmail(
+            recipients=["dpdp@projecttech4dev.org"],
+            subject=f"New DPDP Consult Request - {doc.org_name}",
+            message=str(html),
+            delayed=False,
+        )
+        frappe.log_error(f"STEP 4 — sendmail completed for {doc.name}", "DPDP Debug")
+
+    except Exception as e:
+        frappe.log_error(
+            f"[DPDP] consult notification failed for {doc.name}: {e}",
+            "DPDP Consult Notification"
+        )
 
 
 # ─────────────────────────────────────────────────────────────────
