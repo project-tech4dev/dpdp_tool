@@ -49,6 +49,22 @@ body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A
 .cover-date { color: rgba(255,255,255,.35); font-size: 8pt; margin-top: 4mm; }
 
 
+/* ── RUNNING PAGE HEADER ── */
+/* Placed in @top-center; negative margins bleed to full 210mm page width */
+.running-hdr {
+  position: running(running-hdr);
+  background: #1A2B4A;
+  color: #fff;
+  font-size: 6.5pt;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-family: Helvetica, sans-serif;
+  padding: 3.5mm 18mm;
+  margin: 0 -18mm;
+  width: calc(100% + 36mm);
+  display: block;
+}
+
 /* ── HEADINGS ── */
 h1.section { font-size: 14pt; font-weight: 700; color: #1A2B4A; margin-bottom: 6mm; border-bottom: 1px solid #DCE0E8; padding-bottom: 2mm; }
 h2.subsection { font-size: 10pt; font-weight: 700; color: #1D6FB8; margin: 6mm 0 3mm; border-left: 3px solid #1D6FB8; padding-left: 3mm; }
@@ -122,25 +138,22 @@ h2.subsection { font-size: 10pt; font-weight: 700; color: #1D6FB8; margin: 6mm 0
 
 def _get_pdf_css(org_name):
     """
-    Build full PDF CSS. The @page rule is an f-string (needs org_name).
-    Static CSS is a plain string — no brace escaping required.
+    Build full PDF CSS.
+    Header uses a running element in @top-center with negative margins
+    to bleed across the full page width — avoids WeasyPrint background
+    painting issues with @top-left / @top-right margin boxes.
     """
-    hdr = f"DPDP READINESS REPORT \u00b7 {org_name.upper()[:40]}"
     page_css = (
         "@page {\n"
         "  size: A4;\n"
         "  margin: 14mm 18mm 20mm 18mm;\n"
-        f'  @top-left   {{ content: " "; background: #1A2B4A; }}\n'
-        f'  @top-center {{ content: "{hdr}"; background: #1A2B4A; color: #fff; font-size: 6.5pt; letter-spacing: .06em; font-family: Helvetica, sans-serif; vertical-align: middle; }}\n'
-        f'  @top-right  {{ content: " "; background: #1A2B4A; }}\n'
+        "  @top-center { content: element(running-hdr); }\n"
         "  @bottom-left  { content: \"Tech4Dev \u00b7 DPDP Readiness Navigator \u00b7 dpdp.projecttech4dev.org\"; font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }\n"
         "  @bottom-right { content: \"Page \" counter(page) \" of \" counter(pages); font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }\n"
         "}\n"
         "@page cover {\n"
         "  margin: 0;\n"
-        "  @top-left   { content: normal; background: transparent; }\n"
-        "  @top-center { content: normal; background: transparent; }\n"
-        "  @top-right  { content: normal; background: transparent; }\n"
+        "  @top-center { content: none; }\n"
         "  @bottom-left  { content: none; }\n"
         "  @bottom-right { content: none; }\n"
         "}\n"
@@ -398,6 +411,9 @@ def generate_assessment_pdf(doc, cfg):
     </div>
   </div>
 </div>
+
+<!-- Running header element — extracted by WeasyPrint and placed on every content page -->
+<div class="running-hdr">DPDP Readiness Report · {doc.org_name[:40]}</div>
 
 <!-- ══ 2. EXECUTIVE SUMMARY ══════════════════════════════════════ -->
 <div class="page-break">
