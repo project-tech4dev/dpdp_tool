@@ -19,8 +19,7 @@ import frappe
 
 
 LOGO_URL = (
-    'https://projecttech4dev.org/wp-content/uploads'
-    '/2024/05/13b5fab9b3d478788afed54141951357.png'
+    'https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png'
 )
 
 STATIC_CSS = """
@@ -130,10 +129,10 @@ def _get_pdf_css(org_name):
     page_css = (
         "@page {\n"
         "  size: A4;\n"
-        "  margin: 26mm 18mm 20mm 18mm;\n"
-        f'  @top-left   {{ content: \"\"; background: #1A2B4A; }}\n'
-        f'  @top-center {{ content: \"{hdr}\"; background: #1A2B4A; color: #fff; font-size: 6.5pt; letter-spacing: .06em; font-family: Helvetica, sans-serif; vertical-align: middle; }}\n'
-        f'  @top-right  {{ content: \"\"; background: #1A2B4A; }}\n'
+        "  margin: 14mm 18mm 20mm 18mm;\n"
+        f'  @top-left   {{ content: " "; background: #1A2B4A; }}\n'
+        f'  @top-center {{ content: "{hdr}"; background: #1A2B4A; color: #fff; font-size: 6.5pt; letter-spacing: .06em; font-family: Helvetica, sans-serif; vertical-align: middle; }}\n'
+        f'  @top-right  {{ content: " "; background: #1A2B4A; }}\n'
         "  @bottom-left  { content: \"Tech4Dev \u00b7 DPDP Readiness Navigator \u00b7 dpdp.projecttech4dev.org\"; font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }\n"
         "  @bottom-right { content: \"Page \" counter(page) \" of \" counter(pages); font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }\n"
         "}\n"
