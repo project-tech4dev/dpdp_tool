@@ -1,0 +1,370 @@
+{
+  "sections": [
+    {"id": "consent",    "label": "Data Collection & Consent"},
+    {"id": "storage",    "label": "Data Storage & Security"},
+    {"id": "usage",      "label": "Data Usage & Sharing"},
+    {"id": "rights",     "label": "Rights of Individuals"},
+    {"id": "governance", "label": "Governance & Processes"}
+  ],
+  "questions": [
+    {
+      "section": 0,
+      "text": "Before collecting personal data, do you give individuals a clear notice covering: (a) what data is collected, (b) why it is needed, (c) their rights, and (d) who to contact?",
+      "why": "A valid Notice must cover all four elements. Consent given without a proper notice is not valid under the DPDP Act.",
+      "options": [
+        {"label": "Yes — notice covers all four elements", "points": 2},
+        {"label": "Partially — notice is incomplete or unclear", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 0,
+      "text": "Do you have a separate and more stringent consent process for collecting data about children under 18 years of age?",
+      "why": "Children's data requires verifiable guardian consent, identification of minors, and stronger safeguards than adult data. If your programme does not work with under-18s, answer Yes.",
+      "options": [
+        {"label": "Yes — or we do not work with under-18s", "points": 2},
+        {"label": "Partially — some safeguards exist but not fully in place", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 0,
+      "text": "Is consent obtained in a manner that is clear, specific, informed, and recorded — so you can demonstrate it was given?",
+      "why": "Verbal or implied consent is very difficult to defend. You must be able to produce a record if a beneficiary disputes consent.",
+      "options": [
+        {"label": "Yes — written or digital record for all consents", "points": 2},
+        {"label": "Partially — some records exist but coverage is incomplete", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 0,
+      "text": "Do you collect only the personal data you actually need for your programme, avoiding extra details collected 'just in case'?",
+      "why": "Data Minimisation: only collect what is necessary for the stated purpose. Aadhaar, income, or caste should only be collected if directly required.",
+      "options": [
+        {"label": "Yes — we collect only what is necessary", "points": 2},
+        {"label": "Partially — we sometimes collect more than needed", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 0,
+      "text": "Do you have a clear process for individuals to withdraw consent, and do you stop using their data promptly after withdrawal?",
+      "why": "Withdrawal must be as easy as giving consent. After withdrawal you must stop processing and delete the data unless another legal basis applies.",
+      "options": [
+        {"label": "Yes — a clear process exists and is followed", "points": 2},
+        {"label": "Partially — withdrawal is possible but the process is unclear", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 1,
+      "text": "Do you know what personal data you hold, where it is stored, who can access it, and why you keep it?",
+      "why": "A data inventory — even a simple spreadsheet — is the foundation of all compliance. You cannot protect data you do not know exists.",
+      "options": [
+        {"label": "Yes — a maintained data inventory exists", "points": 2},
+        {"label": "Partially — we have an informal sense but nothing documented", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 1,
+      "text": "Is personal data protected with reasonable security measures such as passwords, access controls, or encryption?",
+      "why": "Open WhatsApp groups or unprotected spreadsheets shared via 'anyone with the link' are a direct breach risk under the DPDP Act.",
+      "options": [
+        {"label": "Yes — data is password-protected and access-controlled", "points": 2},
+        {"label": "Partially — some systems are protected, others are not", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 1,
+      "text": "Do only the staff members who actually need the data have access to it?",
+      "why": "Access control is a core security safeguard. Not every staff member needs access to every beneficiary's personal data.",
+      "options": [
+        {"label": "Yes — role-based access is in place", "points": 2},
+        {"label": "Partially — access is somewhat restricted but not formally managed", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 1,
+      "text": "Do you have a defined retention schedule stating how long each type of data is kept and when it is deleted?",
+      "why": "Data must be deleted once the purpose is complete. Keeping data indefinitely 'just in case' is not permitted under the Act.",
+      "options": [
+        {"label": "Yes — a retention schedule exists and deletions are carried out", "points": 2},
+        {"label": "Partially — some retention rules exist but are not consistently followed", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 1,
+      "text": "Do you have a process — such as regular backups — ensuring personal data is not lost due to theft, damage, or system failure?",
+      "why": "Lost data cannot be recovered and may need to be reported as a breach. Security safeguards include ensuring data availability and integrity.",
+      "options": [
+        {"label": "Yes — regular backups and a recovery process are in place", "points": 2},
+        {"label": "Partially — backups occur but are not tested or regular", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 2,
+      "text": "Do you use personal data only for the purpose you told the person about, unless another lawful basis applies?",
+      "why": "Purpose Limitation: data collected for one purpose cannot be used for another without fresh consent. Patient phone numbers must not be used for fundraising calls.",
+      "options": [
+        {"label": "Yes — data is used only for its stated purpose", "points": 2},
+        {"label": "Partially — we sometimes use data beyond its original purpose", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 2,
+      "text": "If you share personal data with another organisation, do you clearly define why it is shared and how it will be protected?",
+      "why": "As the Data Fiduciary, you remain responsible for beneficiary data even when a partner or processor handles it. Written agreements are essential.",
+      "options": [
+        {"label": "Yes — written data-sharing agreements exist with all partners", "points": 2},
+        {"label": "Partially — some agreements exist but coverage is incomplete", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 2,
+      "text": "Do your staff avoid sharing beneficiary data via personal WhatsApp, personal email accounts, or other unsecured channels?",
+      "why": "Unsecured sharing is an avoidable breach risk. Reasonable security safeguards include controlling how data is transmitted.",
+      "options": [
+        {"label": "Yes — staff use only official, secure channels for data", "points": 2},
+        {"label": "Partially — unofficial channels are sometimes used", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 2,
+      "text": "Do you know whether any vendor or online service (e.g. Google Forms, KoBoToolbox) stores data outside India, and have you assessed whether that arrangement is permitted?",
+      "why": "The government may impose conditions on cross-border transfers. NGOs should at minimum know where their data is hosted.",
+      "options": [
+        {"label": "Yes — we know where all our data is hosted and have assessed the risk", "points": 2},
+        {"label": "Partially — we know about some platforms but not all", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 2,
+      "text": "Before using any new vendor, tool, or app that handles personal data, do you check whether it has adequate privacy and security practices?",
+      "why": "You are accountable for vendors who handle data on your behalf. Basic due diligence — checking for a privacy policy and encryption — is required.",
+      "options": [
+        {"label": "Yes — vendor checks are done before adoption", "points": 2},
+        {"label": "Partially — some checks happen but not consistently", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 3,
+      "text": "Do you have a defined process for responding to requests to access personal data and information about how it is being used?",
+      "why": "Rights of access, correction, and erasure are legally enforceable. There must be a defined workflow — not a vague 'someone will handle it' approach.",
+      "options": [
+        {"label": "Yes — a named person, log, and response timeline exist", "points": 2},
+        {"label": "Partially — requests are handled informally without a formal process", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 3,
+      "text": "Can individuals ask you to correct, complete, or update inaccurate personal data — and do you update it everywhere it appears?",
+      "why": "Right to Correction: inaccurate data can harm beneficiaries. The correction must flow to all records and partner systems where the data appears.",
+      "options": [
+        {"label": "Yes — a correction process exists and is followed", "points": 2},
+        {"label": "Partially — corrections happen but not systematically", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 3,
+      "text": "Can individuals ask you to erase their personal data, and do you comply (subject to legal retention requirements)?",
+      "why": "Right to Erasure: when someone asks for deletion and there is no legal reason to retain the data, you must comply and confirm.",
+      "options": [
+        {"label": "Yes — an erasure process exists and is documented", "points": 2},
+        {"label": "Partially — erasure happens on request but without a formal process", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 3,
+      "text": "Do you have a visible, accessible grievance mechanism for individuals to raise complaints or questions about their data?",
+      "why": "Grievance Redressal is a mandatory requirement under the DPDP Act. There must be a named contact and a response process.",
+      "options": [
+        {"label": "Yes — a named contact and process are communicated to beneficiaries", "points": 2},
+        {"label": "Partially — a contact exists but is not clearly communicated", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 3,
+      "text": "Do you respond to all data-related requests (access, correction, deletion, complaints) within your published timeline?",
+      "why": "Unresolved requests can be escalated to the Data Protection Board. Timely response — within 90 days — is required under DPDP Rules.",
+      "options": [
+        {"label": "Yes — requests are tracked and resolved within timeline", "points": 2},
+        {"label": "Partially — most requests are resolved but tracking is informal", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 4,
+      "text": "Has your organisation assigned at least one person to be responsible for data protection — even if not a full-time role?",
+      "why": "Without ownership, no compliance work can proceed consistently. Someone must be accountable.",
+      "options": [
+        {"label": "Yes — a named person with a defined mandate", "points": 2},
+        {"label": "Partially — someone is informally responsible but without a defined role", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 4,
+      "text": "Do you have a written privacy or data protection policy that explains what data you collect, why, and how you protect it?",
+      "why": "A written policy helps you stay consistent, builds trust with beneficiaries, and demonstrates accountability to regulators and funders.",
+      "options": [
+        {"label": "Yes — a written policy exists and is shared with staff", "points": 2},
+        {"label": "Partially — a draft or partial policy exists", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 4,
+      "text": "Have your staff and volunteers received any training on what personal data is, why protecting it matters, and how to handle it carefully?",
+      "why": "The organisation is responsible for how staff handle data. Training reduces the risk of accidental breaches.",
+      "options": [
+        {"label": "Yes — structured training has been conducted and documented", "points": 2},
+        {"label": "Partially — informal briefings have happened but no structured training", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 4,
+      "text": "If a personal data breach occurs, can you identify it, assess the impact, and notify affected individuals and the Data Protection Board when required?",
+      "why": "Breach notification to the Board is mandatory. Penalties are highest in breach situations. Detection and response speed matter.",
+      "options": [
+        {"label": "Yes — a breach response plan exists and has been tested", "points": 2},
+        {"label": "Partially — we would respond but have no documented plan", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    },
+    {
+      "section": 4,
+      "text": "Have you conducted any form of privacy or data protection review — such as a self-assessment, audit, or gap analysis — in the last 12 months?",
+      "why": "Periodic review is a sign of accountability. Funders and regulators increasingly expect evidence of structured self-assessment.",
+      "options": [
+        {"label": "Yes — a review has been completed and documented", "points": 2},
+        {"label": "Partially — an informal review has happened but nothing documented", "points": 1},
+        {"label": "No / Not Sure", "points": 0}
+      ]
+    }
+  ],
+  "scoring": {
+    "maxPerQuestion": 2,
+    "bands": [
+      {"min": 46, "label": "Strong Readiness",          "color": "green",  "emoji": "🟢"},
+      {"min": 36, "label": "Moderate Readiness",         "color": "amber",  "emoji": "🟠"},
+      {"min": 21, "label": "Basic Readiness — Needs Work","color": "orange", "emoji": "🟡"},
+      {"min": 0,  "label": "High Risk — Not Ready",      "color": "red",    "emoji": "🔴"}
+    ]
+  },
+  "glossary": [
+    {
+      "term": "Data Fiduciary",
+      "definition": "Any organisation or person who decides why and how personal data is collected and used. As an NGO collecting beneficiary data, your organisation is a Data Fiduciary.",
+      "reference": "DPDPA Section 2(i)"
+    },
+    {
+      "term": "Significant Data Fiduciary",
+      "definition": "A Data Fiduciary designated by the Government as processing data at very large scale or of a particularly sensitive nature. Subject to stricter obligations including mandatory Data Protection Officers and audits.",
+      "reference": "DPDPA Section 10"
+    },
+    {
+      "term": "Data Principal",
+      "definition": "The individual whose personal data is being collected or processed — in an NGO context, this is typically your beneficiary, staff member, volunteer, or donor.",
+      "reference": "DPDPA Section 2(j)"
+    },
+    {
+      "term": "Data Processor",
+      "definition": "Any third party that handles personal data on your behalf under a contract — for example, your cloud storage provider, survey tool, or HR software vendor.",
+      "reference": "DPDPA Section 2(k)"
+    },
+    {
+      "term": "Consent Manager",
+      "definition": "A registered intermediary through which individuals can centrally give, review, and withdraw consent for data processing. Rules on Consent Managers are yet to be fully notified.",
+      "reference": "DPDPA Section 2(g)"
+    },
+    {
+      "term": "Personal Data",
+      "definition": "Any data that directly or indirectly identifies an individual — including name, phone number, address, Aadhaar, location, photo, IP address, and more.",
+      "reference": "DPDPA Section 2(t)"
+    },
+    {
+      "term": "Sensitive Personal Data",
+      "definition": "Categories of data requiring heightened protection — financial information, health and medical records, biometric data, sexual orientation, religious or political beliefs.",
+      "reference": "Draft DPDP Rules"
+    },
+    {
+      "term": "Data Localisation",
+      "definition": "The requirement to store certain categories of personal data within India's geographical borders. Specific categories and rules are yet to be formally notified.",
+      "reference": "DPDPA Section 16"
+    },
+    {
+      "term": "Personal Data Breach",
+      "definition": "Any unauthorised access, disclosure, alteration, or destruction of personal data that could harm the individuals to whom it belongs.",
+      "reference": "DPDPA Section 2(f)"
+    },
+    {
+      "term": "Grievance Redressal",
+      "definition": "A mandatory mechanism through which individuals can raise complaints or questions about how their data is being handled. Organisations must designate a named contact person.",
+      "reference": "DPDPA Section 13"
+    },
+    {
+      "term": "Cross-border Transfer",
+      "definition": "Sharing or transferring personal data to an entity located in another country. The Government may restrict transfers to specific countries or for specific categories of data.",
+      "reference": "DPDPA Section 16"
+    },
+    {
+      "term": "Purpose Limitation",
+      "definition": "Personal data may only be used for the specific purpose for which it was collected and for which consent was obtained. Using data for a different purpose requires fresh consent.",
+      "reference": "DPDPA Section 6"
+    },
+    {
+      "term": "Right to Erasure",
+      "definition": "An individual's right to have their personal data deleted when there is no longer a lawful reason to retain it. The organisation must confirm deletion when requested.",
+      "reference": "DPDPA Section 12"
+    },
+    {
+      "term": "Data Protection Officer (DPO)",
+      "definition": "A designated person responsible for overseeing an organisation's compliance with the DPDP Act. Mandatory for Significant Data Fiduciaries; strongly recommended for all NGOs handling sensitive data.",
+      "reference": "DPDPA Section 10"
+    }
+  ],
+  "references": [
+        {
+      "title": "Digital Personal Data Protection Act 2023 — Full Text",
+      "url": "https://www.dpdpa.com/",
+      "note": "Official Act text with section references"
+    },
+    {
+      "title": "DPDPA Implementation Timeline",
+      "url": "https://www.dpdpa.com/dpdpa_enforcement_timeline.html",
+      "note": "Overview of key dates and rollout phases"
+    },
+    {
+      "title": "Digital Personal Data Protection Primer",
+      "url": "https://www.pacta.in/primers/dpdp-primer-2026/",
+      "note": "DPDP Act Primer by Pacta, legal firm working in the social sector"
+    }
+  ],
+  "sectors": [
+    "Health & Nutrition",
+    "Education",
+    "Livelihoods",
+    "Gender & SRHR",
+    "Environment",
+    "Disability",
+    "Humanitarian",
+    "Governance",
+    "Other"
+  ]
+}

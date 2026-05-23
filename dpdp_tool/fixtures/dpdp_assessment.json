@@ -43,7 +43,7 @@
         "fieldtype": "Select",
         "label": "Organisation Size",
         "reqd": 0,
-        "options": "\nUnder 20 staff\n20\u2013100 staff\n100\u2013500 staff\n500+ staff"
+        "options": "\nUnder 20 staff\n20-100 staff\n100-500 staff\n500+ staff"
       },
       {
         "fieldname": "beneficiaries",
@@ -111,6 +111,41 @@
         "reqd": 0
       },
       {
+        "fieldname": "executive_summary",
+        "fieldtype": "Long Text",
+        "label": "Executive Summary (Call 1)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "action_roadmap",
+        "fieldtype": "Long Text",
+        "label": "Action Roadmap (Call 2)",
+        "reqd": 0
+      },
+      {
+        "fieldname": "sb_pdf",
+        "fieldtype": "Section Break",
+        "label": "PDF and Email"
+      },
+      {
+        "fieldname": "pdf_file",
+        "fieldtype": "Attach",
+        "label": "PDF Report",
+        "reqd": 0
+      },
+      {
+        "fieldname": "pdf_emailed",
+        "fieldtype": "Check",
+        "label": "PDF Emailed",
+        "default": "0"
+      },
+      {
+        "fieldname": "failed_reason",
+        "fieldtype": "Long Text",
+        "label": "Failed Reason",
+        "reqd": 0
+      },
+      {
         "fieldname": "sb_meta",
         "fieldtype": "Section Break",
         "label": "Metadata"
@@ -121,7 +156,7 @@
         "label": "Status",
         "reqd": 0,
         "in_list_view": 1,
-        "options": "Submitted\nProcessed\nFailed",
+        "options": "Submitted\nSummary Ready\nRoadmap Ready\nProcessed\nFailed",
         "default": "Submitted"
       },
       {
