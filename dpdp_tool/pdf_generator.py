@@ -23,14 +23,26 @@ LOGO_URL = (
     '/2024/05/13b5fab9b3d478788afed54141951357.png'
 )
 
-PDF_CSS = """
-@page {
+def _get_pdf_css(org_name):
+    hdr = f"DPDP READINESS REPORT · {org_name.upper()[:40]}"
+    return f"""
+@page {{
   size: A4;
-  margin: 18mm 18mm 20mm 18mm;
-  @bottom-left  { content: "Tech4Dev · DPDP Readiness Navigator · dpdp.projecttech4dev.org"; font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }
-  @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }
-}
-@page cover { margin: 0; }
+  margin: 26mm 18mm 20mm 18mm;
+  @top-left   {{ content: ""; background: #1A2B4A; }}
+  @top-center {{ content: "{hdr}"; background: #1A2B4A; color: #fff; font-size: 6.5pt; letter-spacing: .06em; font-family: Helvetica, sans-serif; vertical-align: middle; }}
+  @top-right  {{ content: ""; background: #1A2B4A; }}
+  @bottom-left  {{ content: "Tech4Dev · DPDP Readiness Navigator · dpdp.projecttech4dev.org"; font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }}
+  @bottom-right {{ content: "Page " counter(page) " of " counter(pages); font-size: 7pt; color: #4A5568; font-family: Helvetica, sans-serif; }}
+}}
+@page cover {{
+  margin: 0;
+  @top-left   {{ content: normal; background: transparent; }}
+  @top-center {{ content: normal; background: transparent; }}
+  @top-right  {{ content: normal; background: transparent; }}
+  @bottom-left  {{ content: none; }}
+  @bottom-right {{ content: none; }}
+}}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A; line-height: 1.55; }
@@ -42,7 +54,7 @@ body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A
 .cover-logo { height: 26px; display: block; }
 .cover-logo-divider { width: 1px; height: 22px; background: #DCE0E8; flex-shrink: 0; }
 .cover-nav-title { font-size: 11pt; font-weight: 700; color: #1A2B4A; letter-spacing: .04em; text-transform: uppercase; }
-.cover-body { padding: 0 18mm 14mm 22mm; flex: 1; display: flex; flex-direction: column; }
+.cover-body { padding: 0 18mm 6mm 22mm; flex: 1; display: flex; flex-direction: column; }
 .cover-title { color: #fff; font-size: 26pt; font-weight: 300; line-height: 1.2; margin-top: 28mm; margin-bottom: auto; }
 .cover-bottom { margin-top: 8mm; }
 .cover-org-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12mm; margin-bottom: 5mm; }
@@ -55,9 +67,6 @@ body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A
 .cover-band { color: #fff; font-size: 12pt; font-weight: 500; display: flex; align-items: center; gap: 8px; }
 .cover-date { color: rgba(255,255,255,.35); font-size: 8pt; margin-top: 4mm; }
 
-/* ── PAGE HEADER ── */
-.page-hdr { background: #1A2B4A; padding: 3mm 18mm; margin: -18mm -18mm 10mm -18mm; }
-.page-hdr span { color: #fff; font-size: 6.5pt; letter-spacing: .06em; text-transform: uppercase; }
 
 /* ── HEADINGS ── */
 h1.section { font-size: 14pt; font-weight: 700; color: #1A2B4A; margin-bottom: 6mm; border-bottom: 1px solid #DCE0E8; padding-bottom: 2mm; }
@@ -345,7 +354,7 @@ def generate_assessment_pdf(doc, cfg):
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<style>{PDF_CSS}</style>
+<style>{_get_pdf_css(doc.org_name)}</style>
 </head>
 <body>
 
@@ -385,14 +394,12 @@ def generate_assessment_pdf(doc, cfg):
 
 <!-- ══ 2. EXECUTIVE SUMMARY ══════════════════════════════════════ -->
 <div class="page-break">
-<div class="page-hdr"><span>DPDP Readiness Report · {doc.org_name.upper()}</span></div>
 <h1 class="section">Executive Summary</h1>
 {summary_html if summary_html else '<p style="color:#4A5568">Summary not yet generated.</p>'}
 </div>
 
 <!-- ══ 3. SECTION SCORE SUMMARY ══════════════════════════════════ -->
 <div class="page-break">
-<div class="page-hdr"><span>DPDP Readiness Report · {doc.org_name.upper()}</span></div>
 <h1 class="section">Section Score Summary</h1>
 <div class="sgrid">
 {score_cards_html}
@@ -401,7 +408,6 @@ def generate_assessment_pdf(doc, cfg):
 
 <!-- ══ 4. ACTION ROADMAP ══════════════════════════════════════════ -->
 <div class="page-break">
-<div class="page-hdr"><span>DPDP Readiness Report · {doc.org_name.upper()}</span></div>
 <h1 class="section">Action Roadmap</h1>
 
 {roadmap_body_html}
@@ -409,7 +415,6 @@ def generate_assessment_pdf(doc, cfg):
 
 <!-- ══ 5. Q&A BREAKDOWN ══════════════════════════════════════════ -->
 <div class="page-break">
-<div class="page-hdr"><span>DPDP Readiness Report · {doc.org_name.upper()}</span></div>
 <h1 class="section">Question-by-Question Breakdown</h1>
 <p style="font-size:8pt;color:#4A5568;margin-bottom:5mm">
   All 25 assessment questions, your response, and the compliance rationale for each.
@@ -438,7 +443,6 @@ def generate_assessment_pdf(doc, cfg):
     # ══ APPENDIX A: GLOSSARY ══════════════════════════════════════
     html += f"""
 <div class="page-break">
-<div class="page-hdr"><span>DPDP Readiness Report · {doc.org_name.upper()}</span></div>
 <h1 class="section">Appendix A — Key Terms</h1>
 <p style="font-size:8pt;color:#4A5568;margin-bottom:5mm">
   Plain-language definitions of DPDP Act terminology used in this report.
@@ -455,7 +459,6 @@ def generate_assessment_pdf(doc, cfg):
     html += f"""</div>
 
 <div class="page-break">
-<div class="page-hdr"><span>DPDP Readiness Report · {doc.org_name.upper()}</span></div>
 <h1 class="section">Appendix B — Further Reading</h1>
 <p style="font-size:8pt;color:#4A5568;margin-bottom:5mm">
   Validated references for DPDP Act guidance. All links verified at time of publication.
@@ -475,7 +478,7 @@ def generate_assessment_pdf(doc, cfg):
         string=html,
         base_url=frappe.utils.get_url()
     ).write_pdf(
-        stylesheets=[CSS(string=PDF_CSS)]
+        stylesheets=[CSS(string=_get_pdf_css(doc.org_name))]
     )
 
 
