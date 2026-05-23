@@ -575,6 +575,7 @@ def submit_consult_request(org_name, contact_name, email,
                            sector="", org_size="", service_interest="",
                            message="", phone=""):
     try:
+        frappe.log_error("SUBMIT CONSULT CALLED", "DPDP Debug")
         _validate_origin()
         if not org_name or not contact_name or not email:
             frappe.throw("Organisation name, contact name, and email are required.")
@@ -608,6 +609,7 @@ def _send_consult_notification(doc):
     Send internal notification to Tech4Dev team on new consult request.
     Renders Email Template from doctype (not file path).
     """
+    frappe.log_error("CONSULT NOTIFY CALLED", "DPDP Debug")
     try:
         notify_email = (
             frappe.conf.get("dpdp_consult_notify_email")
