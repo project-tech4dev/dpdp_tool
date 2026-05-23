@@ -340,25 +340,20 @@
     }
   ],
   "references": [
-    {
-      "title": "DPDPA Implementation Timeline",
-      "url": "https://www.dpdpa.com/blogs/DPDPA_Implementation_Timeline.html",
-      "note": "Overview of key dates and rollout phases"
-    },
-    {
+        {
       "title": "Digital Personal Data Protection Act 2023 — Full Text",
-      "url": "https://www.dpdpa.com/dpdpa-2023",
+      "url": "https://www.dpdpa.com/",
       "note": "Official Act text with section references"
     },
     {
-      "title": "Draft DPDP Rules — MeitY",
-      "url": "https://www.dpdpa.com/dpdp-rules",
-      "note": "Proposed rules under the Act (under review)"
+      "title": "DPDPA Implementation Timeline",
+      "url": "https://www.dpdpa.com/dpdpa_enforcement_timeline.html",
+      "note": "Overview of key dates and rollout phases"
     },
     {
-      "title": "Data Protection Board of India",
-      "url": "https://www.dpdpa.com/dpb",
-      "note": "The adjudicating body for DPDP Act complaints"
+      "title": "Digital Personal Data Protection Primer",
+      "url": "https://www.pacta.in/primers/dpdp-primer-2026/",
+      "note": "DPDP Act Primer by Pacta, legal firm working in the social sector"
     }
   ],
   "sectors": [
