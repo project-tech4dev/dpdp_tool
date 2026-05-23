@@ -19,6 +19,19 @@ fixtures = [
             "DPDP Assessment",
             "DPDP Consult Request"
         ]]]
+    },
+    {
+        "dt": "Email Template",
+        "filters": [["name", "in", [
+            "DPDP Assessment Report",
+            "DPDP Consult Request Internal"
+        ]]]
+    },
+    {
+        "dt": "Client Script",
+        "filters": [["name", "in", [
+            "DPDP Assessment Regenerate PDF"
+        ]]]
     }
 ]
 
