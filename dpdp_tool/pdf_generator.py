@@ -36,18 +36,24 @@ PDF_CSS = """
 body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A; line-height: 1.55; }
 
 /* ── COVER ── */
-.cover { page: cover; background: #1A2B4A; width: 210mm; height: 297mm; padding: 0; position: relative; page-break-after: always; }
-.cover-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 5mm; background: #1D6FB8; }
-.cover-body { padding: 40mm 18mm 18mm 24mm; }
-.cover-eyebrow { color: #7EB8F0; font-size: 7.5pt; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 32mm; }
-.cover-logo-wrap { background: rgba(255,255,255,0.12); display: inline-block; padding: 5px 14px; border-radius: 6px; margin-bottom: 8mm; }
-.cover-logo { height: 26px; filter: brightness(0) invert(1); display: block; }
-.cover-title { color: #fff; font-size: 24pt; font-weight: 300; line-height: 1.2; margin-bottom: 28mm; }
-.cover-score { color: #7EB8F0; font-size: 44pt; font-weight: 700; line-height: 1; margin-bottom: 4mm; }
-.cover-score-lbl { color: #A0B9D2; font-size: 9pt; margin-bottom: 14mm; }
-.cover-org { color: #fff; font-size: 13pt; margin-bottom: 3mm; }
-.cover-meta { color: #8CA5C8; font-size: 8.5pt; margin-bottom: 3mm; }
-.cover-band { color: #7EB8F0; font-size: 9pt; margin-top: 6mm; }
+.cover { page: cover; background: #1A2B4A; width: 210mm; height: 297mm; padding: 0; position: relative; page-break-after: always; display: flex; flex-direction: column; }
+.cover-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 5mm; background: #E8622A; }
+.cover-topbar { background: #fff; padding: 14px 24px 14px 22mm; display: flex; align-items: center; gap: 12px; }
+.cover-logo { height: 26px; display: block; }
+.cover-logo-divider { width: 1px; height: 22px; background: #DCE0E8; flex-shrink: 0; }
+.cover-nav-title { font-size: 11pt; font-weight: 700; color: #1A2B4A; letter-spacing: .04em; text-transform: uppercase; }
+.cover-body { padding: 0 18mm 14mm 22mm; flex: 1; display: flex; flex-direction: column; }
+.cover-title { color: #fff; font-size: 26pt; font-weight: 300; line-height: 1.2; margin-top: 28mm; margin-bottom: auto; }
+.cover-bottom { margin-top: 8mm; }
+.cover-org-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12mm; margin-bottom: 5mm; }
+.cover-org { color: #fff; font-size: 15pt; font-weight: 500; line-height: 1.2; }
+.cover-meta { color: rgba(255,255,255,.5); font-size: 8pt; margin-top: 3px; }
+.cover-score-block { text-align: right; flex-shrink: 0; }
+.cover-score { color: #7EB8F0; font-size: 40pt; font-weight: 700; line-height: 1; }
+.cover-score-lbl { color: rgba(255,255,255,.4); font-size: 8pt; margin-top: 2px; }
+.cover-divider { border: none; border-top: 1px solid rgba(255,255,255,.15); margin: 0 0 5mm; }
+.cover-band { color: #fff; font-size: 12pt; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.cover-date { color: rgba(255,255,255,.35); font-size: 8pt; margin-top: 4mm; }
 
 /* ── PAGE HEADER ── */
 .page-hdr { background: #1A2B4A; padding: 3mm 18mm; margin: -18mm -18mm 10mm -18mm; }
@@ -346,19 +352,34 @@ def generate_assessment_pdf(doc, cfg):
 <!-- ══ 1. COVER ══════════════════════════════════════════════════ -->
 <div class="cover">
   <div class="cover-stripe"></div>
+
+  <!-- White top bar: logo + DPDP Navigator title -->
+  <div class="cover-topbar">
+    <img class="cover-logo" src="{LOGO_URL}" alt="Tech4Dev">
+    <div class="cover-logo-divider"></div>
+    <div class="cover-nav-title">DPDP Readiness Navigator</div>
+  </div>
+
   <div class="cover-body">
-    <div class="cover-eyebrow">Tech4Dev · DPDP Readiness Navigator</div>
-    <div class="cover-logo-wrap">
-      <img class="cover-logo" src="{LOGO_URL}" alt="Tech4Dev">
-    </div>
+    <!-- Report title — pushed down from top bar -->
     <div class="cover-title">DPDP Compliance<br>Readiness Report</div>
-    <div class="cover-score">{int(doc.total_score)}/50</div>
-    <div class="cover-score-lbl">Overall readiness score</div>
-    <div class="cover-org">{doc.org_name}</div>
-    <div class="cover-meta">{doc.sector} · {doc.org_size}</div>
-    <div class="cover-meta">Prepared for: {doc.contact_name or doc.org_name}</div>
-    <div class="cover-meta">Assessed: {date_str}</div>
-    <div class="cover-band">{band_obj['emoji']} {band_obj['label']}</div>
+
+    <!-- Bottom block: org + score side by side, then band -->
+    <div class="cover-bottom">
+      <div class="cover-org-row">
+        <div>
+          <div class="cover-org">{doc.org_name}</div>
+          <div class="cover-meta">{doc.sector} · {doc.org_size} · {doc.contact_name or doc.org_name}</div>
+        </div>
+        <div class="cover-score-block">
+          <div class="cover-score">{int(doc.total_score)}/50</div>
+          <div class="cover-score-lbl">overall score</div>
+        </div>
+      </div>
+      <hr class="cover-divider">
+      <div class="cover-band">{band_obj['emoji']} {band_obj['label']}</div>
+      <div class="cover-date">Assessed: {date_str}</div>
+    </div>
   </div>
 </div>
 
