@@ -23,7 +23,12 @@ async function loadDB(){
     const tot=d.reduce((s,x)=>s+(x.submission_count||0),0);
     document.getElementById('db-meta').innerHTML=`<strong>${tot}</strong> submissions across <strong>${d.length}</strong> sectors`;
     mkTabs(d);mkPanels(d);document.querySelector('.stab')?.click();
-  }catch(e){document.getElementById('db-loading').remove();loadDemo();}
+  }
+  catch(e){
+    document.getElementById('db-loading').remove();
+    document.getElementById('dpanels').innerHTML = '<div class="db-empty">Sector insights could not be loaded. Please try refreshing the page.</div>';
+    document.getElementById('db-meta').textContent = '';
+  }
 }
 
 function showEmpty(){
@@ -51,7 +56,7 @@ function mkPanels(data){
     p.className='dpanel'+(i===0?' on':'');
     p.innerHTML=`<div class="cbox"><div class="cbox-t">Domain scores — ${s.sector}</div><canvas id="ch-${i}" height="220"></canvas></div>
       <div class="scol">
-        <div class="sbox"><div class="sbox-lbl">Overall avg. readiness</div><div class="sbox-val">${avg}/50</div><div class="sbox-sub">${s.submission_count} organisation${s.submission_count!==1?'s':''} assessed</div></div>
+        <div class="sbox"><div class="sbox-lbl">Overall avg. readiness</div><div class="sbox-val">${avg}/50</div><div class="sbox-sub">${s.submission_count} submission${s.submission_count!==1?'s':''}</div></div>
         <div class="sbox"><div class="sbox-lbl">Section breakdown</div><div class="glist">${DL.map((l,j)=>`<div class="grow"><div class="gpip ${sc[j]>=7?'pg':sc[j]>=4?'pa':'pr'}"></div><div class="gname">${l}</div><div class="gpct">${sc[j]}/10</div></div>`).join('')}</div></div>
       </div>`;
     c.appendChild(p);
@@ -63,19 +68,6 @@ function mkChart(i,s){
   const sc=DK.map(k=>Math.round(s[k]||0));
   const ctx=document.getElementById(`ch-${i}`);if(!ctx)return;
   CI[i]=new Chart(ctx,{type:'bar',data:{labels:DL.map(l=>l.split(' ').slice(0,2).join(' ')),datasets:[{data:sc,backgroundColor:sc.map(v=>v>=7?'rgba(22,163,74,.85)':v>=4?'rgba(217,119,6,.85)':'rgba(185,28,28,.85)'),borderRadius:3,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,ticks:{stepSize:2,callback:v=>v+'/10',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
-}
-
-function loadDemo(){
-  const d=[
-    {sector:'Health & Nutrition',submission_count:12,avg_overall:44,avg_consent:4,avg_storage:3,avg_usage:4,avg_rights:3,avg_governance:6},
-    {sector:'Education',submission_count:9,avg_overall:51,avg_consent:5,avg_storage:5,avg_usage:5,avg_rights:5,avg_governance:6},
-    {sector:'Livelihoods',submission_count:6,avg_overall:38,avg_consent:3,avg_storage:4,avg_usage:4,avg_rights:3,avg_governance:4},
-    {sector:'Gender & SRHR',submission_count:5,avg_overall:33,avg_consent:3,avg_storage:3,avg_usage:3,avg_rights:3,avg_governance:4},
-    {sector:'Humanitarian',submission_count:4,avg_overall:29,avg_consent:3,avg_storage:3,avg_usage:3,avg_rights:2,avg_governance:3},
-  ];
-  const tot=d.reduce((s,x)=>s+x.submission_count,0);
-  document.getElementById('db-meta').innerHTML=`<strong>${tot}</strong> submissions &nbsp;·&nbsp; <em style="color:var(--amber);font-size:.65rem">DEMO DATA</em>`;
-  mkTabs(d);mkPanels(d);document.querySelector('.stab')?.click();
 }
 
 async function submitConsult(){

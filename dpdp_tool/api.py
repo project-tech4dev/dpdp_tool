@@ -607,7 +607,7 @@ def get_sector_insights():
 
         results = []
         for sector, entries in buckets.items():
-            if len(entries) < 1:
+            if len(entries) < 3:
                 continue
             def avg(field):
                 vals = [e[field] for e in entries if e.get(field) is not None]
