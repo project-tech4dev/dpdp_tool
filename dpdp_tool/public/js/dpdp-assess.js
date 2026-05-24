@@ -363,9 +363,9 @@ function setResultHero(total) {
   animateScore('rh-score', total);
   const bandEl = document.getElementById('rh-band');
   const styles = {
-    green:  ['rgba(22,101,52,.22)',  'rgba(255,255,255,.92)'],
-    amber:  ['rgba(234,88,12,.22)',  'rgba(255,255,255,.92)'],
-    orange: ['rgba(146,64,14,.22)', 'rgba(255,255,255,.92)'],
+    green:  ['rgba(22,163,74,.22)',  'rgba(255,255,255,.92)'],
+    amber:  ['rgba(217,119,6,.22)',  'rgba(255,255,255,.92)'],
+    orange: ['rgba(217,119,6,.22)', 'rgba(255,255,255,.92)'],
     red:    ['rgba(185,28,28,.22)',  'rgba(255,255,255,.92)']
   };
   const [bg, fg] = styles[band.color] || styles.red;
