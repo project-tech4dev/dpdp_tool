@@ -1,711 +1,261 @@
-# DPDP Navigator — Complete Setup Guide
+# DPDP Navigator — Setup Guide
+
 **Site:** `dpdp.projecttech4dev.org` | **App:** `dpdp_tool` | **Frappe Cloud**
 
 ---
 
 ## Overview
 
-The DPDP Navigator runs as a custom Frappe app on a dedicated Frappe Cloud site. This guide covers everything from creating the GitHub repository through to a live, CI/CD-deployed site — so every code change pushed to `main` deploys automatically without manual file copying.
+The DPDP Navigator runs as a custom Frappe app. Every code change pushed to `main` on GitHub deploys automatically — no manual file copying or SSH.
 
 ```
-GitHub repo (dpdp_tool)
-       │
-       │  git push to main
-       ▼
+GitHub (main branch)
+    │  git push
+    ▼
 Frappe Cloud (auto-deploys)
-       │
-       ├── www/index.html         → dpdp.projecttech4dev.org/
-       ├── www/assess.html        → dpdp.projecttech4dev.org/assess
-       ├── public/css/dpdp.css    → /assets/dpdp_tool/css/dpdp.css
-       ├── public/js/dpdp-index.js
-       ├── public/js/dpdp-assess.js
-       └── dpdp_tool/api.py       → /api/method/dpdp_tool.api.*
+    ├── bench migrate        → applies DocType fixture changes
+    ├── bench build          → rebuilds CSS/JS/config from public/
+    └── site restart         → new Python code active
 ```
 
 ---
 
-## PART 1 — GitHub Repository
+## Part 1 — First-time GitHub setup
 
-### 1.1 Create the repo
-
-Go to github.com → New repository:
-- **Name:** `dpdp_tool`
-- **Visibility:** Private (recommended — keeps your API integration private)
-- **Initialise with:** README
-
-### 1.2 Exact folder structure
-
-The repo must match Frappe's expected app structure precisely. Create it as follows:
-
-```
-dpdp_tool/                          ← repo root
-├── README.md
-├── requirements.txt                ← Python dependencies
-├── setup.py                        ← Frappe app manifest
-├── MANIFEST.in
-└── dpdp_tool/                      ← Python package (same name)
-    ├── __init__.py
-    ├── hooks.py                    ← App hooks
-    ├── api.py                      ← All API methods
-    ├── modules.txt
-    ├── dpdp_tool/                  ← Module folder
-    │   └── __init__.py
-    ├── public/                     ← Static assets (auto-served by Frappe)
-    │   ├── css/
-    │   │   └── dpdp.css
-    │   └── js/
-    │       ├── dpdp-index.js
-    │       └── dpdp-assess.js
-    ├── www/                        ← Web pages (auto-routed by Frappe)
-    │   ├── index.html              → served at /
-    │   └── assess.html             → served at /assess
-    └── fixtures/                   ← DocType definitions (exported JSON)
-        ├── dpdp_assessment.json
-        └── dpdp_consult_request.json
-```
-
-### 1.3 Required boilerplate files
-
-**`setup.py`**
-```python
-from setuptools import setup, find_packages
-
-with open("requirements.txt") as f:
-    install_requires = f.read().strip().split("\n")
-
-setup(
-    name="dpdp_tool",
-    version="1.0.0",
-    description="DPDP Readiness Navigator — Tech4Dev",
-    author="Tech4Dev",
-    author_email="dpdp@projecttech4dev.org",
-    packages=find_packages(),
-    zip_safe=False,
-    include_package_data=True,
-    install_requires=install_requires
-)
-```
-
-**`requirements.txt`**
-```
-anthropic>=0.20.0
-```
-
-**`MANIFEST.in`**
-```
-recursive-include dpdp_tool/public *
-recursive-include dpdp_tool/www *
-recursive-include dpdp_tool/fixtures *
-```
-
-**`dpdp_tool/__init__.py`**
-```python
-__version__ = "1.0.0"
-```
-
-**`dpdp_tool/modules.txt`**
-```
-DPDP Tool
-```
-
-**`dpdp_tool/hooks.py`**
-```python
-app_name      = "dpdp_tool"
-app_title     = "DPDP Tool"
-app_publisher = "Tech4Dev"
-app_description = "DPDP Readiness Navigator"
-app_version   = "1.0.0"
-app_icon      = "octicon octicon-file-directory"
-app_color     = "#1D6FB8"
-app_email     = "dpdp@projecttech4dev.org"
-app_license   = "MIT"
-
-# Fixtures — DocType definitions exported as JSON
-# Run `bench export-fixtures` to regenerate after DocType changes
-fixtures = [
-    {"dt": "DocType", "filters": [["name", "in", [
-        "DPDP Assessment",
-        "DPDP Consult Request"
-    ]]]},
-    {"dt": "Module Def", "filters": [["name", "in", ["DPDP Tool"]]]}
-]
-```
-
-**`dpdp_tool/dpdp_tool/__init__.py`**
-```python
-# Module init
-```
-
-### 1.4 Place your working files
-
-Copy the five project files into the repo at the exact paths below:
-
-| File | Destination in repo |
-|---|---|
-| `api.py` | `dpdp_tool/api.py` |
-| `dpdp.css` | `dpdp_tool/public/css/dpdp.css` |
-| `dpdp-index.js` | `dpdp_tool/public/js/dpdp-index.js` |
-| `dpdp-assess.js` | `dpdp_tool/public/js/dpdp-assess.js` |
-| `index.html` | `dpdp_tool/www/index.html` |
-| `assess.html` | `dpdp_tool/www/assess.html` |
-
-### 1.5 Initial commit
+If you are setting up a new instance, create a private GitHub repository named `dpdp_tool`, push this codebase to it, then connect it in Frappe Cloud under Apps → Add App → GitHub.
 
 ```bash
-git add .
-git commit -m "Initial DPDP Navigator app"
-git push origin main
+git remote add origin https://github.com/YOUR-ORG/dpdp_tool.git
+git push -u origin main
 ```
 
 ---
 
-## PART 2 — Frappe Cloud Site
+## Part 2 — Frappe Cloud site setup
 
 ### 2.1 Create the site
 
-1. Log into [frappecloud.com](https://frappecloud.com)
-2. **New Site** →
-   - Region: **India (Mumbai)** — mandatory for DPDP data residency
-   - Plan: Start with the smallest available (Micro or Basic)
-   - Apps to install: **Frappe Framework only** — do not add ERPNext
+Frappe Cloud → New Site:
+- **Region:** India (Mumbai) — required for DPDP data residency
+- **Apps:** Frappe Framework only — do not add ERPNext
 
 ### 2.2 Connect the GitHub repo
 
-1. In Frappe Cloud → **Apps** tab → **Add App**
-2. Select **GitHub** as the source
-3. Authorise Frappe Cloud to access your GitHub account if prompted
-4. Select the `dpdp_tool` repository
-5. Branch: `main`
-6. Click **Add App**
+Apps tab → Add App → GitHub → select `dpdp_tool` → branch `main`.
 
-Frappe Cloud will now:
-- Clone the repo
-- Install it on your site automatically
-- Install Python dependencies from `requirements.txt` (including `anthropic`)
+Frappe Cloud installs the app, runs `pip install -r requirements.txt` (installs `anthropic` and `weasyprint`), and runs `bench migrate` to apply all fixtures.
 
-### 2.3 Add the Claude API key
+### 2.3 Add site config
 
-In Frappe Cloud → your site → **Site Config** tab → **Add Key**:
+Frappe Cloud → your site → Config → Add each key:
 
-```
-Key:   anthropic_api_key
-Value: sk-ant-YOUR-ACTUAL-KEY-HERE
-```
-
-This is the **only** place the API key lives. It is read server-side via `frappe.conf.get("anthropic_api_key")` and never reaches the browser.
+| Key | Value |
+|---|---|
+| `anthropic_api_key` | `sk-ant-YOUR-KEY` |
+| `dpdp_report_cc_email` | `dpdp@projecttech4dev.org` |
+| `dpdp_consult_notify_email` | `dpdp@projecttech4dev.org` |
 
 ### 2.4 Add custom domain
 
-1. Site → **Domains** tab → **Add Domain**
-2. Enter: `dpdp.projecttech4dev.org`
-3. Frappe Cloud shows you a CNAME record to add
-4. Add it at your DNS provider (wherever `projecttech4dev.org` is registered)
-5. Click **Verify** — SSL certificate issues automatically
+Site → Domains → Add Domain → `dpdp.projecttech4dev.org`. Add the CNAME record at your DNS provider. Frappe Cloud issues SSL automatically.
 
 ---
 
-## PART 3 — CI/CD with Frappe Cloud
+## Part 3 — DocTypes
 
-### How it works
+DocTypes are defined in `fixtures/dpdp_assessment.json` and `fixtures/dpdp_consult_request.json` and applied automatically on every deploy via `bench migrate`. You do not need to create them manually.
 
-Once your GitHub repo is connected, Frappe Cloud listens for pushes to `main`. Every merge to `main` triggers an automatic deployment:
+### DPDP Assessment — key fields
 
-```
-Developer pushes to main
-         ↓
-Frappe Cloud detects the push (via GitHub webhook)
-         ↓
-Pulls latest code from the repo
-         ↓
-Runs bench migrate (applies any DocType changes from fixtures)
-         ↓
-Rebuilds assets (CSS, JS from public/)
-         ↓
-Restarts the site
-         ↓
-Changes are live — typically 2–4 minutes
-```
-
-### Recommended branch strategy
-
-```
-main        ← production, auto-deploys to dpdp.projecttech4dev.org
-develop     ← integration branch, test here before merging to main
-feature/*   ← individual feature branches
-```
-
-A typical change workflow:
-```bash
-git checkout -b feature/update-question-3
-# make changes
-git add . && git commit -m "Update Q3 wording"
-git push origin feature/update-question-3
-# open a pull request to develop
-# test on develop
-# merge develop → main to deploy
-```
-
-### What auto-deploys vs what does not
-
-| Change | Auto-deployed | Notes |
+| Field | Type | Purpose |
 |---|---|---|
-| HTML pages (`www/`) | ✓ Yes | Immediately on push |
-| CSS/JS (`public/`) | ✓ Yes | Assets rebuilt automatically |
-| `api.py` | ✓ Yes | Python reloaded on restart |
-| DocType fields (via fixtures) | ✓ Yes | `bench migrate` runs automatically |
-| New DocType (first time) | Manual once | Export fixture JSON first (see Part 5) |
-| Site config (API key) | Manual | Set once in Frappe Cloud dashboard |
-| Python dependencies (`requirements.txt`) | ✓ Yes | Reinstalled on deploy |
+| `org_name` | Data | Organisation name |
+| `org_email` | Data | Assessor email (report sent here) |
+| `contact_name` | Data | Assessor name |
+| `sector` | Small Text | Comma-separated sectors |
+| `org_size` | Select | Under 20 / 20-100 / 100-500 / 500+ staff |
+| `beneficiaries` | Small Text | Beneficiary groups |
+| `total_score` | Float | Overall score out of 50 |
+| `score_consent` | Float | Section 1 score |
+| `score_storage` | Float | Section 2 score |
+| `score_usage` | Float | Section 3 score |
+| `score_rights` | Float | Section 4 score |
+| `score_governance` | Float | Section 5 score |
+| `answers_json` | Long Text | All 25 answers as JSON |
+| `executive_summary` | Long Text | Call 1 AI output |
+| `action_roadmap` | Long Text | Call 2 AI output |
+| `pdf_file` | Attach | Generated PDF |
+| `pdf_emailed` | Check | Set after email sent |
+| `status` | Select | Submitted / Summary Ready / Roadmap Ready / Processed / Failed |
+| `submitted_on` | Datetime | Auto-set on insert |
+| `failed_reason` | Long Text | Error detail if AI calls fail |
+| `recommendations` | Long Text | Legacy single-call output (kept for backward compat) |
+
+### Status flow
+
+```
+Submitted → Summary Ready → Roadmap Ready → Processed
+                                 ↘ (always) → PDF generated → pdf_emailed = 1
+```
+
+`Processed` is the terminal success state. `get_sector_insights()` queries `WHERE status = 'Processed'`.
+
+### If you add a new field
+
+1. Add it via Desk → DocType → DPDP Assessment
+2. Run from bench: `bench --site dpdp.projecttech4dev.org export-fixtures`
+3. Commit the updated `fixtures/dpdp_assessment.json` to the repo
 
 ---
 
-## PART 4 — DocTypes
+## Part 4 — Email setup
 
-DocTypes define the database tables where assessment data is stored. Create them once via the Frappe Desk UI, then export as JSON fixtures so future deploys apply them automatically.
+### Assessment report email
 
-### 4.1 Create DocType: `DPDP Assessment`
+Sent automatically by `generate_and_attach_pdf` background job when PDF is ready. Uses the `DPDP Assessment Report` Email Template (stored as a fixture and editable in Desk → Email Template).
 
-Frappe Desk → Search "DocType" → New
+To edit the email template without a code deploy: Desk → Email Template → DPDP Assessment Report → edit → save.
 
-**Settings:**
-- Name: `DPDP Assessment`
-- Module: `DPDP Tool`
-- Is Submittable: No
-- Allow Guest to Create: No
+### Consult request notification
 
-**Fields — add in this exact order:**
+Handled by a **Frappe Notification** configured directly in Desk:
 
-| Label | Fieldname | Type | Notes |
-|---|---|---|---|
-| Organisation Name | org_name | Data | Required |
-| Email | org_email | Data | Required |
-| Contact Name | contact_name | Data | |
-| Sector(s) | sector | Small Text | Multi-sector stored as comma-separated |
-| Organisation Size | org_size | Select | |
-| Beneficiary Groups | beneficiaries | Small Text | |
-| Total Score | total_score | Float | |
-| Score — Consent | score_consent | Float | |
-| Score — Storage | score_storage | Float | |
-| Score — Usage | score_usage | Float | |
-| Score — Rights | score_rights | Float | |
-| Score — Governance | score_governance | Float | |
-| Raw Answers (JSON) | answers_json | Long Text | |
-| AI Recommendations | recommendations | Long Text | |
-| Status | status | Select | |
-| Submitted On | submitted_on | Datetime | |
+Desk → Notification → New:
+- Document Type: `DPDP Consult Request`
+- Event: `New`
+- Channel: `Email`
+- Recipients: your internal email address
+- Subject: `New Consult Request — {{ doc.org_name }}`
+- Message: paste the HTML from `email_template_consult_internal.html`
 
-> **Why Small Text for Sector?** The sector field uses `Small Text` (not `Select`) because organisations can belong to multiple sectors simultaneously. The field stores comma-separated values like `"Education, Health & Nutrition"`. The API expands these when computing sector insights.
+This approach avoids SMTP issues that arise when `frappe.sendmail()` is called from a web request thread.
 
-**Organisation Size options** (paste into Select field options, one per line):
-```
-Under 20 staff
-20–100 staff
-100–500 staff
-500+ staff
-```
+### Outgoing email account
 
-**Status options:**
-```
-Submitted
-Processed
-Failed
-```
-
-Click **Save**.
+Desk → Email Account → ensure one account has **Default Outgoing** checked. Both emails send from this account.
 
 ---
 
-### 4.2 Create DocType: `DPDP Consult Request`
+## Part 5 — Desk actions
 
-Frappe Desk → DocType → New
+### Viewing submissions
 
-**Settings:**
-- Name: `DPDP Consult Request`
-- Module: `DPDP Tool`
-- Is Submittable: No
+Desk → DPDP Tool → DPDP Assessment. Each record shows the full assessment with AI outputs, PDF attachment, and status.
 
-**Fields:**
+### Regenerating a PDF or re-running AI
 
-| Label | Fieldname | Type | Notes |
-|---|---|---|---|
-| Organisation Name | org_name | Data | Required |
-| Contact Name | contact_name | Data | Required |
-| Email | email | Data | Required |
-| Phone | phone | Data | |
-| Sector(s) | sector | Small Text | Multi-sector |
-| Organisation Size | org_size | Select | |
-| Service Interest | service_interest | Select | |
-| Message | message | Text | |
-| Status | status | Select | |
-| Submitted On | submitted_on | Datetime | |
+Open any DPDP Assessment record → Actions dropdown:
+- **Regenerate PDF** — re-renders the PDF from stored AI content and re-emails. No Claude calls.
+- **Re-run AI Analysis** — re-queues both Claude calls and regenerates the PDF. Overwrites existing AI content.
 
-**Service Interest options:**
-```
-Tier 1 — Self Assessment
-Tier 2 — Light Advisory
-Tier 3 — Deep Advisory
-Not sure yet
-```
+### Sector insights
 
-**Status options:**
-```
-New
-Contacted
-Converted
-```
-
-Click **Save**.
+`get_sector_insights()` returns average scores by sector for the dashboard. Requires at least one completed (`Processed`) assessment per sector to show data.
 
 ---
 
-### 4.3 Export DocTypes as fixtures (critical for CI/CD)
+## Part 6 — Configuration: questions, scoring, glossary
 
-Once both DocTypes are created and saved, export them as JSON so they deploy automatically via `bench migrate` on every future push:
+Everything about the assessment — all 25 questions, 5 sections, scoring bands, glossary terms, references, and sector options — lives in one file:
 
-In the Frappe Desk console (Desk → Developer → Console):
-
-```python
-# Export both DocTypes as fixture JSON files
-frappe.flags.in_install = True
-
-import frappe.utils.fixtures as fu
-
-# Export DPDP Assessment
-with open('/home/frappe/frappe-bench/apps/dpdp_tool/dpdp_tool/fixtures/dpdp_assessment.json', 'w') as f:
-    import json
-    data = frappe.get_doc("DocType", "DPDP Assessment").as_dict()
-    json.dump(data, f, indent=2, default=str)
-
-print("Done")
+```
+dpdp_tool/public/dpdp-config.json
 ```
 
-Then from the bench terminal:
+The JS fetches this on page load (cached in sessionStorage). The Python `api.py` reads it via `_get_config()` with a module-level cache.
 
-```bash
-cd /home/frappe/frappe-bench
-bench --site dpdp.projecttech4dev.org export-fixtures
-```
-
-This generates JSON files in `dpdp_tool/fixtures/`. Commit these to the repo:
-
-```bash
-git add dpdp_tool/fixtures/
-git commit -m "Add DocType fixtures for DPDP Assessment and Consult Request"
-git push origin main
-```
-
-From this point, any new site or fresh deploy will have the DocTypes automatically — no manual Desk setup needed.
+To change a question, add a sector, update a glossary term, or adjust scoring bands: edit `dpdp-config.json` and push to `main`. No Python or HTML changes needed.
 
 ---
 
-## PART 5 — Multi-Sector Implementation
+## Part 7 — Scoring reference
 
-### How it works end-to-end
-
-**In the browser (assess.html / index.html):**
-
-The sector field renders as a multi-select checkbox group. The user can pick more than one:
-
-```html
-<!-- Replace the single <select> in the org-form with this -->
-<div class="if-group">
-  <label>Sector(s) *</label>
-  <div class="sector-checkboxes" id="sector-checkboxes">
-    <label class="sector-cb"><input type="checkbox" value="Health &amp; Nutrition"> Health &amp; Nutrition</label>
-    <label class="sector-cb"><input type="checkbox" value="Education"> Education</label>
-    <label class="sector-cb"><input type="checkbox" value="Livelihoods"> Livelihoods</label>
-    <label class="sector-cb"><input type="checkbox" value="Gender &amp; SRHR"> Gender &amp; SRHR</label>
-    <label class="sector-cb"><input type="checkbox" value="Environment"> Environment</label>
-    <label class="sector-cb"><input type="checkbox" value="Disability"> Disability</label>
-    <label class="sector-cb"><input type="checkbox" value="Humanitarian"> Humanitarian</label>
-    <label class="sector-cb"><input type="checkbox" value="Governance"> Governance</label>
-    <label class="sector-cb"><input type="checkbox" value="Other"> Other</label>
-  </div>
-</div>
-```
-
-Add this CSS to `dpdp.css`:
-```css
-.sector-checkboxes{display:grid;grid-template-columns:1fr 1fr;gap:.4rem .75rem;margin-top:.25rem}
-.sector-cb{display:flex;align-items:center;gap:7px;font-size:.84rem;color:var(--ink);cursor:pointer;padding:4px 0}
-.sector-cb input[type=checkbox]{width:15px;height:15px;accent-color:var(--blue);flex-shrink:0;cursor:pointer}
-```
-
-**In `dpdp-assess.js` — update `startAssessment()`:**
-
-```javascript
-// Replace the single select read with:
-function getSelectedSectors() {
-  const checked = document.querySelectorAll('#sector-checkboxes input:checked');
-  return Array.from(checked).map(cb => cb.value);
-}
-
-function startAssessment() {
-  const o   = document.getElementById('i-org').value.trim();
-  const n   = document.getElementById('i-name').value.trim();
-  const e   = document.getElementById('i-email').value.trim();
-  const sc  = getSelectedSectors();
-  const sz  = document.getElementById('i-size').value;
-
-  if (!o || !n || !e || sc.length === 0 || !sz) {
-    alert('Please fill in all required fields and select at least one sector.');
-    return;
-  }
-  org = { org: o, name: n, email: e, sector: sc, size: sz,
-          bene: document.getElementById('i-bene').value.trim() };
-  // ... rest of startAssessment unchanged
-}
-```
-
-**Sending to Frappe API — sectors as JSON array:**
-
-```javascript
-// In storeInFrappe() — sector sent as JSON-stringified array:
-body: JSON.stringify({
-  org_name:  org.org,
-  sector:    JSON.stringify(org.sector),  // ["Education","Health & Nutrition"]
-  // ... other fields
-})
-
-// In fetchReco() — same:
-section_scores: { consent: secScores[0], ... },
-sector: JSON.stringify(org.sector),
-```
-
-**In Frappe `api.py` — `_parse_sectors()` handles the array:**
-
-The helper function already handles JSON arrays, comma-separated strings, and plain strings:
-
-```python
-def _parse_sectors(sector_raw):
-    # ["Education", "Health & Nutrition"]  →  "Education, Health & Nutrition"
-    # "Education, Health & Nutrition"      →  "Education, Health & Nutrition"
-    # "Education"                          →  "Education"
-```
-
-**In the database:**
-
-Stored as `"Education, Health & Nutrition"` in the `sector` field.
-
-**In `get_sector_insights()`:**
-
-Each assessment is expanded to contribute to every sector it lists:
-
-```python
-for row in rows:
-    # "Education, Health & Nutrition" → ["Education", "Health & Nutrition"]
-    for sec in [s.strip() for s in (row.sector or "").split(",")]:
-        if sec in KNOWN_SECTORS:
-            buckets[sec].append(row)
-```
-
-So an organisation working in both Education and Health appears in both sectors' averages — which is the correct behaviour for cross-sector NGOs.
-
----
-
-## PART 6 — Verify After Deployment
-
-### 6.1 Test API methods in Frappe console
-
-Desk → Developer → Bench Console:
-
-```python
-# Test 1: Store assessment with multi-sector input
-result = frappe.call("dpdp_tool.api.store_assessment",
-    org_name="Test NGO",
-    org_email="test@test.org",
-    contact_name="Test User",
-    sector='["Education", "Health & Nutrition"]',   # JSON array
-    org_size="20-100 staff",
-    beneficiaries="children, women",
-    total_score=32,
-    score_consent=5, score_storage=6, score_usage=7,
-    score_rights=8, score_governance=6,
-    answers_json="[]"
-)
-print(result)
-# Expected: {"status": "ok", "docname": "DPDP-ASSESS-00001"}
-
-# Verify sector was stored correctly
-doc = frappe.get_doc("DPDP Assessment", result["docname"])
-print(doc.sector)
-# Expected: "Education, Health & Nutrition"
-```
-
-```python
-# Test 2: Claude call (uses your API key)
-result = frappe.call("dpdp_tool.api.get_recommendations",
-    org_name="Test NGO",
-    sector='["Education", "Health & Nutrition"]',
-    org_size="20-100 staff",
-    beneficiaries="children",
-    total_score=32, max_score=50,
-    section_scores={"consent":5,"storage":6,"usage":7,"rights":8,"governance":6},
-    answers="Q1: Yes\nQ2: Partially\nQ3: No"
-)
-print(result["status"])            # "ok" or "fallback"
-print(result["recommendations"][:400])
-```
-
-```python
-# Test 3: Sector insights (empty until 3+ submissions per sector)
-data = frappe.call("dpdp_tool.api.get_sector_insights")
-print(data)
-# After 3+ test submissions to "Education": shows Education stats
-```
-
-```python
-# Test 4: Consult request
-result = frappe.call("dpdp_tool.api.submit_consult_request",
-    org_name="Test NGO",
-    contact_name="Test User",
-    email="test@test.org",
-    sector='["Education"]',
-    service_interest="Tier 2 - Light Advisory"
-)
-print(result)
-# Expected: {"status": "ok"}
-```
-
-### 6.2 Full user journey test
-
-1. Visit `https://dpdp.projecttech4dev.org` — landing page loads
-2. Dashboard shows demo data (real data appears after 3+ submissions per sector)
-3. Click "Begin Self-Assessment" → `/assess` opens
-4. Fill org profile — select **multiple sectors** using checkboxes
-5. Answer all 25 questions
-6. Click Submit → section score cards render **instantly** (client-side)
-7. Loading animation appears (~8–15 seconds) while Frappe calls Claude
-8. Recommendations render on screen
-9. "Download PDF Report" activates → PDF downloads in browser
-10. Frappe Desk → DPDP Tool → DPDP Assessment → record shows `sector` as comma-separated values
-11. Submit consult form → record appears in DPDP Consult Request with status "New"
-
-### 6.3 Verify CI/CD is working
-
-Make a small, visible change — for example, update the hero sub-copy in `index.html`:
-
-```bash
-# On your machine
-git checkout -b test/cicd-check
-# Edit dpdp_tool/www/index.html — change one word
-git add dpdp_tool/www/index.html
-git commit -m "Test CI/CD deployment"
-git push origin test/cicd-check
-# Open a PR to main and merge it
-```
-
-Go to Frappe Cloud → your site → **Deployments** tab. You should see a new deployment triggered within seconds. When it completes (2–4 minutes), visit the site and confirm your change is live.
-
----
-
-## PART 7 — Scoring Reference
-
-| Answer | Points |
-|---|---|
-| Yes | 2 |
-| Partially | 1 |
-| No / Not Sure | 0 |
-
-**Maximum score: 50** (25 questions × 2 pts, 5 questions × 2 pts per section)
+Scoring is defined in `dpdp-config.json` under `scoring.bands`:
 
 | Score | Band |
 |---|---|
-| 0–20 | High Risk — Not Ready |
-| 21–35 | Basic Readiness — Needs Work |
-| 36–45 | Moderate Readiness |
 | 46–50 | Strong Readiness |
+| 36–45 | Moderate Readiness |
+| 21–35 | Basic Readiness — Needs Work |
+| 0–20 | High Risk — Not Ready |
 
-**5 sections, 10 pts each:**
-
-| # | Section | Questions |
-|---|---|---|
-| 1 | Data Collection & Consent | Q1–5 |
-| 2 | Data Storage & Security | Q6–10 |
-| 3 | Data Usage & Sharing | Q11–15 |
-| 4 | Rights of Individuals | Q16–20 |
-| 5 | Governance & Processes | Q21–25 |
+Each question has three options: Yes (2pts), Partially (1pt), No (0pts). Maximum 50 points across 25 questions, 5 sections of 5 questions each.
 
 ---
 
-## PART 8 — Rate Limiting
+## Part 8 — CI/CD workflow
 
-| Method | Limit | Window | Reason |
-|---|---|---|---|
-| `get_recommendations` | 10/IP | 1 hour | Prevents Claude API cost abuse |
-| `store_assessment` | 10/IP | 1 hour | Matches recommendation limit |
-| `submit_consult_request` | 5/IP | 1 hour | Prevents form spam |
-| `get_sector_insights` | Unlimited | — | Read-only, low cost |
-
----
-
-## PART 9 — Making Changes After Go-Live
-
-### Updating questions or copy
-Edit the relevant file → commit to a feature branch → PR to `main` → auto-deploys.
-
-```bash
-# Example: update Q3 wording
-git checkout -b fix/q3-wording
-# Edit dpdp_tool/public/js/dpdp-assess.js
-git add . && git commit -m "Clarify Q3 wording"
-git push origin fix/q3-wording
-# PR → main → auto-deploy
+```
+feature/* branch
+    → PR to main
+    → merge to main
+    → Frappe Cloud detects push
+    → deploys in 2–4 minutes
 ```
 
-### Adding a DocType field
-1. Add the field via Frappe Desk on the live site
-2. Run `bench --site dpdp.projecttech4dev.org export-fixtures`
-3. Commit the updated fixture JSON to the repo
-4. All future deploys will include the new field automatically
-
-### Updating the API key
-Frappe Cloud → Site → Site Config → edit `anthropic_api_key`. No deploy needed.
-
-### Monitoring errors
-Frappe Desk → Error Log — all `frappe.log_error()` calls from `api.py` appear here. Filter by title "DPDP API" to see only DPDP-related errors.
+| Change type | Auto-deploys | Notes |
+|---|---|---|
+| HTML (`www/`) | ✓ | On push |
+| CSS/JS/config (`public/`) | ✓ | Assets rebuilt |
+| `api.py`, `pdf_generator.py` | ✓ | Python reloaded on restart |
+| DocType fields (fixtures) | ✓ | `bench migrate` runs on deploy |
+| Site config (API keys) | Manual | Set in Frappe Cloud dashboard |
+| Email Template content | Manual | Edit in Desk — no deploy needed |
 
 ---
 
-## PART 10 — Go-Live Checklist
+## Part 9 — Local PDF testing
+
+WeasyPrint requires system libraries not available on Mac by default.
+
+```bash
+brew install weasyprint
+```
+
+Then place `test_pdf.py`, `pdf_generator.py`, and `dpdp-config.json` in the same folder:
+
+```bash
+/opt/homebrew/Cellar/weasyprint/68.1/libexec/bin/python test_pdf.py
+open output_test.pdf
+```
+
+`test_pdf.py` mocks the entire `frappe` module — no Frappe installation needed.
+
+---
+
+## Part 10 — Go-live checklist
 
 **GitHub**
-- [ ] `dpdp_tool` repo created (private)
-- [ ] All boilerplate files in place (`setup.py`, `hooks.py`, `requirements.txt`, `MANIFEST.in`)
-- [ ] All 5 project files placed at correct paths
-- [ ] Initial commit pushed to `main`
+- [ ] Repository is private
+- [ ] All files committed and pushed to `main`
 
 **Frappe Cloud**
-- [ ] New site created — region: India (Mumbai)
-- [ ] GitHub repo connected via Apps tab
-- [ ] `dpdp_tool` app installed and showing as active
-- [ ] `anthropic_api_key` added to Site Config
-- [ ] Custom domain `dpdp.projecttech4dev.org` verified with SSL
+- [ ] Site created in India (Mumbai) region
+- [ ] GitHub repo connected and app installed
+- [ ] `anthropic_api_key` set in Site Config
+- [ ] `dpdp_report_cc_email` set in Site Config
+- [ ] Custom domain `dpdp.projecttech4dev.org` added with SSL verified
+
+**Email**
+- [ ] Default outgoing email account configured in Desk
+- [ ] Test email sent successfully from Desk
+- [ ] `DPDP Assessment Report` Email Template present in Desk
+- [ ] Consult Notification configured in Desk (Frappe Notification)
 
 **DocTypes**
-- [ ] `DPDP Assessment` created with all fields (sector as Small Text)
-- [ ] `DPDP Consult Request` created with all fields
-- [ ] Both exported as fixtures and committed to repo
-- [ ] `bench migrate` confirmed fixtures apply on deploy
-
-**Multi-sector**
-- [ ] Sector checkboxes rendering in org profile form
-- [ ] Multi-sector selection sends JSON array to API
-- [ ] `_parse_sectors()` correctly converts array to comma-separated string
-- [ ] Stored records show comma-separated sectors in Frappe Desk
-- [ ] `get_sector_insights()` correctly expands multi-sector records into per-sector buckets
+- [ ] DPDP Assessment has all required fields (check `fixtures/dpdp_assessment.json`)
+- [ ] DPDP Consult Request has all required fields
+- [ ] Client Script "DPDP Assessment Actions" showing Actions dropdown on records
 
 **Testing**
-- [ ] All 4 API methods tested via Frappe console
-- [ ] Full 25-question flow completed end-to-end
-- [ ] Multi-sector selection tested — org appears in multiple sector dashboard tabs
-- [ ] PDF generated and checked
-- [ ] Consult form submits successfully
+- [ ] Full 25-question assessment completed end-to-end
+- [ ] Executive summary appears in Summary tab (~15 seconds)
+- [ ] Roadmap appears in Roadmap tab (~60 seconds)
+- [ ] PDF received by email
+- [ ] PDF download button works on results page
+- [ ] Consult form submits and team receives notification
+- [ ] CI/CD: push a small change and confirm it deploys within 5 minutes
 
-**CI/CD**
-- [ ] Test change pushed → deployment triggered in Frappe Cloud
-- [ ] Change visible on site within 5 minutes of merge to `main`
-
-**Final**
-- [ ] `projecttech4dev.org` WordPress page updated to link to `dpdp.projecttech4dev.org`
-- [ ] Team briefed on Frappe Desk for viewing submissions and consult requests
+**Monitoring**
+- [ ] Desk → Error Log shows no unexpected DPDP errors
+- [ ] Anthropic API key has sufficient credits

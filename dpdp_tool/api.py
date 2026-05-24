@@ -663,51 +663,6 @@ def submit_consult_request(org_name, contact_name, email,
         return {"status": "error", "message": str(e)}
 
 
-def _send_consult_notification(doc):
-    try:
-        notify_email = (
-            frappe.conf.get("dpdp_consult_notify_email")
-            or "dpdp@projecttech4dev.org"
-        )
-        frappe.log_error(f"STEP 1 — notify_email: {notify_email}", "DPDP Debug")
-
-        args = {"doc": doc, "site_url": frappe.utils.get_url()}
-
-        html = _render_email_template("DPDP Consult Request Internal", args)
-        frappe.log_error(f"STEP 2 — html rendered: {bool(html)}", "DPDP Debug")
-
-        if not html:
-            html = (
-                f"<b>New DPDP Consult Request</b><br><br>"
-                f"<b>Organisation:</b> {doc.org_name}<br>"
-                f"<b>Contact:</b> {doc.contact_name}<br>"
-                f"<b>Email:</b> {doc.email}<br>"
-                f"<b>Phone:</b> {doc.phone or chr(8212)}<br>"
-                f"<b>Sector:</b> {doc.sector or chr(8212)}<br>"
-                f"<b>Size:</b> {doc.org_size or chr(8212)}<br>"
-                f"<b>Service Interest:</b> {doc.service_interest or chr(8212)}<br><br>"
-                f"<b>Message:</b><br>{doc.message or '(none)'}<br><br>"
-                f"<a href='{frappe.utils.get_url()}/app/dpdp-consult-request/{doc.name}'>"
-                f"View in Frappe Desk</a>"
-            )
-            frappe.log_error("STEP 2b — using fallback HTML", "DPDP Debug")
-
-        frappe.log_error(f"STEP 3 — calling sendmail to {notify_email}", "DPDP Debug")
-        frappe.sendmail(
-            recipients=["dpdp@projecttech4dev.org"],
-            subject=f"New DPDP Consult Request - {doc.org_name}",
-            message=str(html),
-            delayed=False,
-        )
-        frappe.log_error(f"STEP 4 — sendmail completed for {doc.name}", "DPDP Debug")
-
-    except Exception as e:
-        frappe.log_error(
-            f"[DPDP] consult notification failed for {doc.name}: {e}",
-            "DPDP Consult Notification"
-        )
-
-
 # ─────────────────────────────────────────────────────────────────
 # PROMPTS
 # ─────────────────────────────────────────────────────────────────
