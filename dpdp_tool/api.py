@@ -569,6 +569,7 @@ def _send_report_email(doc, file_doc):
     frappe.sendmail(
         recipients=[doc.org_email],
         cc=cc or None,
+        reply_to = cc,
         subject=f"Your DPDP Readiness Report — {doc.org_name}",
         message=html,
         attachments=attachments,

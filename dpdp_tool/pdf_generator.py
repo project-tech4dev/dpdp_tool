@@ -56,17 +56,17 @@ h2.subsection { font-size: 10pt; font-weight: 700; color: #1D6FB8; margin: 6mm 0
 /* ── SCORE CARDS ── */
 .sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-bottom: 8mm; }
 .scard { border: 1px solid #DCE0E8; border-radius: 4px; padding: 5mm; border-top: 3px solid #DCE0E8; }
-.scard.high { border-top-color: #1D6FB8; }
+.scard.high { border-top-color: #16A34A; }
 .scard.mid  { border-top-color: #D97706; }
 .scard.low  { border-top-color: #B91C1C; }
 .sc-name { font-size: 7.5pt; color: #4A5568; margin-bottom: 2mm; }
 .sc-score { font-size: 16pt; font-weight: 300; color: #1A2B4A; line-height: 1; margin-bottom: 2mm; }
-.scard.high .sc-score { color: #1D6FB8; }
+.scard.high .sc-score { color: #16A34A; }
 .scard.mid  .sc-score { color: #D97706; }
 .scard.low  .sc-score { color: #B91C1C; }
 .sc-bar { height: 4px; background: #DCE0E8; border-radius: 2px; margin-bottom: 2mm; }
 .sc-bar-fill { height: 4px; border-radius: 2px; }
-.fill-high { background: #1D6FB8; } .fill-mid { background: #D97706; } .fill-low { background: #B91C1C; }
+.fill-high { background: #16A34A; } .fill-mid { background: #D97706; } .fill-low { background: #B91C1C; }
 .sc-lbl { font-size: 7pt; color: #4A5568; }
 
 /* ── ORG PROFILE (top of roadmap page) ── */

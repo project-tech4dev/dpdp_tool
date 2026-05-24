@@ -62,7 +62,7 @@ function mkChart(i,s){
   if(CI[i])return;
   const sc=DK.map(k=>Math.round(s[k]||0));
   const ctx=document.getElementById(`ch-${i}`);if(!ctx)return;
-  CI[i]=new Chart(ctx,{type:'bar',data:{labels:DL.map(l=>l.split(' ').slice(0,2).join(' ')),datasets:[{data:sc,backgroundColor:sc.map(v=>v>=7?'rgba(29,111,184,.75)':v>=4?'rgba(146,64,14,.75)':'rgba(185,28,28,.75)'),borderRadius:3,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,ticks:{stepSize:2,callback:v=>v+'/10',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
+  CI[i]=new Chart(ctx,{type:'bar',data:{labels:DL.map(l=>l.split(' ').slice(0,2).join(' ')),datasets:[{data:sc,backgroundColor:sc.map(v=>v>=7?'rgba(22,163,74,.85)':v>=4?'rgba(217,119,6,.85)':'rgba(185,28,28,.85)'),borderRadius:3,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,ticks:{stepSize:2,callback:v=>v+'/10',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
 }
 
 function loadDemo(){
