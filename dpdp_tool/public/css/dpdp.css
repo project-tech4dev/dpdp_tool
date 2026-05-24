@@ -187,6 +187,8 @@ h2.sh{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:300;line-height:1.2;margin-
 .stab:hover:not(.on){border-color:var(--blue);color:var(--blue)}
 .dpanel{display:none}
 .dpanel.on{display:grid;grid-template-columns:3fr 2fr;gap:2rem;align-items:start}
+.dpanel.on .cbox { min-width: 0; overflow: hidden; }
+.dpanel.on .scol { min-width: 0; }
 .cbox{background:var(--white);border-radius:6px;padding:1.75rem;border:1px solid var(--border)}
 .cbox-t{font-size:.85rem;font-weight:500;margin-bottom:1.25rem}
 .scol{display:flex;flex-direction:column;gap:1rem}
@@ -274,6 +276,8 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   .wsplit{gap:3rem}
   .csplit{gap:3rem}
   .ngo-grid{grid-template-columns:repeat(2,1fr)}
+  .wgrid{grid-template-columns:1fr 1fr}
+  .dgrid{grid-template-columns:1fr 1fr}
   footer{padding:2rem}
 }
 
@@ -292,8 +296,6 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   .wsplit{grid-template-columns:1fr;gap:2.5rem}
   .ngo-grid{grid-template-columns:1fr 1fr}
   .ngo-q{padding:1.5rem}
-  .wgrid{grid-template-columns:1fr 1fr}
-  .dgrid{grid-template-columns:1fr 1fr}
   .dpanel.on{grid-template-columns:1fr}
   .db-load{grid-template-columns:1fr}
   .db-hdr{flex-direction:column;align-items:flex-start}
@@ -320,6 +322,7 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   .ngo-q{padding:1.25rem 1rem}
   .ngo-qt{font-size:1.1rem}
   .stab{font-size:.80rem;padding:6px 12px}
+  .cbox { padding: 1.25rem; }
   .insights-cta-btns{flex-direction:column}
   .icta-btn-o,.icta-btn-g{text-align:center}
   footer{padding:1.75rem 1rem}
