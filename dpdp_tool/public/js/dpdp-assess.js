@@ -342,7 +342,7 @@ async function submitAssessment() {
   if (emailEl) emailEl.textContent = org.email;
 
   // Show status bar
-  setStatusBar(true, 'Generating your compliance analysis — please do not close this tab. We will also email your roadmap when ready.');
+  updateStatusBar('processing');
 
   // Store in Frappe, then start both AI calls in parallel
   _docname = await storeInFrappe(secScores, total);
@@ -458,12 +458,77 @@ function renderReferences() {
 }
 
 // ── STATUS BAR ───────────────────────────────────────────────────────
-function setStatusBar(visible, text) {
+function updateStatusBar(state) {
   const bar = document.getElementById('reco-status');
-  const txt = document.getElementById('reco-status-text');
   if (!bar) return;
-  bar.style.display = visible ? 'flex' : 'none';
-  if (text && txt) txt.textContent = text;
+  bar.style.display = 'block';
+
+  // Step definitions per state
+  // States: 'processing' | 'summary_ready' | 'roadmap_ready' | 'complete'
+  const stepState = (key) => {
+    const order = ['scores','summary','roadmap','pdf','email'];
+    const doneAt = {
+      processing:    ['scores'],
+      summary_ready: ['scores','summary'],
+      roadmap_ready: ['scores','summary','roadmap'],
+      complete:      ['scores','summary','roadmap','pdf','email'],
+    }[state] || ['scores'];
+    const activeAt = {
+      processing:    'summary',
+      summary_ready: 'roadmap',
+      roadmap_ready: 'pdf',
+      complete:      null,
+    }[state];
+    if (doneAt.includes(key))  return 'done';
+    if (activeAt === key)       return 'active';
+    // pdf and email both spin during roadmap_ready
+    if (state === 'roadmap_ready' && key === 'email') return 'active';
+    return 'pending';
+  };
+
+  const steps = [
+    {key:'scores',  label:'Scores'},
+    {key:'summary', label:'Summary'},
+    {key:'roadmap', label:'Roadmap'},
+    {key:'pdf',     label:'PDF'},
+    {key:'email',   label:'Email'},
+  ];
+
+  const stepHTML = steps.map((s, i) => {
+    const st = stepState(s.key);
+    const icon = st === 'done'
+      ? '<span class="ss-check">&#10003;</span>'
+      : st === 'active'
+        ? '<span class="ss-spin"></span>'
+        : '<span class="ss-dot"></span>';
+    return `<div class="ss-step ss-${st}">${icon}${s.label}</div>`
+      + (i < steps.length - 1 ? '<div class="ss-connector"></div>' : '');
+  }).join('');
+
+  // Complete: tracker only, no second bar
+  if (state === 'complete') {
+    bar.innerHTML = `<div class="ss-steps ss-steps-complete">${stepHTML}</div>`;
+    return;
+  }
+
+  const cfg = {
+    processing:    {cls:'ss-bar-processing', icon:'<span class="ss-spin-lg"></span>', text:'Generating your executive summary\u2026'},
+    summary_ready: {cls:'ss-bar-info',       icon:'<span class="ss-dot-info"></span>',    text:'Executive summary ready. Action roadmap is generating in the background.', btn:{label:'View summary \u2192',tab:'tab-summary'}},
+    roadmap_ready: {cls:'ss-bar-success',    icon:'<span class="ss-dot-success"></span>', text:'Roadmap ready. PDF is being prepared and will be emailed to you.',          btn:{label:'View roadmap \u2192',tab:'tab-roadmap'}},
+  }[state];
+
+  bar.innerHTML = `
+    <div class="ss-steps">${stepHTML}</div>
+    <div class="ss-bar ${cfg.cls}">
+      ${cfg.icon}
+      <div class="ss-text">${cfg.text}</div>
+      ${cfg.btn ? `<button class="ss-btn" onclick="switchTabByName('${cfg.btn.tab}')">${cfg.btn.label}</button>` : ''}
+    </div>`;
+}
+
+function switchTabByName(tabId) {
+  const btn = document.querySelector('.tab[data-tab="' + tabId + '"]');
+  if (btn) switchTab(btn);
 }
 
 // ── FRAPPE STORAGE ───────────────────────────────────────────────────
@@ -552,11 +617,9 @@ async function fetchRoadmap(secScores, total) {
   try {
     if (!_docname) throw new Error('no docname');
     await pollForField('roadmap-accordions', 'action_roadmap', _docname, null, renderRoadmap);
-    setStatusBar(false);
     saveSession();
   } catch(e) {
     console.error('[fetchRoadmap]', e);
-    setStatusBar(false);
     document.getElementById('roadmap-pending')?.remove();
     document.getElementById('roadmap-accordions').innerHTML =
       `<p style="color:var(--muted);padding:1rem 0">Roadmap generation failed. Check your email — we may have emailed it already.</p>`;
@@ -590,6 +653,7 @@ async function pollForField(contentId, field, docname, intervalTimer, renderFn) 
 
 function renderSummary(md) {
   document.getElementById('summary-content').innerHTML = markdownToHTML(md);
+  updateStatusBar('summary_ready');
 }
 
 
@@ -643,6 +707,7 @@ async function pollForPDF() {
         _pdfUrl = FRAPPE_URL + j.message.pdf_file;
         const btn = document.getElementById('btn-pdf');
         btn.disabled = false;
+        updateStatusBar('complete');
         saveSession();
         return;
       }
@@ -897,6 +962,7 @@ function parseRoadmapSections(md) {
 
 function renderRoadmap(md) {
   document.getElementById('roadmap-pending')?.remove();
+  updateStatusBar('roadmap_ready');
   const secs = parseRoadmapSections(md);
   // Summary table at top
   const tableEl = document.getElementById('roadmap-summary-table');
