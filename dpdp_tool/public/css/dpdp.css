@@ -43,7 +43,7 @@ nav{
 .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none;flex-shrink:0}
 .nav-logo img{height:30px;filter:brightness(0) invert(1);opacity:.9}
 .nav-div{width:1px;height:20px;background:rgba(255,255,255,.2)}
-.nav-label{font-size:1.2rem;color:rgba(255,255,255,.7)}
+.nav-label{font-size:1.1rem;color:rgba(255,255,255,.7)}
 .nav-links{display:flex;align-items:center}
 .nav-links a{color:rgba(255,255,255,.58);font-size:.85rem;text-decoration:none;padding:0 .85rem;height:64px;display:inline-flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
 .nav-links a:hover{color:#fff}
