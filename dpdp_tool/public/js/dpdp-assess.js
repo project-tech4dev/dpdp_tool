@@ -669,7 +669,7 @@ function markdownToHTML(md) {
     .replace(/\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)*)/g, (_, header, rows) => {
       const th = header.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
       const trs = rows.trim().split('\n').filter(r => r.includes('|')).map(r =>
-        '<tr>' + r.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('') + '</tr>'
+        '<tr>' + r.split('|').slice(1, -1).map(c => `<td>${c.trim()}</td>`).join('') + '</tr>'
       ).join('');
       return `<div class="md-table-wrap"><table class="md-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></div>`;
     })
