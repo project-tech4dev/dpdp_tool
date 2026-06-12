@@ -697,7 +697,7 @@ Produce a focused executive brief with exactly these four sections:
 3-4 sentences plain language for a non-technical NGO leader. Interpret the overall score honestly. Reference the two lowest-scoring sections by name.
 
 ## Sector and Beneficiary Risks
-Bullet list of exactly 3 risks specific to {doc.sector} work and beneficiaries ({doc.beneficiaries or 'not specified'}). For each risk name the DPDP Act provision and phrase any penalty as "up to ₹X crore". Be concrete — name the programme activity or data type at risk, not a generic statement.
+Bullet list of exactly 3 risks specific to {doc.sector} work and beneficiaries ({doc.beneficiaries or 'not specified'}). For each risk name the relevant DPDP Act provision. Be concrete — name the programme activity or data type at risk, not a generic statement.
 
 ## Priority Areas
 A table classifying each section:
@@ -710,7 +710,7 @@ Place each section name in the column matching its score: under 40% = Address No
 ## One Action This Week
 One sentence. Name a specific, concrete action the organisation can take in the next 7 days. Not generic advice — something achievable by a {doc.org_size} NGO.
 
-Rules: bullet points only, no prose paragraphs in risks section, penalties as "up to ₹X crore", refer to dpdpa.com for further reading, do not cite iSPIRT or SECO."""
+Rules: bullet points only, no prose paragraphs in risks section, do not cite specific penalty amounts, refer to dpdpa.com for further reading, do not cite iSPIRT or SECO."""
 
 
 def _build_gap_answers(answers_json):
@@ -809,10 +809,10 @@ Target length: 1,200–1,800 words. Be specific; be direct; be useful.
 4. If beneficiaries include anyone under 18, address Section 9 obligations in every relevant action.
 5. Where the organisation works across multiple sectors, name the specific data risk for each sector separately.
 6. Use realistic role titles for a {org_size} NGO.
-7. Every action must state: (a) WHY — cite DPDP section and penalty range. (b) HOW — concrete enough to start tomorrow.
+7. Every action must state: (a) WHY — cite the relevant DPDP section. (b) HOW — concrete enough to start tomorrow.
 8. Calibrate urgency to the score band.
 9. Prioritise the two lowest-scoring sections.
-10. Phrase all penalties as "up to ₹X crore" — never as fixed amounts.
+10. Do not cite specific penalty amounts anywhere in the roadmap.
 11. Refer users only to dpdpa.com for further reading. Do not reference iSPIRT or SECO.
  
 ━━━ FORMAT — use exactly these headings ━━━
@@ -822,7 +822,7 @@ Start with the two lowest-scoring sections. 4–5 items.
 
 **[Specific task name]**
 - **Who:** [Role appropriate for {org_size} NGO]
-- **Why this cannot wait:** [DPDP Act section + penalty + specific consequence for {beneficiaries}]
+- **Why this cannot wait:** [DPDP Act section + specific consequence for {beneficiaries}]
 - **How:** [3–4 sentences of practical guidance. Name tools, templates, or processes.]
 - **Covers multiple gaps:** [Only include when genuinely true]
 
@@ -879,7 +879,7 @@ def _fallback(section_scores, total_score):
 
 **Audit your consent forms**
 - Who: Programme Manager
-- Why: Invalid consent is a direct DPDP violation (Section 6). Penalties up to ₹250 crore apply.
+- Why: Invalid consent is a direct DPDP violation (Section 6).
 - How: Check every form for four elements: purpose, retention period, rights, contact details.
 
 **Create a basic data inventory**

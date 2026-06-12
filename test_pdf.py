@@ -41,7 +41,7 @@ doc = types.SimpleNamespace(
 Your score of 24/50 indicates Basic Readiness. Data Collection & Consent and Rights of Individuals are your two lowest-scoring sections and require immediate attention.
 
 ## Sector and Beneficiary Risks
-- **Children's data** under Section 9 requires verifiable guardian consent — penalty exposure up to ₹200 crore for violations
+- **Children's data** under Section 9 requires verifiable guardian consent before collection
 - **Health data** collected during programme delivery is sensitive personal data under Draft DPDP Rules — heightened protection required
 - **Rural beneficiaries** may lack awareness of their data rights — grievance mechanisms must be accessible in local languages
 
@@ -58,7 +58,7 @@ Appoint a named data protection contact and document their mandate in a one-page
 
 **Designate a data protection owner**
 - Who: Executive Director or Senior Programme Manager
-- Why: Section 8 accountability — up to ₹250 crore penalty for repeated violations
+- Why: Section 8 accountability for repeated violations
 - How: One-page terms of reference, share with board
 
 **Audit all consent forms used in field programmes**

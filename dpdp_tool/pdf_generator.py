@@ -76,6 +76,9 @@ h2.subsection { font-size: 10pt; font-weight: 700; color: #1D6FB8; margin: 6mm 0
 .op-pdf-table td { padding: 2.5px 6px; vertical-align: top; color: #fff; }
 .op-pdf-key { color: rgba(255,255,255,.5); font-weight: 500; white-space: nowrap; width: 22%; }
 
+/* ── PENALTY NOTICE ── */
+.penalty-notice { background: #FDF1EC; border-left: 3px solid #E8622A; padding: 3mm 4mm; margin-bottom: 5mm; font-size: 8.5pt; font-weight: 700; color: #1A2B4A; }
+
 /* ── AI CONTENT ── */
 .ai-content { font-size: 8.5pt; line-height: 1.65; }
 .ai-content p { margin-bottom: 3mm; }
@@ -391,6 +394,7 @@ def generate_assessment_pdf(doc, cfg):
 <!-- ══ 2. EXECUTIVE SUMMARY ══════════════════════════════════════ -->
 <div class="page-break">
 <h1 class="section">Executive Summary</h1>
+<div class="penalty-notice">Non-compliance with the DPDP Act can lead to penalties of up to ₹250 crore.</div>
 {summary_html if summary_html else '<p style="color:#4A5568">Summary not yet generated.</p>'}
 </div>
 
