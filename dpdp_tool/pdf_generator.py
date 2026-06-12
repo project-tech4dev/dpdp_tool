@@ -46,6 +46,11 @@ body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1A2B4A
 .cover-score-lbl { color: rgba(255,255,255,.4); font-size: 8pt; margin-top: 2px; }
 .cover-divider { border: none; border-top: 1px solid rgba(255,255,255,.15); margin: 0 0 5mm; }
 .cover-band { color: #fff; font-size: 12pt; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.band-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.band-green  { background: #16A34A; }
+.band-amber  { background: #D97706; }
+.band-orange { background: #E8622A; }
+.band-red    { background: #B91C1C; }
 .cover-date { color: rgba(255,255,255,.35); font-size: 8pt; margin-top: 4mm; }
 
 
@@ -389,7 +394,7 @@ def generate_assessment_pdf(doc, cfg):
         </div>
       </div>
       <hr class="cover-divider">
-      <div class="cover-band">{band_obj['emoji']} {band_obj['label']}</div>
+      <div class="cover-band"><span class="band-dot band-{band_obj['color']}"></span> {band_obj['label']}</div>
       <div class="cover-date">Assessed: {date_str}</div>
     </div>
   </div>
