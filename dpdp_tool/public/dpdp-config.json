@@ -10,7 +10,7 @@
     {
       "section": 0,
       "text": "Before collecting personal data, do you give individuals a clear notice covering: (a) what data is collected, (b) why it is needed, (c) their rights, and (d) who to contact?",
-      "why": "A valid Notice must cover all four elements. Consent given without a proper notice is not valid under the DPDP Act.",
+      "why": "A valid Notice must cover all four elements, and must be in a language the individual understands. Consent given without a proper notice is not valid under the DPDP Act. This also applies to any legacy data which was collected without consent before the enactment of the DPDP Act.",
       "options": [
         {"label": "Yes — notice covers all four elements", "points": 2},
         {"label": "Partially — notice is incomplete or unclear", "points": 1},
@@ -19,10 +19,10 @@
     },
     {
       "section": 0,
-      "text": "Do you have a separate and more stringent consent process for collecting data about children under 18 years of age?",
-      "why": "Children's data requires verifiable guardian consent, identification of minors, and stronger safeguards than adult data. If your programme does not work with under-18s, answer Yes.",
+      "text": "Do you have a separate and more stringent consent process for collecting data about children under 18 years of age or PWDs with legal guardians?",
+      "why": "Children's data requires verifiable guardian consent, identification of minors, and stronger safeguards than adult data, as does data for PWDs with legal guardians. If your programme does not work with under-18s or PWDs, answer Yes.",
       "options": [
-        {"label": "Yes — or we do not work with under-18s", "points": 2},
+        {"label": "Yes — or we do not work with under-18s or PWDs", "points": 2},
         {"label": "Partially — some safeguards exist but not fully in place", "points": 1},
         {"label": "No / Not Sure", "points": 0}
       ]
@@ -90,7 +90,7 @@
     {
       "section": 1,
       "text": "Do you have a defined retention schedule stating how long each type of data is kept and when it is deleted?",
-      "why": "Data must be deleted once the purpose is complete. Keeping data indefinitely 'just in case' is not permitted under the Act.",
+      "why": "PII data must be deleted or completely anonymised once the purpose is complete. Keeping data indefinitely 'just in case' is not permitted under the Act. This also applies to any legacy data which was collected before the enactment of the DPDP Act.",
       "options": [
         {"label": "Yes — a retention schedule exists and deletions are carried out", "points": 2},
         {"label": "Partially — some retention rules exist but are not consistently followed", "points": 1},
