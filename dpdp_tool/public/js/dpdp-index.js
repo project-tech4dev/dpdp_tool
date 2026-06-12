@@ -17,10 +17,10 @@ function getCsrfToken() {
 async function loadDB(){
   try{
     const r=await fetch(`${FU}/api/method/dpdp_tool.api.get_sector_insights`,{headers:{'Accept':'application/json'}});
-    const j=await r.json();const d=j.message||[];
+    const j=await r.json();const msg=j.message||{};const d=msg.sectors||[];
     document.getElementById('db-loading').remove();
     if(!d.length){showEmpty();return;}
-    const tot=d.reduce((s,x)=>s+(x.submission_count||0),0);
+    const tot=msg.total_submissions||0;
     document.getElementById('db-meta').innerHTML=`<strong>${tot}</strong> submissions across <strong>${d.length}</strong> sectors`;
     mkTabs(d);mkPanels(d);document.querySelector('.stab')?.click();
   }

@@ -88,6 +88,7 @@ DocTypes are defined in `fixtures/dpdp_assessment.json` and `fixtures/dpdp_consu
 | `pdf_emailed` | Check | Set after email sent |
 | `status` | Select | Submitted / Summary Ready / Roadmap Ready / Processed / Failed |
 | `submitted_on` | Datetime | Auto-set on insert |
+| `is_testing` | Check | Excludes the record from sector insights when checked |
 | `failed_reason` | Long Text | Error detail if AI calls fail |
 | `recommendations` | Long Text | Legacy single-call output (kept for backward compat) |
 

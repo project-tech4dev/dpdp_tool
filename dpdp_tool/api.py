@@ -577,7 +577,7 @@ def _send_report_email(doc, file_doc):
 
 
 # ─────────────────────────────────────────────────────────────────
-# METHOD 3 — get_sector_insights  (unchanged)
+# METHOD 3 — get_sector_insights
 # ─────────────────────────────────────────────────────────────────
 
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
@@ -589,6 +589,7 @@ def get_sector_insights():
             FROM `tabDPDP Assessment`
             WHERE status = 'Processed'
               AND sector IS NOT NULL AND sector != ''
+              AND is_testing = 0
         """, as_dict=True)
 
         KNOWN_SECTORS = [
@@ -622,11 +623,14 @@ def get_sector_insights():
                 "avg_governance":   avg("score_governance"),
             })
         results.sort(key=lambda x: x["submission_count"], reverse=True)
-        return results
+        return {
+            "sectors":          results,
+            "total_submissions": len(rows),
+        }
 
     except Exception as e:
         frappe.log_error(f"DPDP insights error: {e}", "DPDP API")
-        return []
+        return {"sectors": [], "total_submissions": 0}
 
 
 # ─────────────────────────────────────────────────────────────────
