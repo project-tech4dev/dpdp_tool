@@ -79,6 +79,10 @@ h2.subsection { font-size: 10pt; font-weight: 700; color: #1D6FB8; margin: 6mm 0
 /* ── PENALTY NOTICE ── */
 .penalty-notice { background: #FDF1EC; border-left: 3px solid #E8622A; padding: 3mm 4mm; margin-bottom: 5mm; font-size: 8.5pt; font-weight: 700; color: #1A2B4A; }
 
+/* ── DISCLAIMER ── */
+.disclaimer-text { font-size: 8.5pt; color: #1A2B4A; line-height: 1.65; }
+.disclaimer-text p { margin-bottom: 3mm; }
+
 /* ── AI CONTENT ── */
 .ai-content { font-size: 8.5pt; line-height: 1.65; }
 .ai-content p { margin-bottom: 3mm; }
@@ -471,7 +475,18 @@ def generate_assessment_pdf(doc, cfg):
   {'<div class="ref-note">' + r['note'] + '</div>' if r.get('note') else ''}
 </div>\n"""
 
-    html += '</div>\n</body>\n</html>'
+    # ══ DISCLAIMER ════════════════════════════════════════════════
+    html += """</div>
+
+<div class="page-break">
+<h1 class="section">Disclaimer</h1>
+<div class="disclaimer-text">
+<p>The self-assessment report is not a certification, endorsement, or verification of an organization's compliance with, or readiness for, the Digital Personal Data Protection Act, 2023 (DPDPA). It is intended solely as a self-evaluation tool and provides indicative, non-binding guidance on areas that may require further attention or improvement.</p>
+<p>The self-assessment report, the DPDP Navigator, and any related resources, guidance, recommendations, or advisory services provided by Project Tech4Dev, regarding DPDPA, are for informational and educational purposes only. They do not constitute legal advice, legal opinion, or professional legal services, and should not be relied upon as a substitute for consultation with qualified legal counsel. Users are encouraged to seek independent legal advice regarding their specific obligations, rights, and compliance requirements under applicable laws and regulations.</p>
+</div>
+</div>"""
+
+    html += '\n</body>\n</html>'
 
     # ── Render to PDF ──
     return HTML(
