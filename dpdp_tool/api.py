@@ -592,11 +592,7 @@ def get_sector_insights():
               AND is_testing = 0
         """, as_dict=True)
 
-        KNOWN_SECTORS = [
-            "Health & Nutrition", "Education", "Livelihoods",
-            "Gender & SRHR", "Environment", "Disability",
-            "Humanitarian", "Governance", "Other"
-        ]
+        KNOWN_SECTORS = _get_config().get("sectors", [])
 
         from collections import defaultdict
         buckets = defaultdict(list)
@@ -624,6 +620,23 @@ def get_sector_insights():
                 "avg_governance":    avg("score_governance"),
             })
         results.sort(key=lambda x: x["submission_count"], reverse=True)
+
+        if len(rows) >= 3:
+            def avg_all(field):
+                vals = [r[field] for r in rows if r.get(field) is not None]
+                return round(sum(vals) / len(vals), 1) if vals else 0
+            results.insert(0, {
+                "sector":            "All Sectors",
+                "submission_count":  len(rows),
+                "total_submissions": len(rows),
+                "avg_overall":       avg_all("total_score"),
+                "avg_consent":       avg_all("score_consent"),
+                "avg_storage":       avg_all("score_storage"),
+                "avg_usage":         avg_all("score_usage"),
+                "avg_rights":        avg_all("score_rights"),
+                "avg_governance":    avg_all("score_governance"),
+            })
+
         return results
 
     except Exception as e:

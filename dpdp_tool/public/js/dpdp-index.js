@@ -22,7 +22,8 @@ async function loadDB(){
     document.getElementById('db-loading').remove();
     if(!d.length){showEmpty();return;}
     const tot=d[0]?.total_submissions||0;
-    document.getElementById('db-meta').innerHTML=`<strong>${tot}</strong> organisations across <strong>${d.length}</strong> sectors`;
+    const sectorCount=d[0]?.sector==='All Sectors'?d.length-1:d.length;
+    document.getElementById('db-meta').innerHTML=`<strong>${tot}</strong> organisations across <strong>${sectorCount}</strong> sectors`;
     mkTabs(d);mkPanels(d);document.querySelector('.stab')?.click();
   }
   catch(e){
@@ -87,7 +88,23 @@ async function submitConsult(){
   document.getElementById('cf-success').style.display='block';
 }
 
+async function loadConsultSectors(){
+  try{
+    let cfg;
+    const cached=sessionStorage.getItem('dpdp_cfg_v1');
+    if(cached){cfg=JSON.parse(cached);}
+    else{
+      const r=await fetch('/assets/dpdp_tool/dpdp-config.json');
+      cfg=await r.json();
+      sessionStorage.setItem('dpdp_cfg_v1',JSON.stringify(cfg));
+    }
+    const el=document.getElementById('cf-sectors');
+    if(el&&cfg.sectors){el.innerHTML=cfg.sectors.map(s=>`<label class="sector-cb"><input type="checkbox" value="${s}"> ${s}</label>`).join('');}
+  }catch(e){console.error('[loadConsultSectors] failed:',e);}
+}
+
 loadDB();
+loadConsultSectors();
 
 // ── Mobile nav ────────────────────────────────────────────────────
 function toggleMenu(){

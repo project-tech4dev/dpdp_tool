@@ -480,6 +480,7 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 .sector-cb{display:flex;align-items:center;gap:7px;font-size:.85rem;color:var(--ink);cursor:pointer;padding:3px 0}
 .sector-cb input[type=checkbox]{width:15px;height:15px;accent-color:var(--blue);flex-shrink:0;cursor:pointer}
 .sector-cb:hover{color:var(--blue)}
+#cf-sectors .sector-cb{color:rgba(255,255,255,.72)}
 
 /* ═══════════════════════════════════════
    RESPONSIVE — ASSESS PAGE
