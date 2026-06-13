@@ -9,7 +9,7 @@ no_cache: 1
 <title>DPDP Readiness Navigator — Tech4Dev</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css?v=20260613b">
+<link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css?v=20260613c">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -184,27 +184,55 @@ no_cache: 1
 <!-- DASHBOARD -->
 <section id="dashboard">
   <div class="container">
+
     <div class="db-hdr">
       <div>
         <div class="eyelabel">Sector Insights</div>
         <h2 class="sh" style="margin-bottom:.5rem">How the sector is faring.</h2>
-        <p class="sub" style="margin-bottom:0">Aggregated from submitted assessments. Sectors shown once 3+ organisations have completed. </p>
-      </div>
-      <div class="db-meta" id="db-meta">Loading data…</div>
-    </div>
-    <div class="stabs" id="stabs"></div>
-    <div id="dpanels">
-      <div class="db-load" id="db-loading">
-        <div class="shimmer" style="height:280px"></div>
-        <div style="display:flex;flex-direction:column;gap:1rem">
-          <div class="shimmer" style="height:90px"></div>
-          <div class="shimmer" style="height:90px"></div>
-          <div class="shimmer" style="height:90px"></div>
-        </div>
+        <p class="sub" style="margin-bottom:0">Aggregated from submitted assessments. Sectors shown once 3+ organisations have completed.</p>
       </div>
     </div>
 
-    <!-- Scroll to action CTA -->
+    <!-- Loading shimmer — removed by JS once data arrives -->
+    <div id="db-loading">
+      <div class="db-shimmer-row">
+        <div class="shimmer" style="height:88px;border-radius:6px"></div>
+        <div class="shimmer" style="height:88px;border-radius:6px"></div>
+        <div class="shimmer" style="height:88px;border-radius:6px"></div>
+      </div>
+      <div class="db-shimmer-row" style="margin-top:.85rem">
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+      </div>
+      <div class="shimmer" style="height:320px;border-radius:6px;margin-top:.85rem"></div>
+    </div>
+
+    <!-- ROW 1: three aggregate stat cards -->
+    <div class="stat-row" id="stat-cards"></div>
+
+    <!-- ROW 2: five domain cards — fixed all-sectors aggregate -->
+    <div class="domain-row" id="domain-cards"></div>
+
+    <!-- Band legend — sits between domain cards and chart -->
+    <div class="db-legend">
+      <div class="db-legend-item"><div class="db-legend-pip pg"></div>Strong</div>
+      <div class="db-legend-item"><div class="db-legend-pip pa"></div>Developing</div>
+      <div class="db-legend-item"><div class="db-legend-pip pr"></div>Priority gap</div>
+    </div>
+
+    <!-- ROW 3: sector tabs + full-width chart -->
+    <div class="db-chart-panel" id="dpanels">
+      <div class="stabs" id="stabs"></div>
+      <div class="cbox-t" id="chart-title"></div>
+      <div class="db-chart-area">
+        <canvas id="ch-main"></canvas>
+      </div>
+    </div>
+
+    <!-- CTA -->
     <div class="insights-cta">
       <div class="insights-cta-text">
         <strong>See where your organisation stands.</strong><br>
@@ -272,6 +300,6 @@ no_cache: 1
   <div class="fnote">Data stored on Indian servers · · © 2026 Project Tech4Dev</div>
 </footer>
 
-<script src="/assets/dpdp_tool/js/dpdp-index.js?v=20260613b"></script>
+<script src="/assets/dpdp_tool/js/dpdp-index.js?v=20260613c"></script>
 </body>
 </html>

@@ -265,6 +265,11 @@
       {"min": 36, "label": "Moderate Readiness",         "color": "amber",  "emoji": "🟠"},
       {"min": 21, "label": "Basic Readiness — Needs Work","color": "orange", "emoji": "🟡"},
       {"min": 0,  "label": "High Risk — Not Ready",      "color": "red",    "emoji": "🔴"}
+    ],
+    "section_bands": [
+      {"min_pct": 70, "label": "Strong",       "color": "green"},
+      {"min_pct": 40, "label": "Developing",   "color": "amber"},
+      {"min_pct": 0,  "label": "Priority gap", "color": "red"}
     ]
   },
   "glossary": [

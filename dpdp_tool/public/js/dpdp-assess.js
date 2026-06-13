@@ -325,6 +325,15 @@ function getBand(total) {
   return bands.find(b => total >= b.min) || bands[bands.length - 1];
 }
 
+function getSectionBand(pct) {
+  const bands = CFG?.scoring?.section_bands || [
+    {min_pct: 70, label: 'Strong',       color: 'green'},
+    {min_pct: 40, label: 'Developing',   color: 'amber'},
+    {min_pct: 0,  label: 'Priority gap', color: 'red'}
+  ];
+  return bands.find(b => pct >= b.min_pct) || bands[bands.length - 1];
+}
+
 // ── SUBMIT ───────────────────────────────────────────────────────────
 async function submitAssessment() {
   const { secScores, total } = calcScores();
@@ -362,16 +371,8 @@ function setResultHero(total) {
     `${org.org} · ${Array.isArray(org.sector) ? org.sector.join(', ') : org.sector} · ${org.size}`;
   animateScore('rh-score', total);
   const bandEl = document.getElementById('rh-band');
-  const styles = {
-    green:  ['rgba(22,163,74,.22)',  'rgba(255,255,255,.92)'],
-    amber:  ['rgba(217,119,6,.22)',  'rgba(255,255,255,.92)'],
-    orange: ['rgba(217,119,6,.22)', 'rgba(255,255,255,.92)'],
-    red:    ['rgba(185,28,28,.22)',  'rgba(255,255,255,.92)']
-  };
-  const [bg, fg] = styles[band.color] || styles.red;
   bandEl.textContent = `${band.emoji} ${band.label}`;
-  bandEl.style.background = bg;
-  bandEl.style.color = fg;
+  bandEl.className = 'rh-band band-' + (band.color || 'red');
 }
 
 function animateScore(id, target) {
@@ -392,8 +393,9 @@ function renderSGrid(secScores) {
     const raw = secScores[i] !== null ? secScores[i] : 0;
     const maxSec = SEC_COUNTS[i] * 2;
     const pct = Math.round((raw / maxSec) * 100);
-    const band = pct >= 70 ? 'high' : pct >= 40 ? 'mid' : 'low';
-    const lbl  = pct >= 70 ? 'Strong' : pct >= 40 ? 'Developing' : 'Priority gap';
+    const sb   = getSectionBand(pct);
+    const band = sb.color === 'green' ? 'high' : sb.color === 'amber' ? 'mid' : 'low';
+    const lbl  = sb.label;
     return `<div class="scard ${band}" style="animation-delay:${i * .07}s">
       <div class="sc-name">Section ${i + 1} · ${sec.label}</div>
       <div class="sc-pct ${band}">${raw}/${maxSec}</div>
@@ -771,7 +773,9 @@ function generatePDFFallback() {
     chk(22);
     const raw = secScores[i] || 0; const max = SEC_COUNTS[i] * 2;
     const pct = Math.round((raw / max) * 100);
-    const col = pct >= 70 ? [29,111,184] : pct >= 40 ? [146,64,14] : [185,28,28];
+    /* jsPDF draws to a non-DOM canvas so CSS variables are unavailable here.
+       These RGB values must match --score-high/mid/low in dpdp.css. */
+    const col = (() => { const sb = getSectionBand(pct); return sb.color === 'green' ? [29,111,184] : sb.color === 'amber' ? [146,64,14] : [185,28,28]; })();
     doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(26,43,74);
     doc.text(`Section ${i + 1}: ${sec.label}`, M, y);
     doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(74,85,104);
