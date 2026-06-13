@@ -22,7 +22,7 @@ async function loadDB(){
     document.getElementById('db-loading').remove();
     if(!d.length){showEmpty();return;}
     const tot=d[0]?.total_submissions||0;
-    document.getElementById('db-meta').innerHTML=`<strong>${tot}</strong> submissions across <strong>${d.length}</strong> sectors`;
+    document.getElementById('db-meta').innerHTML=`<strong>${tot}</strong> organisations across <strong>${d.length}</strong> sectors`;
     mkTabs(d);mkPanels(d);document.querySelector('.stab')?.click();
   }
   catch(e){
