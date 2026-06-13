@@ -122,7 +122,7 @@ function mkDomainCards(agg){
     const fillCls=sb.color==='green'?'bg-high':sb.color==='amber'?'bg-mid':'bg-low';
     const scoreCls=sb.color==='green'?'score-high':sb.color==='amber'?'score-mid':'score-low';
     return `<div class="domain-card">
-      <div class="domain-card-label">${DS[i]}</div>
+      <div class="domain-card-label">${DL[i]}</div>
       <div class="domain-card-score ${scoreCls}">${raw}<span class="domain-card-denom">/10</span></div>
       <div class="domain-card-bar"><div class="domain-card-fill ${fillCls}" style="width:${pct}%"></div></div>
       <div class="pip-row"><div class="pip ${fillCls}"></div><div class="pip-label">${sb.label}</div></div>
