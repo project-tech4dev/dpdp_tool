@@ -156,16 +156,17 @@ function mkChart(s){
   if(_chart){
     _chart.data.datasets[0].data=sc;
     _chart.data.datasets[0].backgroundColor=colors;
+    _chart.data.datasets[0].rawData=rawVals;
     _chart.update('active');
     return;
   }
   _chart=new Chart(ctx,{
     type:'bar',
-    data:{labels:DS,datasets:[{data:sc,backgroundColor:colors,borderRadius:4,borderSkipped:false,barPercentage:.55}]},
+    data:{labels:DS,datasets:[{data:sc,rawData:rawVals,backgroundColor:colors,borderRadius:4,borderSkipped:false,barPercentage:.55}]},
     options:{
       responsive:true,maintainAspectRatio:false,
       animation:{duration:300},
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:v=>` ${v.raw}/10`}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.dataset.rawData[c.dataIndex].toFixed(1)}/10`}}},
       scales:{
         y:{min:0,max:10,ticks:{stepSize:2,callback:v=>v+'/10',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'},border:{display:false}},
         x:{ticks:{font:{size:11}},grid:{display:false},border:{display:false}}
