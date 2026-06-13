@@ -1,5 +1,5 @@
 {
-  "asset_version": "20260613e",
+  "asset_version": "20260613f",
   "sections": [
     {"id": "consent",    "label": "Data Collection & Consent"},
     {"id": "storage",    "label": "Data Storage & Security"},
@@ -268,8 +268,8 @@
       {"min": 0,  "label": "High Risk — Not Ready",      "color": "red",    "emoji": "🔴"}
     ],
     "section_bands": [
-      {"min_pct": 71, "label": "Strong",       "color": "green"},
-      {"min_pct": 41, "label": "Developing",   "color": "amber"},
+      {"min_pct": 70, "label": "Strong",       "color": "green"},
+      {"min_pct": 40, "label": "Developing",   "color": "amber"},
       {"min_pct": 0,  "label": "Priority gap", "color": "red"}
     ]
   },

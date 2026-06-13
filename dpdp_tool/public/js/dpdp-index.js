@@ -115,9 +115,9 @@ function mkDomainCards(agg){
   const el=document.getElementById('domain-cards');
   if(!el)return;
   el.innerHTML=DK.map((k,i)=>{
-    const raw=Math.round(agg?.[k]||0);
-    const maxRaw=10;
-    const pct=Math.round((raw/maxRaw)*100);
+    const rawVal=agg?.[k]||0;
+    const raw=Math.round(rawVal);
+    const pct=Math.round((rawVal/10)*100);
     const sb=getSectionBand(pct);
     const fillCls=sb.color==='green'?'bg-high':sb.color==='amber'?'bg-mid':'bg-low';
     const scoreCls=sb.color==='green'?'score-high':sb.color==='amber'?'score-mid':'score-low';
@@ -147,8 +147,9 @@ function mkTabs(sectors){
 }
 
 function mkChart(s){
-  const sc=DK.map(k=>Math.round(s[k]||0));
-  const colors=sc.map(v=>bandColor(Math.round((v/10)*100)));
+  const rawVals=DK.map(k=>s[k]||0);
+  const sc=rawVals.map(v=>Math.round(v));
+  const colors=rawVals.map(v=>bandColor(Math.round((v/10)*100)));
   const titleEl=document.getElementById('chart-title');
   if(titleEl)titleEl.textContent='Domain scores — '+s.sector;
   const ctx=document.getElementById('ch-main');if(!ctx)return;

@@ -198,7 +198,7 @@ h2.sh{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:300;line-height:1.2;margin-
 /* ROW 2 — five domain cards */
 .domain-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:.85rem}
 .domain-card{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:1rem;display:flex;flex-direction:column;gap:5px}
-.domain-card-label{font-family:"Outfit",sans-serif;font-size:.68rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;line-height:1.35}
+.domain-card-label{font-family:"Outfit",sans-serif;font-size:.68rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;line-height:1.35;min-height:2.7em}
 .domain-card-score{font-size:1.55rem;font-weight:300;color:var(--navy);line-height:1}
 .domain-card-denom{font-size:.80rem;color:var(--muted);font-weight:400}
 .domain-card-bar{height:4px;border-radius:2px;background:var(--navy-lt);margin-top:.5rem;overflow:hidden}
