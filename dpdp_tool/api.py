@@ -613,24 +613,22 @@ def get_sector_insights():
                 vals = [e[field] for e in entries if e.get(field) is not None]
                 return round(sum(vals) / len(vals), 1) if vals else 0
             results.append({
-                "sector":           sector,
-                "submission_count": len(entries),
-                "avg_overall":      avg("total_score"),
-                "avg_consent":      avg("score_consent"),
-                "avg_storage":      avg("score_storage"),
-                "avg_usage":        avg("score_usage"),
-                "avg_rights":       avg("score_rights"),
-                "avg_governance":   avg("score_governance"),
+                "sector":            sector,
+                "submission_count":  len(entries),
+                "total_submissions": len(rows),
+                "avg_overall":       avg("total_score"),
+                "avg_consent":       avg("score_consent"),
+                "avg_storage":       avg("score_storage"),
+                "avg_usage":         avg("score_usage"),
+                "avg_rights":        avg("score_rights"),
+                "avg_governance":    avg("score_governance"),
             })
         results.sort(key=lambda x: x["submission_count"], reverse=True)
-        return {
-            "sectors":          results,
-            "total_submissions": len(rows),
-        }
+        return results
 
     except Exception as e:
         frappe.log_error(f"DPDP insights error: {e}", "DPDP API")
-        return {"sectors": [], "total_submissions": 0}
+        return []
 
 
 # ─────────────────────────────────────────────────────────────────
