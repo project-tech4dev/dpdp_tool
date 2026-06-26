@@ -697,7 +697,6 @@ def _build_summary_prompt(doc, section_scores):
 
     return f"""You are a senior DPDP Act 2023 compliance advisor for Indian NGOs.
 
-Organisation: {doc.org_name}
 Sector: {doc.sector}
 Size: {doc.org_size}
 Beneficiaries: {doc.beneficiaries or 'Not specified'}

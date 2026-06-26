@@ -35,7 +35,7 @@ async function loadConfig() {
     sessionStorage.setItem('dpdp_cfg_v1', JSON.stringify(cfg));
     applyConfig(cfg);
   } catch(e) {
-    console.error('[loadConfig] failed:', e);
+    console.warn('[dpdp] config load failed');
     document.querySelector('.btn-start').textContent = 'Error loading config — please refresh';
   }
 }
@@ -548,7 +548,7 @@ function buildAnswerSummary() {
 
 async function storeInFrappe(secScores, total) {
   // Field names match existing DPDP Assessment DocType exactly.
-  console.log('[storeInFrappe] called, FRAPPE_URL:', FRAPPE_URL || '(relative)');
+  console.log('[dpdp] storing assessment');
   try {
     const body = {
       org_name:         org.org,
@@ -565,27 +565,24 @@ async function storeInFrappe(secScores, total) {
       score_governance: secScores[4] || 0,
       answers_json:     buildAnswerSummary(),
     };
-    console.log('[storeInFrappe] posting to:', `${FRAPPE_URL}/api/method/dpdp_tool.api.store_assessment`);
     const res = await fetch(`${FRAPPE_URL}/api/method/dpdp_tool.api.store_assessment`, {
       method: 'POST',
       headers: { 'X-Frappe-CSRF-Token': 'fetch' },
       body: new URLSearchParams(body)
     });
-    console.log('[storeInFrappe] response status:', res.status, res.statusText);
     if (!res.ok) {
-      const text = await res.text();
-      console.error('[storeInFrappe] non-OK response body:', text.slice(0, 300));
+      console.warn('[dpdp] store failed:', res.status);
       return null;
     }
     const j = await res.json();
-    console.log('[storeInFrappe] response json:', j);
     if (j.message?.status === 'error') {
-      console.error('[storeInFrappe] API error:', j.message);
+      console.warn('[dpdp] store API error');
       return null;
     }
+    console.log('[dpdp] store complete');
     return j.message?.docname || null;
   } catch(e) {
-    console.error('[storeInFrappe] exception:', e);
+    console.warn('[dpdp] store exception');
     return null;
   }
 }
@@ -604,11 +601,13 @@ async function fetchSummary(secScores, total) {
 
   try {
     if (!_docname) throw new Error('no docname');
+    console.log('[dpdp] polling summary');
     // Poll for summary from Frappe (background job started by storeInFrappe)
     await pollForField('summary-content', 'executive_summary', _docname, t, renderSummary);
+    console.log('[dpdp] summary ready');
   } catch(e) {
     clearInterval(t);
-    console.error('[fetchSummary]', e);
+    console.warn('[dpdp] summary failed');
     document.getElementById('summary-content').innerHTML =
       `<p style="color:var(--muted);padding:1rem 0">Summary generation failed — please retake the assessment.</p>`;
   }
@@ -618,10 +617,12 @@ async function fetchSummary(secScores, total) {
 async function fetchRoadmap(secScores, total) {
   try {
     if (!_docname) throw new Error('no docname');
+    console.log('[dpdp] polling roadmap');
     await pollForField('roadmap-accordions', 'action_roadmap', _docname, null, renderRoadmap);
+    console.log('[dpdp] roadmap ready');
     saveSession();
   } catch(e) {
-    console.error('[fetchRoadmap]', e);
+    console.warn('[dpdp] roadmap failed');
     document.getElementById('roadmap-pending')?.remove();
     document.getElementById('roadmap-accordions').innerHTML =
       `<p style="color:var(--muted);padding:1rem 0">Roadmap generation failed. Check your email — we may have emailed it already.</p>`;
@@ -646,9 +647,7 @@ async function pollForField(contentId, field, docname, intervalTimer, renderFn) 
         return;
       }
       if (st?.status === 'failed') throw new Error(st.failed_reason || 'processing failed');
-    } catch(e) {
-      console.warn(`[pollForField:${field}] poll ${i + 1}:`, e.message);
-    }
+    } catch(e) { console.warn('[dpdp] poll retry'); }
   }
   throw new Error('Poll timeout');
 }
@@ -713,7 +712,7 @@ async function pollForPDF() {
         saveSession();
         return;
       }
-    } catch(e) { console.warn('[pollForPDF] poll', i + 1, e.message); }
+    } catch(e) { console.warn('[dpdp] pdf poll retry'); }
   }
   // Fallback to client-side jsPDF
   const btn = document.getElementById('btn-pdf');
