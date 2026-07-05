@@ -5,9 +5,6 @@ no_cache: 1
 
 {% block title %}DPDP Readiness Navigator — Tech4Dev{% endblock %}
 
-{% block head_extra %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-{% endblock %}
 
 {% block content %}
 
@@ -21,7 +18,7 @@ no_cache: 1
       <div class="hero-btns">
         <a href="/assess" class="btn-o">Begin Self-Assessment →</a>
         <a href="#why" class="btn-g">Why this matters ↓</a>
-        <a href="#dashboard" class="btn-g">Sector Insights ↓</a>
+        <a href="/sector-insights" class="btn-g">Sector Insights ↓</a>
       </div>
     </div>
     <div>
@@ -143,65 +140,6 @@ no_cache: 1
       <div class="dcard"><div class="dn">SECTION 05</div><div class="dt">Governance &amp; Processes</div><div class="dd">Designated responsibility, written privacy policy, staff training, breach response plan, and periodic review.</div><div class="dc">5 questions · 10 pts</div></div>
       <div class="dcard" style="border-top-color:var(--orange)"><div class="dn">SCORING</div><div class="dt">Readiness Bands</div><div class="dd">0–20 · High Risk &nbsp; 21–35 · Basic &nbsp; 36–45 · Moderate &nbsp; 46–50 · Strong</div><div class="dc" style="color:var(--orange)">Max score: 50</div></div>
     </div>
-  </div>
-</section>
-
-<!-- DASHBOARD -->
-<section id="dashboard">
-  <div class="container">
-
-    <div class="db-hdr">
-      <div>
-        <div class="eyelabel">Sector Insights</div>
-        <h2 class="sh" style="margin-bottom:.5rem">How the sector is faring.</h2>
-        <p class="sub" style="margin-bottom:0">Aggregated from submitted assessments. Sectors shown once 3+ organisations have completed.</p>
-      </div>
-    </div>
-
-    <div id="db-loading">
-      <div class="db-shimmer-row">
-        <div class="shimmer" style="height:88px;border-radius:6px"></div>
-        <div class="shimmer" style="height:88px;border-radius:6px"></div>
-        <div class="shimmer" style="height:88px;border-radius:6px"></div>
-      </div>
-      <div class="db-shimmer-row" style="margin-top:.85rem">
-        <div class="shimmer" style="height:96px;border-radius:6px"></div>
-        <div class="shimmer" style="height:96px;border-radius:6px"></div>
-        <div class="shimmer" style="height:96px;border-radius:6px"></div>
-        <div class="shimmer" style="height:96px;border-radius:6px"></div>
-        <div class="shimmer" style="height:96px;border-radius:6px"></div>
-      </div>
-      <div class="shimmer" style="height:320px;border-radius:6px;margin-top:.85rem"></div>
-    </div>
-
-    <div class="stat-row" id="stat-cards"></div>
-    <div class="domain-row" id="domain-cards"></div>
-
-    <div class="db-legend">
-      <div class="db-legend-item"><div class="db-legend-pip pg"></div>Strong</div>
-      <div class="db-legend-item"><div class="db-legend-pip pa"></div>Developing</div>
-      <div class="db-legend-item"><div class="db-legend-pip pr"></div>Priority gap</div>
-    </div>
-
-    <div class="db-chart-panel" id="dpanels">
-      <div class="stabs" id="stabs"></div>
-      <div class="cbox-t" id="chart-title"></div>
-      <div class="db-chart-area">
-        <canvas id="ch-main"></canvas>
-      </div>
-    </div>
-
-    <div class="insights-cta">
-      <div class="insights-cta-text">
-        <strong>See where your organisation stands.</strong><br>
-        Complete the self-assessment to add your data to these sector benchmarks — and get your personalised compliance roadmap.
-      </div>
-      <div class="insights-cta-btns">
-        <a href="/assess" class="icta-btn-o">Begin Self-Assessment →</a>
-        <a href="#consult-s" class="icta-btn-g">Talk to an Advisor</a>
-      </div>
-    </div>
-
   </div>
 </section>
 

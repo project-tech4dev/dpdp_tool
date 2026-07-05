@@ -1,0 +1,74 @@
+---
+no_cache: 1
+---
+{% extends "templates/dpdp_base.html" %}
+
+{% block title %}Sector Insights — DPDP Readiness Navigator{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<section id="dashboard">
+  <div class="container">
+
+    <div class="db-hdr">
+      <div>
+        <div class="eyelabel">Sector Insights</div>
+        <h2 class="sh" style="margin-bottom:.5rem">How the sector is faring.</h2>
+        <p class="sub" style="margin-bottom:0">Aggregated from submitted assessments. Sectors shown once 3+ organisations have completed.</p>
+      </div>
+    </div>
+
+    <div id="db-loading">
+      <div class="db-shimmer-row">
+        <div class="shimmer" style="height:88px;border-radius:6px"></div>
+        <div class="shimmer" style="height:88px;border-radius:6px"></div>
+        <div class="shimmer" style="height:88px;border-radius:6px"></div>
+      </div>
+      <div class="db-shimmer-row" style="margin-top:.85rem">
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+        <div class="shimmer" style="height:96px;border-radius:6px"></div>
+      </div>
+      <div class="shimmer" style="height:320px;border-radius:6px;margin-top:.85rem"></div>
+    </div>
+
+    <div class="stat-row" id="stat-cards"></div>
+    <div class="domain-row" id="domain-cards"></div>
+
+    <div class="db-legend">
+      <div class="db-legend-item"><div class="db-legend-pip pg"></div>Strong</div>
+      <div class="db-legend-item"><div class="db-legend-pip pa"></div>Developing</div>
+      <div class="db-legend-item"><div class="db-legend-pip pr"></div>Priority gap</div>
+    </div>
+
+    <div class="db-chart-panel" id="dpanels">
+      <div class="stabs" id="stabs"></div>
+      <div class="cbox-t" id="chart-title"></div>
+      <div class="db-chart-area">
+        <canvas id="ch-main"></canvas>
+      </div>
+    </div>
+
+    <div class="insights-cta">
+      <div class="insights-cta-text">
+        <strong>See where your organisation stands.</strong><br>
+        Complete the self-assessment to add your data to these sector benchmarks — and get your personalised compliance roadmap.
+      </div>
+      <div class="insights-cta-btns">
+        <a href="/assess" class="icta-btn-o">Begin Self-Assessment →</a>
+        <a href="/#consult-s" class="icta-btn-g">Talk to an Advisor</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/assets/dpdp_tool/js/dpdp-index.js?v={{ asset_v }}"></script>
+{% endblock %}
