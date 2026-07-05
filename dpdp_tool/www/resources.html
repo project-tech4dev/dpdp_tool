@@ -6,10 +6,113 @@ no_cache: 1
 {% block title %}Resources — DPDP Readiness Navigator{% endblock %}
 
 {% block content %}
-<div style="max-width:780px;margin:6rem auto;padding:0 2rem 8rem;text-align:center">
-  <div class="hero-tag" style="display:inline-flex;margin-bottom:2rem"><span class="edot"></span>Coming Soon</div>
-  <h1 style="font-size:2.2rem;font-weight:300;color:var(--ink);line-height:1.2;margin-bottom:1rem">DPDP Resources for NGOs</h1>
-  <p style="color:var(--muted);font-size:1rem;line-height:1.8;max-width:520px;margin:0 auto 2.5rem">Guides, templates, and reference material to help social sector organisations understand and implement the Digital Personal Data Protection Act 2023. Check back soon.</p>
-  <a href="/" class="btn-o" style="display:inline-flex">← Back to overview</a>
+
+<!-- HERO -->
+<div class="res-hero">
+  <div class="container">
+    <div class="eyelabel">Resources</div>
+    <h1 class="res-hero-h">Practical guides for<br><em>NGOs getting compliant.</em></h1>
+    <p class="res-hero-sub">Step-by-step how-tos, templates, and checklists — built for civil society organisations navigating the DPDP Act 2023. No legal jargon.</p>
+  </div>
 </div>
+
+<!-- MAIN -->
+<div class="res-wrap">
+  <div class="container res-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="res-sidebar">
+      <div class="res-sb-section">
+        <div class="res-sb-label">By domain</div>
+        <a class="res-sb-link active" data-domain="" onclick="sidebarFilter(this,'domain')">
+          <span class="res-sb-icon">⊞</span>All resources
+          <span class="res-sb-count" id="sb-count-all">—</span>
+        </a>
+        <a class="res-sb-link" data-domain="Consent" onclick="sidebarFilter(this,'domain')">
+          <span class="res-sb-icon">☑</span>Consent
+          <span class="res-sb-count" id="sb-count-consent">—</span>
+        </a>
+        <a class="res-sb-link" data-domain="Storage" onclick="sidebarFilter(this,'domain')">
+          <span class="res-sb-icon">🗄</span>Storage &amp; Security
+          <span class="res-sb-count" id="sb-count-storage">—</span>
+        </a>
+        <a class="res-sb-link" data-domain="Usage" onclick="sidebarFilter(this,'domain')">
+          <span class="res-sb-icon">⇄</span>Usage &amp; Sharing
+          <span class="res-sb-count" id="sb-count-usage">—</span>
+        </a>
+        <a class="res-sb-link" data-domain="Rights" onclick="sidebarFilter(this,'domain')">
+          <span class="res-sb-icon">✓</span>Rights
+          <span class="res-sb-count" id="sb-count-rights">—</span>
+        </a>
+        <a class="res-sb-link" data-domain="Governance" onclick="sidebarFilter(this,'domain')">
+          <span class="res-sb-icon">⊙</span>Governance
+          <span class="res-sb-count" id="sb-count-governance">—</span>
+        </a>
+      </div>
+
+      <div class="res-sb-section">
+        <div class="res-sb-label">By type</div>
+        <a class="res-sb-link" data-type="Guide" onclick="sidebarFilter(this,'type')">
+          <span class="res-sb-icon">📄</span>How-to guides
+        </a>
+        <a class="res-sb-link" data-type="Template" onclick="sidebarFilter(this,'type')">
+          <span class="res-sb-icon">📋</span>Templates
+        </a>
+        <a class="res-sb-link" data-type="Checklist" onclick="sidebarFilter(this,'type')">
+          <span class="res-sb-icon">✅</span>Checklists
+        </a>
+        <a class="res-sb-link" data-type="Video" onclick="sidebarFilter(this,'type')">
+          <span class="res-sb-icon">▶</span>Videos
+        </a>
+      </div>
+
+      <div class="res-sb-nudge">
+        <div class="res-sb-nudge-t">Not sure which apply to you?</div>
+        <div class="res-sb-nudge-d">Your assessment report tells you exactly which domains need attention.</div>
+        <a href="/assess" class="res-sb-nudge-a">Take the assessment →</a>
+      </div>
+    </aside>
+
+    <!-- RESOURCE GRID -->
+    <main class="res-content">
+
+      <div id="res-loading">
+        <div class="res-shimmer-featured shimmer"></div>
+        <div class="res-shimmer-grid">
+          <div class="res-shimmer-card shimmer"></div>
+          <div class="res-shimmer-card shimmer"></div>
+          <div class="res-shimmer-card shimmer"></div>
+          <div class="res-shimmer-card shimmer"></div>
+        </div>
+      </div>
+
+      <div id="res-empty">
+        <div class="res-empty">
+          <div class="res-empty-icon">📂</div>
+          <div class="res-empty-t">No resources match your filters</div>
+          <div class="res-empty-d">Try clearing your filters or check back soon — we add new guides regularly.</div>
+          <button class="res-empty-reset" onclick="resetFilters()">Clear filters</button>
+        </div>
+      </div>
+
+      <div id="res-grid"></div>
+
+    </main>
+  </div>
+</div>
+
+<!-- CTA BAND -->
+<section class="res-cta-band">
+  <div class="container">
+    <div class="eyelabel">Self-Assessment</div>
+    <h2 class="sh">Not sure where your gaps are?</h2>
+    <p>Take the free 15-minute assessment — your personalised gap report tells you exactly which of these resources apply to your organisation.</p>
+    <a href="/assess" class="btn-o">Begin Self-Assessment →</a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/assets/dpdp_tool/js/dpdp-resources.js?v={{ asset_v }}"></script>
 {% endblock %}

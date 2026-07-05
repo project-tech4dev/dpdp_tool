@@ -679,6 +679,26 @@ def submit_consult_request(org_name, contact_name, email,
 
 
 # ─────────────────────────────────────────────────────────────────
+# METHOD 5 — get_resources
+# ─────────────────────────────────────────────────────────────────
+
+@frappe.whitelist(allow_guest=True, methods=["GET"])
+def get_resources():
+    """Return all published DPDP Resource records for the resources page."""
+    try:
+        return frappe.get_all(
+            "DPDP Resource",
+            filters={"published": 1},
+            fields=["name", "title", "summary", "resource_type", "domain",
+                    "read_time", "featured", "coming_soon", "external_url"],
+            order_by="featured desc, creation asc"
+        )
+    except Exception as e:
+        frappe.log_error(f"DPDP get_resources error: {e}", "DPDP API")
+        return []
+
+
+# ─────────────────────────────────────────────────────────────────
 # PROMPTS
 # ─────────────────────────────────────────────────────────────────
 

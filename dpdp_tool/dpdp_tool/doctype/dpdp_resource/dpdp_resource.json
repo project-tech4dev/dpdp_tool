@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "format:RES-{###}",
+ "creation": "2026-07-05 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "summary",
+  "column_break_metadata",
+  "resource_type",
+  "domain",
+  "section_break_details",
+  "read_time",
+  "external_url",
+  "column_break_flags",
+  "featured",
+  "coming_soon",
+  "published"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "summary",
+   "fieldtype": "Text",
+   "label": "Summary",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_metadata",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "resource_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Resource Type",
+   "options": "Guide\nTemplate\nChecklist\nVideo",
+   "reqd": 1
+  },
+  {
+   "fieldname": "domain",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Domain",
+   "options": "Consent\nStorage\nUsage\nRights\nGovernance",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_details",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "read_time",
+   "fieldtype": "Int",
+   "label": "Read Time (minutes)"
+  },
+  {
+   "fieldname": "external_url",
+   "fieldtype": "Data",
+   "label": "External URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "column_break_flags",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "Renders as a full-width Start here card at the top of the grid",
+   "fieldname": "featured",
+   "fieldtype": "Check",
+   "label": "Featured"
+  },
+  {
+   "default": "0",
+   "description": "Renders as a dashed placeholder — no CTA link shown",
+   "fieldname": "coming_soon",
+   "fieldtype": "Check",
+   "label": "Coming Soon"
+  },
+  {
+   "default": "1",
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Published"
+  }
+ ],
+ "links": [],
+ "modified": "2026-07-05 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "DPDP Tool",
+ "name": "DPDP Resource",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Guest"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}
