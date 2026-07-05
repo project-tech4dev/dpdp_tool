@@ -28,6 +28,8 @@ nav :focus-visible,.hero :focus-visible,.assess-hero :focus-visible,.cform :focu
   --orange-dk:#CC5225;   /* orange hover */
   --peach:#F8A87A;       /* warm accent on dark */
   --navy-dk:#0F1F38;     /* deep navy for gradients */
+  --white-secondary:rgba(255,255,255,.55); /* footer text, labels on dark */
+  --white-dim:rgba(255,255,255,.35);       /* quieter text on dark backgrounds */
 }
 
 html{scroll-behavior:smooth}
@@ -276,11 +278,11 @@ input,select,textarea{font-family:"Public Sans",sans-serif}
 footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
 .flogo{display:flex;align-items:center;gap:12px}
 .flogo img{height:24px;filter:brightness(0) invert(1);opacity:.7}
-.flogo span{font-size:.80rem;color:rgba(255,255,255,.4)}
+.flogo span{font-size:.80rem;color:var(--white-secondary)}
 .flinks{display:flex;gap:1.5rem;flex-wrap:wrap}
-.flinks a{font-size:.80rem;color:rgba(255,255,255,.36);text-decoration:none;transition:color .2s}
-.flinks a:hover{color:rgba(255,255,255,.7)}
-.fnote{font-size:.80rem;color:rgba(255,255,255,.2)}
+.flinks a{font-size:.80rem;color:var(--white-dim);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--white-secondary)}
+.fnote{font-size:.80rem;color:var(--white-dim)}
 
 /* ═══════════════════════════════════════
    RESPONSIVE — MAIN SITE
