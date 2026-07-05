@@ -60,6 +60,15 @@ nav{
 .nav-back{color:rgba(255,255,255,.55);font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
 .nav-back:hover{color:#fff}
 
+/* Nav dropdown (About menu) */
+.nav-dropdown{position:relative;display:inline-flex;align-items:center}
+.nav-dropdown-trigger{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.58);font-size:.85rem;font-family:inherit;display:inline-flex;align-items:center;gap:5px;padding:0 .85rem;height:64px;transition:color .2s;white-space:nowrap}
+.nav-dropdown-trigger:hover,.nav-dropdown:hover .nav-dropdown-trigger{color:#fff}
+.nav-dropdown-menu{display:none;position:absolute;top:100%;left:0;min-width:180px;background:var(--navy-mid);border:1px solid rgba(255,255,255,.1);border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:.4rem 0;z-index:400}
+.nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
+.nav-dropdown-menu a{display:block;padding:.65rem 1.1rem;font-size:.85rem;color:var(--white-secondary);text-decoration:none;transition:background .15s,color .15s;white-space:nowrap;border-bottom:none!important}
+.nav-dropdown-menu a:hover{background:rgba(255,255,255,.08);color:#fff}
+
 /* Hamburger */
 .nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0}
 .nav-hamburger span{display:block;height:2px;border-radius:2px;background:rgba(255,255,255,.75);transition:all .25s}
@@ -73,6 +82,7 @@ nav{
 .nav-drawer a{color:rgba(255,255,255,.72);font-size:.90rem;text-decoration:none;padding:.85rem 1.75rem;border-bottom:1px solid rgba(255,255,255,.05);display:block;transition:background .15s}
 .nav-drawer a:hover{background:rgba(255,255,255,.06);color:#fff}
 .nav-drawer a:last-of-type{border-bottom:none}
+.nav-drawer .drawer-sub{padding-left:2.75rem;color:rgba(255,255,255,.55);font-size:.85rem}
 .nav-drawer .drawer-ctas{display:flex;flex-direction:column;gap:.6rem;padding:1rem 1.75rem 0}
 .nav-drawer .drawer-btn-assess{background:rgba(255,255,255,.1);color:#fff;text-align:center;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:.7rem 1rem;font-size:.90rem;text-decoration:none;transition:all .2s}
 .nav-drawer .drawer-btn-assess:hover{background:rgba(255,255,255,.18)}
