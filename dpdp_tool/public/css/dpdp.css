@@ -675,11 +675,11 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 ═══════════════════════════════════════ */
 
 /* Hero */
-.res-hero{background:var(--navy);padding:3.5rem 3rem 3rem}
+.res-hero{background:var(--navy);padding:2.5rem 3rem 2rem}
 .res-hero .eyelabel{color:var(--sky)}
-.res-hero-h{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:300;color:#fff;line-height:1.25;margin-bottom:.75rem}
+.res-hero-h{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:300;color:#fff;line-height:1.25;margin-bottom:.5rem}
 .res-hero-h em{font-style:italic;color:var(--sky)}
-.res-hero-sub{font-size:.90rem;color:rgba(255,255,255,.55);line-height:1.85;max-width:560px}
+.res-hero-sub{font-size:.90rem;color:rgba(255,255,255,.55);line-height:1.6}
 
 /* Layout */
 .res-wrap{background:var(--paper);padding:2.5rem 0 3rem}
@@ -760,13 +760,6 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 .res-empty-reset{padding:8px 20px;border-radius:4px;border:1px solid var(--border);background:var(--white);font-size:.85rem;color:var(--ink);cursor:pointer}
 .res-empty-reset:hover{border-color:var(--blue);color:var(--blue)}
 
-/* CTA band */
-.res-cta-band{background:var(--navy);padding:4rem 3rem}
-.res-cta-band .container{text-align:center}
-.res-cta-band .eyelabel{color:var(--sky);text-align:center}
-.res-cta-band .sh{color:#fff;text-align:center;margin-bottom:.75rem}
-.res-cta-band p{color:rgba(255,255,255,.55);font-size:.90rem;line-height:1.8;margin-bottom:1.75rem;max-width:480px;margin-left:auto;margin-right:auto}
-
 /* ── RESPONSIVE — RESOURCES ── */
 @media(max-width:900px){
   .res-layout{grid-template-columns:1fr}
@@ -774,13 +767,9 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   .res-sb-nudge{display:none}
 }
 @media(max-width:768px){
-  .res-hero{padding:2.5rem 1.25rem 2rem}
+  .res-hero{padding:1.75rem 1.25rem 1.5rem}
   .res-sidebar{grid-template-columns:1fr}
   .res-grid-row{grid-template-columns:1fr}
   .rcard-featured{flex-direction:column}
   .rcard-featured-visual{display:none}
-  .res-cta-band{padding:3rem 1.25rem}
-}
-@media(max-width:480px){
-  .res-cta-band{padding:2.5rem 1rem}
 }
