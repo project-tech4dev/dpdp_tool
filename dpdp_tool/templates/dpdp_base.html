@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}DPDP Readiness Navigator — Tech4Dev{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Outfit:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css?v={{ asset_v }}">
+{% block head_extra %}{% endblock %}
+</head>
+<body>
+
+{% if nav_mode == 'minimal' %}
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
+    <div class="nav-div"></div>
+    <span class="nav-label">DPDP Navigator</span>
+  </a>
+  <a href="/" class="nav-back">← Back to overview</a>
+</nav>
+{% else %}
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
+    <div class="nav-div"></div>
+    <span class="nav-label">DPDP Navigator</span>
+  </a>
+  <div class="nav-links">
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger" aria-haspopup="true">
+        About
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="nav-dropdown-menu">
+        <a href="/">Overview</a>
+        <a href="/#why">Why DPDP</a>
+        <a href="/#who">Who It's For</a>
+      </div>
+    </div>
+    <a href="/#dashboard">Sector Insights</a>
+    <a href="/resources">Resources</a>
+    <a href="/assess" class="nav-cta nav-cta-assess">Begin Self-Assessment</a>
+    <a href="/#consult-s" class="nav-cta nav-cta-consult">Request DPDP Consult →</a>
+  </div>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-drawer" id="nav-drawer">
+  <a href="/" onclick="closeMenu()">Overview</a>
+  <a href="/#why" class="drawer-sub" onclick="closeMenu()">Why DPDP</a>
+  <a href="/#who" class="drawer-sub" onclick="closeMenu()">Who It's For</a>
+  <a href="/#dashboard" onclick="closeMenu()">Sector Insights</a>
+  <a href="/resources" onclick="closeMenu()">Resources</a>
+  <div class="drawer-ctas">
+    <a href="/assess" class="drawer-btn-assess" onclick="closeMenu()">Begin Self-Assessment</a>
+    <a href="/#consult-s" class="drawer-btn-consult" onclick="closeMenu()">Request DPDP Consult →</a>
+  </div>
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer>
+  <div class="flogo">
+    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
+    <span>DPDP Readiness Navigator</span>
+  </div>
+  <div class="flinks">
+    <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
+    <a href="https://projecttech4dev.org/terms-of-use/" target="_blank" rel="noopener">Terms of Use</a>
+  </div>
+  <div class="fnote">© 2026 Project Tech4Dev</div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

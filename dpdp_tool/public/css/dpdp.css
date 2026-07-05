@@ -56,6 +56,17 @@ nav{
 .nav-cta-consult{background:var(--orange)!important;color:#fff!important;border:none!important;font-weight:500!important}
 .nav-cta-consult:hover{background:var(--orange-dk)!important}
 
+/* Nav dropdown */
+.nav-dropdown{position:relative;display:inline-flex;align-items:center}
+.nav-dropdown-trigger{color:rgba(255,255,255,.58);font-size:.85rem;text-decoration:none;padding:0 .85rem;height:64px;display:inline-flex;align-items:center;gap:5px;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;cursor:pointer;font-family:inherit}
+.nav-dropdown-trigger:hover{color:#fff}
+.nav-dropdown-trigger svg{opacity:.6;transition:transform .2s}
+.nav-dropdown:hover .nav-dropdown-trigger svg,.nav-dropdown-trigger[aria-expanded="true"] svg{transform:rotate(180deg);opacity:1}
+.nav-dropdown-menu{display:none;position:absolute;top:calc(100% - 2px);left:0;background:var(--navy-mid);border:1px solid rgba(255,255,255,.1);border-radius:4px;min-width:180px;padding:.4rem 0;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:400}
+.nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown-menu:hover{display:block}
+.nav-dropdown-menu a{color:rgba(255,255,255,.68);font-size:.85rem;text-decoration:none;padding:.6rem 1.1rem;display:block;transition:background .15s;white-space:nowrap;height:auto;border-bottom:none!important}
+.nav-dropdown-menu a:hover{background:rgba(255,255,255,.08);color:#fff}
+
 /* Assess back-link (assess page only) */
 .nav-back{color:rgba(255,255,255,.55);font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
 .nav-back:hover{color:#fff}
@@ -73,6 +84,7 @@ nav{
 .nav-drawer a{color:rgba(255,255,255,.72);font-size:.90rem;text-decoration:none;padding:.85rem 1.75rem;border-bottom:1px solid rgba(255,255,255,.05);display:block;transition:background .15s}
 .nav-drawer a:hover{background:rgba(255,255,255,.06);color:#fff}
 .nav-drawer a:last-of-type{border-bottom:none}
+.nav-drawer .drawer-sub{padding-left:2.5rem;font-size:.85rem;color:rgba(255,255,255,.5)}
 .nav-drawer .drawer-ctas{display:flex;flex-direction:column;gap:.6rem;padding:1rem 1.75rem 0}
 .nav-drawer .drawer-btn-assess{background:rgba(255,255,255,.1);color:#fff;text-align:center;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:.7rem 1rem;font-size:.90rem;text-decoration:none;transition:all .2s}
 .nav-drawer .drawer-btn-assess:hover{background:rgba(255,255,255,.18)}

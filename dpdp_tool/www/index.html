@@ -1,51 +1,15 @@
 ---
 no_cache: 1
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DPDP Readiness Navigator — Tech4Dev</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css?v={{ asset_v }}">
+{% extends "dpdp_base.html" %}
+
+{% block title %}DPDP Readiness Navigator — Tech4Dev{% endblock %}
+
+{% block head_extra %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-</head>
-<body>
+{% endblock %}
 
-<nav>
-  <a href="https://dpdp.projecttech4dev.org" class="nav-logo">
-    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
-    <div class="nav-div"></div>
-    <span class="nav-label">DPDP Navigator</span>
-  </a>
-  <div class="nav-links">
-    <a href="/" class="active">Overview</a>
-    <a href="#why">Why DPDP</a>
-    <a href="#who">Who It's For</a>
-    <a href="#dashboard">Sector Insights</a>
-    <a href="/assess" class="nav-cta nav-cta-assess">Begin Self-Assessment</a>
-    <a href="#consult-s" class="nav-cta nav-cta-consult">Request DPDP Consult →</a>
-  </div>
-  <!-- Hamburger — mobile only -->
-  <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<!-- Mobile nav drawer -->
-<div class="nav-drawer" id="nav-drawer">
-  <a href="/" onclick="closeMenu()">Overview</a>
-  <a href="#why" onclick="closeMenu()">Why DPDP</a>
-  <a href="#who" onclick="closeMenu()">Who It's For</a>
-  <a href="#dashboard" onclick="closeMenu()">Sector Insights</a>
-  <div class="drawer-ctas">
-    <a href="/assess" class="drawer-btn-assess" onclick="closeMenu()">Begin Self-Assessment</a>
-    <a href="#consult-s" class="drawer-btn-consult" onclick="closeMenu()">Request DPDP Consult →</a>
-  </div>
-</div>
-
+{% block content %}
 <!-- HERO -->
 <div class="hero">
   <div class="hero-grid">
@@ -193,7 +157,6 @@ no_cache: 1
       </div>
     </div>
 
-    <!-- Loading shimmer — removed by JS once data arrives -->
     <div id="db-loading">
       <div class="db-shimmer-row">
         <div class="shimmer" style="height:88px;border-radius:6px"></div>
@@ -210,20 +173,15 @@ no_cache: 1
       <div class="shimmer" style="height:320px;border-radius:6px;margin-top:.85rem"></div>
     </div>
 
-    <!-- ROW 1: three aggregate stat cards -->
     <div class="stat-row" id="stat-cards"></div>
-
-    <!-- ROW 2: five domain cards — fixed all-sectors aggregate -->
     <div class="domain-row" id="domain-cards"></div>
 
-    <!-- Band legend — sits between domain cards and chart -->
     <div class="db-legend">
       <div class="db-legend-item"><div class="db-legend-pip pg"></div>Strong</div>
       <div class="db-legend-item"><div class="db-legend-pip pa"></div>Developing</div>
       <div class="db-legend-item"><div class="db-legend-pip pr"></div>Priority gap</div>
     </div>
 
-    <!-- ROW 3: sector tabs + full-width chart -->
     <div class="db-chart-panel" id="dpanels">
       <div class="stabs" id="stabs"></div>
       <div class="cbox-t" id="chart-title"></div>
@@ -232,7 +190,6 @@ no_cache: 1
       </div>
     </div>
 
-    <!-- CTA -->
     <div class="insights-cta">
       <div class="insights-cta-text">
         <strong>See where your organisation stands.</strong><br>
@@ -291,19 +248,8 @@ no_cache: 1
     </div>
   </div>
 </section>
+{% endblock %}
 
-<footer>
-  <div class="flogo">
-    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
-    <span>DPDP Readiness Navigator</span>
-  </div>
-  <div class="flinks">
-    <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
-    <a href="https://projecttech4dev.org/terms-of-use/" target="_blank" rel="noopener">Terms of Use</a>
-  </div>
-  <div class="fnote">© 2026 Project Tech4Dev</div>
-</footer>
-
+{% block scripts %}
 <script src="/assets/dpdp_tool/js/dpdp-index.js?v={{ asset_v }}"></script>
-</body>
-</html>
+{% endblock %}
