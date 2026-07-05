@@ -28,8 +28,8 @@ nav :focus-visible,.hero :focus-visible,.assess-hero :focus-visible,.cform :focu
   --orange-dk:#CC5225;   /* orange hover */
   --peach:#F8A87A;       /* warm accent on dark */
   --navy-dk:#0F1F38;     /* deep navy for gradients */
-  --white-secondary:rgba(255,255,255,.55); /* footer text, labels on dark */
-  --white-dim:rgba(255,255,255,.35);       /* quieter text on dark backgrounds */
+  --white-secondary:rgba(255,255,255,.75); /* footer text, labels on dark */
+  --white-dim:rgba(255,255,255,.5);       /* quieter text on dark backgrounds */
 }
 
 html{scroll-behavior:smooth}
