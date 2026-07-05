@@ -34,7 +34,7 @@ Nav links use absolute paths (`/`, `/#why`, `/#dashboard`) so they resolve corre
 
 ## CSS — Reuse First
 
-Before adding any CSS class, search `dpdp.css` for an existing class that covers the need. Use inline `style` for truly isolated one-off values. If a pattern appears on more than one element, promote it to a class and check with the user first. The design token variables in `:root` must be used for all colours — no raw hex or rgba values outside the token definitions themselves.
+Before adding any CSS class, search `dpdp.css` for an existing class that covers the need. **Never use inline `style` attributes** — always create or reuse a CSS class. If a pattern appears on more than one element, promote it to a class and check with the user first. The design token variables in `:root` must be used for all colours — no raw hex or rgba values outside the token definitions themselves.
 
 ## End-to-End Verification
 
