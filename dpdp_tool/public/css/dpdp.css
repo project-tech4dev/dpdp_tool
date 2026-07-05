@@ -64,7 +64,7 @@ nav{
 .nav-dropdown:hover .nav-dropdown-trigger svg,.nav-dropdown-trigger[aria-expanded="true"] svg{transform:rotate(180deg);opacity:1}
 .nav-dropdown-menu{display:none;position:absolute;top:calc(100% - 2px);left:0;background:var(--navy-mid);border:1px solid rgba(255,255,255,.1);border-radius:4px;min-width:180px;padding:.4rem 0;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:400}
 .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown-menu:hover{display:block}
-.nav-dropdown-menu a{color:rgba(255,255,255,.68);font-size:.85rem;text-decoration:none;padding:.6rem 1.1rem;display:block;transition:background .15s;white-space:nowrap;height:auto;border-bottom:none!important}
+.nav-dropdown-menu a{color:var(--white-secondary);font-size:.85rem;text-decoration:none;padding:.6rem 1.1rem;display:block;transition:background .15s;white-space:nowrap;height:auto;border-bottom:none!important}
 .nav-dropdown-menu a:hover{background:rgba(255,255,255,.08);color:#fff}
 
 /* Assess back-link (assess page only) */
