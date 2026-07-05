@@ -1,28 +1,15 @@
 ---
 no_cache: 1
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DPDP Self-Assessment — Tech4Dev</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/dpdp_tool/css/dpdp.css?v={{ asset_v }}">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
+{% extends "templates/dpdp_base.html" %}
 
-<nav>
-  <a href="/" class="nav-logo">
-    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
-    <div class="nav-div"></div>
-    <span class="nav-label">DPDP Navigator</span>
-  </a>
-  <a href="/" class="nav-back">← Back</a>
-</nav>
+{% block title %}DPDP Self-Assessment — Tech4Dev{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
 
 <!-- INTRO -->
 <div id="s-intro" class="screen active">
@@ -193,18 +180,8 @@ no_cache: 1
   </div>
 </div>
 
-<script src="/assets/dpdp_tool/js/dpdp-assess.js?v={{ asset_v }}"></script>
+{% endblock %}
 
-<footer>
-  <div class="flogo">
-    <img src="https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png" alt="Tech4Dev" onerror="this.style.display='none'">
-    <span>DPDP Readiness Navigator</span>
-  </div>
-  <div class="flinks">
-    <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
-    <a href="https://projecttech4dev.org/terms-of-use/" target="_blank" rel="noopener">Terms of Use</a>
-  </div>
-  <div class="fnote">© 2026 Project Tech4Dev</div>
-</footer>
-</body>
-</html>
+{% block scripts %}
+<script src="/assets/dpdp_tool/js/dpdp-assess.js?v={{ asset_v }}"></script>
+{% endblock %}
