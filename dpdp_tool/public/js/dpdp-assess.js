@@ -60,6 +60,13 @@ function renderSectorCheckboxes(sectors) {
   el.innerHTML = sectors.map(s =>
     `<label class="sector-cb"><input type="checkbox" value="${s}"> ${s}</label>`
   ).join('');
+  prefillFormFromProfile({ org: 'i-org', name: 'i-name', email: 'i-email', size: 'i-size' });
+  const p = loadProfile();
+  if (p?.sector) {
+    document.querySelectorAll('#sector-checkboxes input[type=checkbox]').forEach(cb => {
+      cb.checked = p.sector.includes(cb.value);
+    });
+  }
 }
 
 // ── SESSION STORAGE ─────────────────────────────────────────────────
@@ -250,6 +257,7 @@ function startAssessment() {
     return;
   }
   org = { org: o, name: n, email: e, sector: sc, size: sz, bene: document.getElementById('i-bene').value.trim() };
+  saveProfile({ org: o, name: n, email: e, sector: sc, size: sz });
   showScreen('s-assess');
   currentQ = 0;
   renderQ(0);

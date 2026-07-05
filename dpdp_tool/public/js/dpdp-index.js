@@ -180,10 +180,12 @@ async function submitConsult(){
   const name=document.getElementById('cf-name').value.trim();
   const email=document.getElementById('cf-email').value.trim();
   if(!org||!name||!email){alert('Please fill in organisation name, your name, and email.');return;}
+  const sectors=Array.from(document.querySelectorAll('#cf-sectors input:checked')).map(cb=>cb.value);
+  const size=document.getElementById('cf-size').value;
+  saveProfile({org,name,email,sector:sectors,size});
   const btn=document.querySelector('.fsub');btn.textContent='Submitting…';btn.disabled=true;
   try{
-    const sectors=Array.from(document.querySelectorAll('#cf-sectors input:checked')).map(cb=>cb.value);
-    const cp=new URLSearchParams({org_name:org,contact_name:name,email,sector:JSON.stringify(sectors),org_size:document.getElementById('cf-size').value,service_interest:document.getElementById('cf-svc').value,message:document.getElementById('cf-msg').value});
+    const cp=new URLSearchParams({org_name:org,contact_name:name,email,sector:JSON.stringify(sectors),org_size:size,service_interest:document.getElementById('cf-svc').value,message:document.getElementById('cf-msg').value});
     const cr=await fetch(`${FU}/api/method/dpdp_tool.api.submit_consult_request?${cp}`);
     const cj=await cr.json();console.log('Consult result:',cj.message);
   }catch(e){console.error('submitConsult failed:',e);}
@@ -203,6 +205,11 @@ async function loadConsultSectors(){
     }
     const el=document.getElementById('cf-sectors');
     if(el&&cfg.sectors){el.innerHTML=cfg.sectors.map(s=>`<label class="sector-cb"><input type="checkbox" value="${s}"> ${s}</label>`).join('');}
+    prefillFormFromProfile({org:'cf-org',name:'cf-name',email:'cf-email',size:'cf-size'});
+    const p=loadProfile();
+    if(p?.sector){
+      document.querySelectorAll('#cf-sectors input[type=checkbox]').forEach(cb=>{cb.checked=p.sector.includes(cb.value);});
+    }
   }catch(e){console.error('[loadConsultSectors] failed:',e);}
 }
 
