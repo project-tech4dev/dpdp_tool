@@ -1,0 +1,112 @@
+[
+  {
+    "name": "DPDP Resource",
+    "custom": 1,
+    "module": "DPDP Tool",
+    "doctype": "DocType",
+    "autoname": "format:RES-{###}",
+    "naming_rule": "Expression (old style)",
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 0,
+    "fields": [
+      {
+        "fieldname": "title",
+        "fieldtype": "Data",
+        "label": "Title",
+        "reqd": 1,
+        "bold": 1,
+        "in_list_view": 1,
+        "in_standard_filter": 1
+      },
+      {
+        "fieldname": "summary",
+        "fieldtype": "Text",
+        "label": "Summary",
+        "reqd": 1
+      },
+      {
+        "fieldname": "column_break_metadata",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "resource_type",
+        "fieldtype": "Select",
+        "label": "Resource Type",
+        "reqd": 1,
+        "options": "Guide\nTemplate\nChecklist\nVideo",
+        "in_list_view": 1,
+        "in_standard_filter": 1
+      },
+      {
+        "fieldname": "domain",
+        "fieldtype": "Select",
+        "label": "Domain",
+        "reqd": 1,
+        "options": "Consent\nStorage\nUsage\nRights\nGovernance",
+        "in_list_view": 1,
+        "in_standard_filter": 1
+      },
+      {
+        "fieldname": "section_break_details",
+        "fieldtype": "Section Break",
+        "label": "Details"
+      },
+      {
+        "fieldname": "read_time",
+        "fieldtype": "Int",
+        "label": "Read Time (minutes)"
+      },
+      {
+        "fieldname": "external_url",
+        "fieldtype": "Data",
+        "label": "External URL",
+        "options": "URL"
+      },
+      {
+        "fieldname": "column_break_flags",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "featured",
+        "fieldtype": "Check",
+        "label": "Featured",
+        "default": "0",
+        "description": "Renders as a full-width Start here card at the top of the grid"
+      },
+      {
+        "fieldname": "coming_soon",
+        "fieldtype": "Check",
+        "label": "Coming Soon",
+        "default": "0",
+        "description": "Renders as a dashed placeholder — no CTA link shown"
+      },
+      {
+        "fieldname": "published",
+        "fieldtype": "Check",
+        "label": "Published",
+        "default": "1",
+        "in_list_view": 1
+      }
+    ],
+    "permissions": [
+      {
+        "role": "System Manager",
+        "read": 1,
+        "write": 1,
+        "create": 1,
+        "delete": 1,
+        "email": 1,
+        "export": 1,
+        "print": 1,
+        "report": 1,
+        "select": 1,
+        "share": 1
+      },
+      {
+        "role": "Guest",
+        "read": 1
+      }
+    ]
+  }
+]

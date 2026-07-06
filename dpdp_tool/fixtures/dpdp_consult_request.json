@@ -48,7 +48,7 @@
         "fieldtype": "Select",
         "label": "Organisation Size",
         "reqd": 0,
-        "options": "\nUnder 20 staff\n20\u2013100 staff\n100\u2013500 staff\n500+ staff"
+        "options": "\nUnder 20 staff\n20-100 staff\n100-500 staff\n500+ staff"
       },
       {
         "fieldname": "service_interest",
@@ -94,13 +94,6 @@
     "permissions": [
       {
         "role": "System Manager",
-        "read": 1,
-        "write": 1,
-        "create": 1,
-        "delete": 1
-      },
-      {
-        "role": "Administrator",
         "read": 1,
         "write": 1,
         "create": 1,

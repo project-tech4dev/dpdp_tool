@@ -17,7 +17,8 @@ fixtures = [
         "dt": "DocType",
         "filters": [["name", "in", [
             "DPDP Assessment",
-            "DPDP Consult Request"
+            "DPDP Consult Request",
+            "DPDP Resource"
         ]]]
     },
     {
