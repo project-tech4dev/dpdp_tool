@@ -213,7 +213,7 @@ async function loadConsultSectors(){
   }catch(e){console.error('[loadConsultSectors] failed:',e);}
 }
 
-loadDB();
+if (document.getElementById('db-loading')) loadDB();
 loadConsultSectors();
 
 // ── Mobile nav ────────────────────────────────────────────────────
