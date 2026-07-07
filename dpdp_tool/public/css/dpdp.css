@@ -736,7 +736,7 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 .rcard-featured{border-top:3px solid var(--blue);flex-direction:row;align-items:stretch;margin-bottom:.5rem}
 .rcard-featured-body{flex:1;padding:1.5rem}
 .rcard-featured-visual{width:160px;background:var(--blue-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.rcard-featured-icon{font-size:3rem;opacity:.35}
+.rcard-featured-icon{font-size:3rem;opacity:.75}
 .rcard-badge-featured{font-family:"Outfit",sans-serif;font-size:.67rem;background:var(--blue);color:#fff;padding:2px 8px;border-radius:3px;letter-spacing:.06em;text-transform:uppercase}
 
 /* Coming soon card */
