@@ -2,7 +2,7 @@
 
 // ── STATE ─────────────────────────────────────────────────────────────
 const STATE = { domain: '', type: '' };
-const DOMAINS = ['Consent', 'Storage', 'Usage', 'Rights', 'Governance'];
+const DOMAINS = ['Consent', 'Storage', 'Usage', 'Rights', 'Governance', 'Common'];
 let _resources = [];
 
 // ── INIT ──────────────────────────────────────────────────────────────
