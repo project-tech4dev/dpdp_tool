@@ -43,7 +43,7 @@
         "fieldtype": "Select",
         "label": "Domain",
         "reqd": 1,
-        "options": "Consent\nStorage\nUsage\nRights\nGovernance",
+        "options": "Consent\nStorage\nUsage\nRights\nGovernance\nCommon",
         "in_list_view": 1,
         "in_standard_filter": 1
       },
