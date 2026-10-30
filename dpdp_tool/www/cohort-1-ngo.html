@@ -84,7 +84,7 @@ no_cache: 1
     <div class="eyelabel">From the Tech4Dev blog</div>
     <div class="res-grid-row">
       {% for a in articles %}
-      <article class="rcard">
+      <article class="rcard{% if loop.first %} op-full{% endif %}">
         <div class="rcard-body">
           <div class="rcard-meta"><span class="rcard-time">{{ a.date }}</span></div>
           <h3 class="rcard-title">{{ a.title | e }}</h3>
