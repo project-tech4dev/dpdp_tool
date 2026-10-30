@@ -24,7 +24,7 @@ Owns the `<html>`, `<head>`, nav, footer, and font loading.
 Not `"dpdp_base.html"` — that looks for the file at the package root, not inside `templates/`.
 
 **Adding a new page:**
-1. Create `www/<page>.html` with `{% extends "templates/dpdp_base.html" %}` and `www/<page>.py` setting `context.asset_v`
+1. Create `www/<page>.html` with `{% extends "templates/dpdp_base.html" %}` and `www/<page>.py` setting `context.asset_v`. The controller name uses underscores where the route has hyphens (`www/cohorts-events.html` → `www/cohorts_events.py`); with a hyphen Frappe never loads it and `?v={{ asset_v }}` is served literally
 2. Set `context.nav_mode = "minimal"` only for focused task flows (e.g. assess)
 3. Add the page to the nav in `dpdp_base.html` if it should appear in navigation
 
