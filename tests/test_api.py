@@ -428,6 +428,8 @@ def _wp_post(**kw):
         "link": "https://projecttech4dev.org/helping-ngos/",
         "title": {"rendered": "Helping NGOs &#8211; DPDP"},
         "excerpt": {"rendered": "<p>At a roundtable &amp; more [&hellip;]</p>\n"},
+        "author": 42,
+        "jetpack_featured_media_url": "https://projecttech4dev.org/wp-content/uploads/2026/10/cohort.jpg",
     }
     post.update(kw)
     return post
@@ -448,27 +450,37 @@ def _wire_wp(monkeypatch, responses):
 
 
 def test_wp_post_to_article_cleans_text_and_formats_date(api):
-    a = api._wp_post_to_article(_wp_post())
+    a = api._wp_post_to_article(_wp_post(), {42: "Shweta Chaudhury"})
     assert a == {
         "title": "Helping NGOs – DPDP",
         "summary": "At a roundtable & more…",
         "date": "13 Oct 2026",
+        "author": "Shweta Chaudhury",
+        "image": "https://projecttech4dev.org/wp-content/uploads/2026/10/cohort.jpg",
         "link": "https://projecttech4dev.org/helping-ngos/",
     }
 
 
 def test_wp_post_to_article_drops_offsite_link_and_trims_summary(api):
     long = "<p>" + "word " * 100 + "</p>"
-    a = api._wp_post_to_article(_wp_post(link="https://evil.example/x", excerpt={"rendered": long}))
-    assert a["link"] == ""
+    a = api._wp_post_to_article(_wp_post(link="https://evil.example/x", excerpt={"rendered": long},
+                                         jetpack_featured_media_url="https://evil.example/x.png"))
+    assert a["link"] == "" and a["image"] == "" and a["author"] == ""
     assert len(a["summary"]) <= 181 and a["summary"].endswith("…")
 
 
 def test_get_tagged_articles_fetches_tag_then_posts(api, monkeypatch):
-    calls = _wire_wp(monkeypatch, {"tags": [{"id": 7}], "posts": [_wp_post()]})
+    calls = _wire_wp(monkeypatch, {"tags": [{"id": 7}], "posts": [_wp_post()],
+                                   "users": [{"id": 42, "name": "Shweta Chaudhury"}]})
     articles = api.get_tagged_articles("dpdp-ngo-cohort-1")
-    assert [a["title"] for a in articles] == ["Helping NGOs – DPDP"]
-    assert [c.rsplit("/", 1)[-1] for c in calls] == ["tags", "posts"]
+    assert [(a["title"], a["author"]) for a in articles] == [("Helping NGOs – DPDP", "Shweta Chaudhury")]
+    assert [c.rsplit("/", 1)[-1] for c in calls] == ["tags", "posts", "users"]
+
+
+def test_get_tagged_articles_keeps_posts_if_author_lookup_fails(api, monkeypatch):
+    _wire_wp(monkeypatch, {"tags": [{"id": 7}], "posts": [_wp_post()], "users": RuntimeError("403")})
+    articles = api.get_tagged_articles("dpdp")
+    assert [(a["title"], a["author"]) for a in articles] == [("Helping NGOs – DPDP", "")]
 
 
 def test_get_tagged_articles_unknown_tag_is_empty(api, monkeypatch):

@@ -49,7 +49,16 @@
       </div>
     </div>
     <a href="/sector-insights">Sector Insights</a>
-    <a href="/resources">Resources</a>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger{% if nav_active is defined and nav_active == 'resources' %} active{% endif %}" aria-haspopup="true">
+        Resources
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="nav-dropdown-menu">
+        <a href="/resources">Guides &amp; Toolkits</a>
+        <a href="/blog">Blog</a>
+      </div>
+    </div>
     <div class="nav-dropdown">
       <button class="nav-dropdown-trigger{% if nav_active is defined and nav_active == 'cohorts-events' %} active{% endif %}" aria-haspopup="true">
         Cohorts &amp; Events
@@ -74,6 +83,8 @@
   <a href="/#who" class="drawer-sub" onclick="closeMenu()">Who It's For</a>
   <a href="/sector-insights" onclick="closeMenu()">Sector Insights</a>
   <a href="/resources" onclick="closeMenu()">Resources</a>
+  <a href="/resources" class="drawer-sub" onclick="closeMenu()">Guides &amp; Toolkits</a>
+  <a href="/blog" class="drawer-sub" onclick="closeMenu()">Blog</a>
   <a href="/cohorts-events" onclick="closeMenu()">Cohorts &amp; Events</a>
   <a href="/cohort-1-ngo" class="drawer-sub" onclick="closeMenu()">Cohort 1 for NGOs</a>
   <div class="drawer-ctas">

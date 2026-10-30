@@ -753,7 +753,7 @@ def get_events():
         return []
 
 
-# Tech4Dev blog (WordPress) — public posts only; no user data is sent.
+# Tech4Dev blog (WordPress) — public posts and author names only; no user data is sent.
 WP_API = "https://projecttech4dev.org/wp-json/wp/v2"
 
 
@@ -770,15 +770,39 @@ def _wp_text(rendered, max_len=None):
     return text.rstrip(",.;:") + "…" if cut else text
 
 
-def _wp_post_to_article(post):
+def _wp_onsite(url):
+    """Only use links and images hosted on the Tech4Dev site."""
+    return url if (url or "").startswith("https://projecttech4dev.org/") else ""
+
+
+def _wp_post_to_article(post, authors=None):
     d = datetime.strptime(post["date"][:10], "%Y-%m-%d")
-    link = post.get("link") or ""
     return {
         "title": _wp_text(post.get("title", {}).get("rendered")),
         "summary": _wp_text(post.get("excerpt", {}).get("rendered"), max_len=180),
         "date": f"{d.day} {d.strftime('%b %Y')}",
-        "link": link if link.startswith("https://projecttech4dev.org/") else "",
+        "author": (authors or {}).get(post.get("author"), ""),
+        "image": _wp_onsite(post.get("jetpack_featured_media_url")),
+        "link": _wp_onsite(post.get("link")),
     }
+
+
+def _wp_author_names(posts):
+    """Display names for the posts' WordPress author IDs; {} if the lookup fails."""
+    ids = sorted({p["author"] for p in posts if p.get("author")})
+    if not ids:
+        return {}
+    try:
+        import requests
+        users = requests.get(
+            f"{WP_API}/users",
+            params={"include": ",".join(map(str, ids)), "_fields": "id,name"},
+            timeout=5,
+        ).json()
+        return {u["id"]: u["name"] for u in users}
+    except Exception as e:
+        frappe.log_error(f"DPDP WordPress author lookup error: {e}", "DPDP API")
+        return {}
 
 
 def get_tagged_articles(tag_slug, limit=6):
@@ -791,10 +815,11 @@ def get_tagged_articles(tag_slug, limit=6):
             posts = requests.get(
                 f"{WP_API}/posts",
                 params={"tags": tags[0]["id"], "per_page": limit,
-                        "_fields": "date,link,title,excerpt"},
+                        "_fields": "date,link,title,excerpt,author,jetpack_featured_media_url"},
                 timeout=5,
             ).json()
-            articles = [_wp_post_to_article(p) for p in posts]
+            authors = _wp_author_names(posts)
+            articles = [_wp_post_to_article(p, authors) for p in posts]
     except Exception as e:
         frappe.log_error(f"DPDP get_tagged_articles error: {e}", "DPDP API")
         return []
