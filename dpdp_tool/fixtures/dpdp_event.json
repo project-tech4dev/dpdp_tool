@@ -49,9 +49,11 @@
     "print": 1,
     "report": 1,
     "select": 1,
-    "share": 1
+    "share": 1,
+    "import": 1
    }
-  ]
+  ],
+  "allow_import": 1
  },
  {
   "name": "DPDP Event Speaker",
@@ -224,8 +226,10 @@
     "print": 1,
     "report": 1,
     "select": 1,
-    "share": 1
+    "share": 1,
+    "import": 1
    }
-  ]
+  ],
+  "allow_import": 1
  }
 ]
