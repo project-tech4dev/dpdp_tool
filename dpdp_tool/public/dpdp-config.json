@@ -1,5 +1,5 @@
 {
-  "asset_version": "20260922a",
+  "asset_version": "20261030b",
   "sections": [
     {"id": "consent",    "label": "Data Collection & Consent"},
     {"id": "storage",    "label": "Data Storage & Security"},

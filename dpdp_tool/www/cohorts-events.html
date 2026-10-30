@@ -1,0 +1,130 @@
+---
+no_cache: 1
+---
+{% extends "templates/dpdp_base.html" %}
+
+{% block title %}Cohorts &amp; Events — DPDP Readiness Navigator{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-tag">Cohorts, workshops and events</div>
+      <h1>Build DPDP practice with <em>peers and experts.</em></h1>
+      <p class="hero-sub">Cohorts for NGOs, workshops for funders and ecosystem organisations, and webinars on the Digital Personal Data Protection Act. Sessions range from awareness on what the Act asks of you, to hands-on guidance and advisory support, to how to set up your technology so it truly matches your DPDP stance.</p>
+      <div class="hero-btns">
+        <a class="btn-o" href="#events">See all events</a>
+        <a class="btn-g" href="#cohorts">Explore cohorts</a>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uc-title">What's coming up</div>
+      <div id="ev-hero-list">
+        <div class="tl">
+          <div class="tl-d"><strong>11 Jan 2027</strong>Kick-off</div>
+          <div>
+            <span class="badge b-now">OPENING SOON</span>
+            <div class="tl-lbl">Cohort 2 for NGOs</div>
+            <div class="tl-desc">In person 21 to 22 Jan in Bangalore or Delhi, then eight weeks of clinics and advisory sessions. <a class="rcard-cta" href="#cohorts">See details →</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COHORTS -->
+<section id="cohorts">
+  <div class="container">
+    <div class="eyelabel">Cohorts</div>
+    <h2 class="sh">Three-month cohorts for NGOs</h2>
+    <p class="wbody">NGOs must be fully compliant with the DPDP Act by May 2027, and many are still working out how to protect the data of the people they serve. Each three-month cohort helps a small group of NGOs build sustainable systems and compliant legal and organisational practices for responsible data governance. The programme combines structured learning, peer exchange, expert advisory and hands-on implementation support. Mentors from Tech4Dev's Fractional CxO (fCxO) team and advisors from Pacta help each organisation understand its obligations and build a clear roadmap, then stay with it through group clinics and one-to-one advisory, while the implementation stays with the organisation. The first cohort brought seven NGOs together in Bangalore in October.</p>
+
+
+    <div class="csplit">
+      <div class="tlist">
+        <div class="titem"><div class="ti-n">STAGE 1 · MEASURE</div><div class="ti-t">Kick-off and self-assessment</div><div class="ti-d">A kick-off call, then a detailed self-assessment and a baseline of understanding of the Act before the in-person workshop.</div></div>
+        <div class="titem"><div class="ti-n">STAGE 2 · ANALYSE AND PLAN</div><div class="ti-t">Two-day in-person workshop</div><div class="ti-d">Six sessions on the Act, with group activities and individual work on each organisation's own situation. Each participant plans one to five projects.</div></div>
+        <div class="titem"><div class="ti-n">STAGE 3 · IMPROVE</div><div class="ti-t">Eight to ten weeks of virtual work</div><div class="ti-d">Group Q&amp;A clinics, one-to-one advisory sessions, and evidence of completed assignments, ending with a closing call.</div></div>
+        <div class="titem"><div class="ti-n">AFTER THE PROGRAMME</div><div class="ti-t">Check-ins</div><div class="ti-d">Group check-in calls one month and three months after the closing call.</div></div>
+      </div>
+
+      <div class="vc-cards">
+        <div class="dcard">
+          <div class="dn">APPLICATIONS OPENING SOON</div>
+          <div class="dt">Cohort 2 for NGOs</div>
+          <div class="dd">Eight weeks of group clinics and eight one-to-one advisory sessions after an in-person kick-off. Pacta provides legal advice in the one-to-one sessions.</div>
+          <div class="dd"><strong>Kick-off call:</strong> 11 Jan 2027<br><strong>In person:</strong> 21 to 22 Jan 2027, Bangalore or Delhi<br><strong>Virtual:</strong> 25 Jan to 19 Mar 2027<br><strong>Cohort size:</strong> 8 to 10 organisations<br><strong>Fee:</strong> INR 1.5 lakh excluding taxes<br><strong>Co-delivery partner:</strong> Pacta</div>
+          <div class="dc"><a class="btn-o is-disabled" aria-disabled="true">Apply for Cohort 2 →</a></div>
+        </div>
+        <div class="dcard">
+          <div class="dn">ONGOING</div>
+          <div class="dt">Cohort 1 for NGOs</div>
+          <div class="dd">Participants built their action plans at a two-day workshop in Bangalore and are now implementing them with group clinics and one-to-one advisory sessions, with Pacta on the legal side.</div>
+          <div class="dd"><strong>Running:</strong> 16 Oct to 16 Dec 2026<br><strong>In person:</strong> 5 to 6 Oct 2026, Bangalore<br><strong>Closing call:</strong> 18 Dec 2026<br><strong>Cohort size:</strong> 8 to 10 organisations<br><strong>Co-delivery partner:</strong> Pacta</div>
+          <div class="dc"><a class="rcard-cta" href="/cohort-1">Read about this cohort →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKSHOPS AND EVENTS (from DPDP Event DocType) -->
+<section id="events">
+  <div class="container">
+    <div class="eyelabel">Workshops and events</div>
+
+    <div class="ev-filters" aria-label="Filter events">
+      <div class="ev-fgroup">
+        <span class="ev-flabel">Type</span>
+        <button class="ev-chip active" data-key="type" data-value="" onclick="setEventFilter(this)">All</button>
+        <button class="ev-chip" data-key="type" data-value="Event" onclick="setEventFilter(this)">Event</button>
+        <button class="ev-chip" data-key="type" data-value="Workshop" onclick="setEventFilter(this)">Workshop</button>
+        <button class="ev-chip" data-key="type" data-value="Webinar" onclick="setEventFilter(this)">Webinar</button>
+      </div>
+      <div class="ev-fgroup">
+        <span class="ev-flabel">When</span>
+        <button class="ev-chip active" data-key="status" data-value="" onclick="setEventFilter(this)">All</button>
+        <button class="ev-chip" data-key="status" data-value="Upcoming" onclick="setEventFilter(this)">Upcoming</button>
+        <button class="ev-chip" data-key="status" data-value="Past" onclick="setEventFilter(this)">Past</button>
+      </div>
+    </div>
+
+    <div class="res-section-hdr"><span class="res-section-lbl">Newest first</span><div class="res-section-line"></div></div>
+
+    <div id="ev-loading" class="res-shimmer-grid">
+      <div class="res-shimmer-card shimmer"></div>
+      <div class="res-shimmer-card shimmer"></div>
+    </div>
+
+    <div id="ev-empty" class="res-empty" hidden>
+      <div class="res-empty-t">No events match your filters</div>
+      <div class="res-empty-d">Try another filter, or check back soon for new workshops and webinars.</div>
+      <button class="res-empty-reset" onclick="resetEventFilters()">Clear filters</button>
+    </div>
+
+    <div id="ev-timeline" class="ev-timeline"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section>
+  <div class="container">
+    <div class="tblock">
+      <div class="tblock-lbl">Not sure which fits?</div>
+      <h3>Not sure which cohort or workshop fits your NGO? Funder or ecosystem organisation?</h3>
+      <p>Email us and we will help you choose. We can also design and run a cohort or workshop for your grantees or partners, using the same format as the sessions above.</p>
+      <div class="dc hero-btns">
+        <a class="btn-o" href="/#consult-s">Contact us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/assets/dpdp_tool/js/dpdp-events.js?v={{ asset_v }}"></script>
+{% endblock %}

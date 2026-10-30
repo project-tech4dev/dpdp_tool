@@ -698,6 +698,109 @@ def get_resources():
         return []
 
 
+def _event_status(event_date, today):
+    """Upcoming if the date is today or later, or not yet fixed; else Past."""
+    if not event_date:
+        return "Upcoming"
+    return "Upcoming" if str(event_date) >= str(today) else "Past"
+
+
+@frappe.whitelist(allow_guest=True, methods=["GET"])
+def get_events():
+    """Return published DPDP Event records, newest first, undated (TBC) on top."""
+    try:
+        events = frappe.get_all(
+            "DPDP Event",
+            filters={"published": 1},
+            fields=["name", "title", "summary", "event_type", "format",
+                    "event_date", "date_label", "date_note", "location",
+                    "participants", "partner", "register_url",
+                    "slides_url", "show_in_hero"],
+        )
+        today = frappe.utils.today()
+        for ev in events:
+            ev["status"] = _event_status(ev.get("event_date"), today)
+            ev["event_date"] = str(ev["event_date"]) if ev.get("event_date") else None
+        events.sort(key=lambda ev: ev["event_date"] or "9999-12-31", reverse=True)
+
+        # Speakers: event → DPDP Event Speaker (link rows) → DPDP Speaker
+        links = []
+        if events:
+            links = frappe.get_all(
+                "DPDP Event Speaker",
+                filters={"parenttype": "DPDP Event",
+                         "parent": ["in", [ev["name"] for ev in events]]},
+                fields=["parent", "speaker"],
+                order_by="idx asc",
+                parent_doctype="DPDP Event",
+            )
+        people = {}
+        if links:
+            people = {sp.pop("name"): sp for sp in frappe.get_all(
+                "DPDP Speaker",
+                filters={"name": ["in", list({l["speaker"] for l in links})]},
+                fields=["name", "speaker_name", "role", "linkedin_url"],
+            )}
+        by_event = {}
+        for l in links:
+            if l["speaker"] in people:
+                by_event.setdefault(l["parent"], []).append(people[l["speaker"]])
+        for ev in events:
+            ev["speakers"] = by_event.get(ev["name"], [])
+        return events
+    except Exception as e:
+        frappe.log_error(f"DPDP get_events error: {e}", "DPDP API")
+        return []
+
+
+# Tech4Dev blog (WordPress) — public posts only; no user data is sent.
+WP_API = "https://projecttech4dev.org/wp-json/wp/v2"
+
+
+def _wp_text(rendered, max_len=None):
+    """Strip tags/entities from a WordPress rendered field; optionally trim."""
+    import html
+    import re
+    text = re.sub(r"<[^>]+>", " ", rendered or "")
+    text = html.unescape(text)
+    cut = "[…]" in text  # WordPress marks auto-trimmed excerpts this way
+    text = re.sub(r"\s+", " ", text.replace("[…]", "")).strip()
+    if max_len and len(text) > max_len:
+        text, cut = text[:max_len].rsplit(" ", 1)[0], True
+    return text.rstrip(",.;:") + "…" if cut else text
+
+
+def _wp_post_to_article(post):
+    d = datetime.strptime(post["date"][:10], "%Y-%m-%d")
+    link = post.get("link") or ""
+    return {
+        "title": _wp_text(post.get("title", {}).get("rendered")),
+        "summary": _wp_text(post.get("excerpt", {}).get("rendered"), max_len=180),
+        "date": f"{d.day} {d.strftime('%b %Y')}",
+        "link": link if link.startswith("https://projecttech4dev.org/") else "",
+    }
+
+
+def get_tagged_articles(tag_slug, limit=6):
+    """Posts on the Tech4Dev blog carrying a tag, newest first. Fetched live on each request."""
+    try:
+        import requests
+        tags = requests.get(f"{WP_API}/tags", params={"slug": tag_slug}, timeout=5).json()
+        articles = []
+        if tags:
+            posts = requests.get(
+                f"{WP_API}/posts",
+                params={"tags": tags[0]["id"], "per_page": limit,
+                        "_fields": "date,link,title,excerpt"},
+                timeout=5,
+            ).json()
+            articles = [_wp_post_to_article(p) for p in posts]
+    except Exception as e:
+        frappe.log_error(f"DPDP get_tagged_articles error: {e}", "DPDP API")
+        return []
+    return articles
+
+
 # ─────────────────────────────────────────────────────────────────
 # PROMPTS
 # ─────────────────────────────────────────────────────────────────

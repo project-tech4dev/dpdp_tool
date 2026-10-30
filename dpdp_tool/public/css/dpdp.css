@@ -67,6 +67,7 @@ nav{
 .nav-dropdown{position:relative;display:inline-flex;align-items:center}
 .nav-dropdown-trigger{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.58);font-size:.85rem;font-family:inherit;display:inline-flex;align-items:center;gap:5px;padding:0 .85rem;height:64px;transition:color .2s;white-space:nowrap}
 .nav-dropdown-trigger:hover,.nav-dropdown:hover .nav-dropdown-trigger{color:#fff}
+.nav-dropdown-trigger.active{color:var(--sky);box-shadow:inset 0 -2px 0 var(--sky)}
 .nav-dropdown-menu{display:none;position:absolute;top:100%;left:0;min-width:180px;background:var(--navy-mid);border:1px solid rgba(255,255,255,.1);border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:.4rem 0;z-index:400}
 .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown:focus-within .nav-dropdown-menu{display:block}
 .nav-dropdown-menu a{display:block;padding:.65rem 1.1rem;font-size:.85rem;color:var(--white-secondary);text-decoration:none;transition:background .15s,color .15s;white-space:nowrap;border-bottom:none!important}
@@ -132,6 +133,8 @@ section{padding:5.5rem 3rem}
 .eyelabel{font-family:"Outfit",sans-serif;font-size:.80rem;color:var(--blue);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.75rem}
 h2.sh{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:300;line-height:1.2;margin-bottom:1rem;color:var(--ink)}
 .sub{font-size:.90rem;color:var(--muted);line-height:1.85;max-width:680px;margin-bottom:3rem}
+/* Greyed-out link or button that cannot be clicked; pair with aria-disabled="true" and no href */
+.is-disabled{opacity:.45;pointer-events:none;cursor:not-allowed;filter:grayscale(1)}
 
 /* ── WHY COMPLIANCE ── */
 #why{background:var(--white)}
@@ -303,6 +306,12 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
    RESPONSIVE — MAIN SITE
 ═══════════════════════════════════════ */
 
+/* Nav links need ~1170px; switch to the hamburger below that */
+@media(max-width:1180px){
+  .nav-links{display:none}
+  .nav-hamburger{display:flex}
+}
+
 @media(max-width:1024px){
   nav{padding:0 2rem}
   .hero{padding:4.5rem 2rem 4rem}
@@ -346,6 +355,12 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
 }
 
 @media(max-width:480px){
+  /* Small phones: logo, label and hamburger/back-link must fit in one row */
+  nav{padding:0 1rem}
+  .nav-logo{gap:10px}
+  .nav-logo img{height:26px}
+  .nav-label{font-size:.9rem;white-space:nowrap}
+  .nav-back{font-size:.78rem;white-space:nowrap}
   .hero{padding:3rem 1rem 2.5rem}
   .hero h1{font-size:clamp(1.6rem,6vw,2rem)}
   .hero-tag{font-size:.80rem}
@@ -365,6 +380,11 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   .db-chart-area{height:200px}
   footer{padding:1.75rem 1rem}
   .flinks{flex-direction:column;align-items:center;gap:.75rem}
+}
+
+/* Assess nav (logo + back link) on the smallest phones: drop the "| DPDP Navigator" label */
+@media(max-width:389px){
+  .nav-logo:has(+ .nav-back) .nav-div,.nav-logo:has(+ .nav-back) .nav-label{display:none}
 }
 
 /* ═══════════════════════════════════════
@@ -773,4 +793,80 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   .res-grid-row{grid-template-columns:1fr}
   .rcard-featured{flex-direction:column}
   .rcard-featured-visual{display:none}
+}
+
+/* ═══════════════════════════════════════
+   COHORTS & EVENTS PAGE — events timeline
+═══════════════════════════════════════ */
+
+/* Tighter gap between the cohorts and events sections */
+#cohorts{padding-bottom:2.5rem}
+#events{padding-top:2.5rem}
+#partners{padding-top:2.5rem;padding-bottom:2.5rem}
+
+/* Filter chips */
+.ev-filters{display:flex;gap:1rem 2.5rem;flex-wrap:wrap;margin-bottom:1.75rem}
+.ev-fgroup{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center}
+.ev-flabel{font-family:"Outfit",sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-right:.35rem}
+.ev-chip{border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.85rem;font-family:inherit;color:var(--muted);background:var(--white);cursor:pointer;transition:all .15s}
+.ev-chip:hover{border-color:var(--navy);color:var(--ink)}
+.ev-chip.active{background:var(--navy);border-color:var(--navy);color:var(--white)}
+
+/* Timeline: date column · dot and dashed rail · card (.rcard) */
+.ev-timeline{display:flex;flex-direction:column}
+.ev-row{display:grid;grid-template-columns:160px 28px 1fr;align-items:stretch}
+.ev-row .rcard{margin-bottom:1.25rem}
+.ev-date{padding-top:1.1rem}
+.ev-day{font-size:1rem;font-weight:500;color:var(--ink)}
+.ev-dsub{font-size:.80rem;color:var(--muted);margin-top:2px;line-height:1.45}
+.ev-rail{position:relative}
+.ev-rail::before{content:"";position:absolute;top:1.4rem;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--navy)}
+.ev-rail::after{content:"";position:absolute;top:2.4rem;bottom:0;left:50%;margin-left:-1px;border-left:2px dashed var(--border)}
+.ev-row:last-child .ev-rail::after{display:none}
+.ev-actions{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+
+/* Speakers (Luma-style): overlapping initials + "With A, B and C"; tints reuse .rcard-type type-* colours */
+.ev-speakers{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem .6rem;margin:.1rem 0 .25rem}
+.ev-avs{display:flex}
+.ev-av{width:30px;height:30px;border-radius:50%;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;letter-spacing:.02em;border:2px solid var(--white)}
+.ev-av+.ev-av{margin-left:-8px}
+.ev-names{font-size:.85rem;color:var(--muted)}
+.ev-names a,.ev-names b{color:var(--ink);font-weight:500;text-decoration:none}
+.ev-names a:hover{color:var(--blue);text-decoration:underline}
+
+@media(max-width:768px){
+  .ev-row{grid-template-columns:1fr}
+  .ev-rail{display:none}
+  .ev-date{display:flex;gap:.6rem;align-items:baseline;padding:0 0 .5rem}
+  .ev-dsub{margin-top:0}
+  .ev-row .rcard-footer{flex-direction:column;align-items:flex-start;gap:.75rem}
+  .ev-row .ev-actions{width:100%}
+  .ev-speakers{flex-direction:column;align-items:flex-start}
+}
+
+/* ═══════════════════════════════════════
+   COHORT PAGES — participant logo wall
+═══════════════════════════════════════ */
+#c1-programme,#c1-sessions,#c1-participants,#c1-articles,#c1-contact{padding-top:2.5rem;padding-bottom:2.5rem}
+#c1-contact{padding-bottom:3rem}
+
+.logo-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.logo-tile{padding:1rem .5rem;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;text-align:center}
+.logo-tile img{max-width:100%;max-height:48px;object-fit:contain}
+/* Navy band for logos supplied in white/reversed versions */
+.logo-wall-dark{background:var(--navy);border-radius:8px;padding:.5rem 1rem;margin-bottom:1rem}
+/* Cohort participants: centred strips; the navy band runs full width (edge to edge) */
+#c1-participants .logo-wall{display:flex;flex-wrap:wrap;justify-content:center}
+#c1-participants .logo-tile{flex:0 0 200px}
+#c1-participants{overflow-x:clip}
+#c1-participants .logo-wall-dark{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);border-radius:0;padding:1rem}
+/* Partner logo on the right of a navy page header; white tile keeps dark-text logos legible */
+.res-hero-split{display:flex;justify-content:space-between;align-items:center;gap:2rem}
+.res-hero-partner{flex:0 0 auto;text-align:right}
+.res-hero-partner{display:flex;flex-direction:column;align-items:flex-end}
+.res-hero-partner .logo-tile{background:var(--white);border-radius:50%;width:132px;height:132px;min-height:0;padding:0}
+.res-hero-partner .logo-tile img{max-width:104px;max-height:none}
+@media(max-width:768px){
+  .res-hero-split{flex-direction:column;align-items:flex-start;gap:1.25rem}
+  .res-hero-partner{text-align:left;align-items:flex-start}
 }
