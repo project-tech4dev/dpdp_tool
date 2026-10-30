@@ -1,0 +1,231 @@
+[
+ {
+  "name": "DPDP Speaker",
+  "custom": 1,
+  "module": "DPDP Tool",
+  "doctype": "DocType",
+  "autoname": "format:SPK-{###}",
+  "naming_rule": "Expression (old style)",
+  "title_field": "speaker_name",
+  "show_title_field_in_link": 1,
+  "search_fields": "speaker_name,role",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 0,
+  "fields": [
+   {
+    "fieldname": "speaker_name",
+    "fieldtype": "Data",
+    "label": "Name",
+    "reqd": 1,
+    "bold": 1,
+    "in_list_view": 1,
+    "in_standard_filter": 1
+   },
+   {
+    "fieldname": "role",
+    "fieldtype": "Data",
+    "label": "Role / Organisation",
+    "in_list_view": 1,
+    "description": "e.g. Counsel, Pacta"
+   },
+   {
+    "fieldname": "linkedin_url",
+    "fieldtype": "Data",
+    "label": "LinkedIn URL",
+    "options": "URL",
+    "description": "Full https://www.linkedin.com/in/… profile link"
+   }
+  ],
+  "permissions": [
+   {
+    "role": "System Manager",
+    "read": 1,
+    "write": 1,
+    "create": 1,
+    "delete": 1,
+    "email": 1,
+    "export": 1,
+    "print": 1,
+    "report": 1,
+    "select": 1,
+    "share": 1
+   }
+  ]
+ },
+ {
+  "name": "DPDP Event Speaker",
+  "custom": 1,
+  "module": "DPDP Tool",
+  "doctype": "DocType",
+  "istable": 1,
+  "editable_grid": 1,
+  "track_changes": 0,
+  "fields": [
+   {
+    "fieldname": "speaker",
+    "fieldtype": "Link",
+    "label": "Speaker",
+    "options": "DPDP Speaker",
+    "reqd": 1,
+    "in_list_view": 1
+   }
+  ],
+  "permissions": []
+ },
+ {
+  "name": "DPDP Event",
+  "custom": 1,
+  "module": "DPDP Tool",
+  "doctype": "DocType",
+  "autoname": "format:EVT-{###}",
+  "naming_rule": "Expression (old style)",
+  "sort_field": "event_date",
+  "sort_order": "DESC",
+  "track_changes": 0,
+  "fields": [
+   {
+    "fieldname": "title",
+    "fieldtype": "Data",
+    "label": "Title",
+    "reqd": 1,
+    "bold": 1,
+    "in_list_view": 1,
+    "in_standard_filter": 1
+   },
+   {
+    "fieldname": "summary",
+    "fieldtype": "Text",
+    "label": "Summary",
+    "reqd": 1
+   },
+   {
+    "fieldname": "column_break_type",
+    "fieldtype": "Column Break"
+   },
+   {
+    "fieldname": "event_type",
+    "fieldtype": "Select",
+    "label": "Event Type",
+    "reqd": 1,
+    "options": "Event\nWorkshop\nWebinar",
+    "in_list_view": 1,
+    "in_standard_filter": 1
+   },
+   {
+    "fieldname": "format",
+    "fieldtype": "Select",
+    "label": "Format",
+    "options": "\nIn person\nOnline\nHybrid"
+   },
+   {
+    "fieldname": "published",
+    "fieldtype": "Check",
+    "label": "Published",
+    "default": "1",
+    "in_list_view": 1
+   },
+   {
+    "fieldname": "show_in_hero",
+    "fieldtype": "Check",
+    "label": "Show in Hero",
+    "default": "0",
+    "description": "Lists this event in the What's coming up card at the top of the page (upcoming events only)"
+   },
+   {
+    "fieldname": "section_break_when",
+    "fieldtype": "Section Break",
+    "label": "When and Where"
+   },
+   {
+    "fieldname": "event_date",
+    "fieldtype": "Date",
+    "label": "Event Date",
+    "in_list_view": 1,
+    "description": "Sets order and Upcoming/Past. Leave empty if not yet fixed — the event shows as Upcoming"
+   },
+   {
+    "fieldname": "date_label",
+    "fieldtype": "Data",
+    "label": "Date Label",
+    "description": "Optional display override, e.g. Nov 2026 or Date to confirm"
+   },
+   {
+    "fieldname": "date_note",
+    "fieldtype": "Data",
+    "label": "Date Note",
+    "description": "Shown under the date, e.g. Tentative: week of 23 to 27 Nov"
+   },
+   {
+    "fieldname": "column_break_where",
+    "fieldtype": "Column Break"
+   },
+   {
+    "fieldname": "location",
+    "fieldtype": "Data",
+    "label": "Location"
+   },
+   {
+    "fieldname": "participants",
+    "fieldtype": "Data",
+    "label": "Participants",
+    "description": "e.g. 50+ participants"
+   },
+   {
+    "fieldname": "section_break_people",
+    "fieldtype": "Section Break",
+    "label": "Partner and Links"
+   },
+   {
+    "fieldname": "partner",
+    "fieldtype": "Data",
+    "label": "Partner",
+    "description": "Organisation co-hosting or hosting the session, shown on the card. Leave empty for Tech4Dev-only events"
+   },
+   {
+    "fieldname": "column_break_links",
+    "fieldtype": "Column Break"
+   },
+   {
+    "fieldname": "register_url",
+    "fieldtype": "Data",
+    "label": "Register URL",
+    "options": "URL",
+    "description": "Register button shows for upcoming events only"
+   },
+   {
+    "fieldname": "slides_url",
+    "fieldtype": "Data",
+    "label": "Slides URL",
+    "options": "URL"
+   },
+   {
+    "fieldname": "section_break_speakers",
+    "fieldtype": "Section Break",
+    "label": "Speakers",
+    "description": "Pick from DPDP Speaker; shown on the card as initials and names linking to LinkedIn."
+   },
+   {
+    "fieldname": "speakers",
+    "fieldtype": "Table MultiSelect",
+    "label": "Speakers",
+    "options": "DPDP Event Speaker"
+   }
+  ],
+  "permissions": [
+   {
+    "role": "System Manager",
+    "read": 1,
+    "write": 1,
+    "create": 1,
+    "delete": 1,
+    "email": 1,
+    "export": 1,
+    "print": 1,
+    "report": 1,
+    "select": 1,
+    "share": 1
+   }
+  ]
+ }
+]

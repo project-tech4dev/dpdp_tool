@@ -18,7 +18,10 @@ fixtures = [
         "filters": [["name", "in", [
             "DPDP Assessment",
             "DPDP Consult Request",
-            "DPDP Resource"
+            "DPDP Resource",
+            "DPDP Speaker",
+            "DPDP Event Speaker",
+            "DPDP Event"
         ]]]
     },
     {

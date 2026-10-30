@@ -1,5 +1,6 @@
 """Business-logic tests for dpdp_tool.api. See conftest.py for the harness."""
 
+import datetime
 import json
 
 
@@ -7,6 +8,7 @@ import json
 # _parse_sectors
 # ─────────────────────────────────────────────────────────────────
 
+import sys
 import types
 
 import pytest
@@ -328,3 +330,153 @@ def test_insights_multi_sector_row_counts_in_each(api, frappe, monkeypatch):
     counts = {r["sector"]: r["submission_count"] for r in api.get_sector_insights()}
     assert counts["Education"] == 3
     assert counts["Health & Nutrition"] == 3
+
+
+# ─────────────────────────────────────────────────────────────────
+# get_events
+# ─────────────────────────────────────────────────────────────────
+
+def test_event_status_future_today_past_and_undated(api):
+    assert api._event_status("2026-08-01", "2026-07-13") == "Upcoming"
+    assert api._event_status("2026-07-13", "2026-07-13") == "Upcoming"
+    assert api._event_status("2026-07-12", "2026-07-13") == "Past"
+    assert api._event_status(None, "2026-07-13") == "Upcoming"
+
+
+def _wire_events(frappe, events, links=(), people=()):
+    calls = []
+    rows = {"DPDP Event": events, "DPDP Event Speaker": links, "DPDP Speaker": people}
+    def _get_all(doctype, **kw):
+        calls.append((doctype, kw))
+        return [dict(r) for r in rows[doctype]]
+    frappe.get_all = _get_all
+    return calls
+
+
+def test_get_events_status_order_and_date_serialised(api, frappe):
+    _wire_events(frappe, [
+        {"name": "EVT-1", "title": "Old", "event_date": datetime.date(2026, 6, 1)},
+        {"name": "EVT-2", "title": "TBC", "event_date": None},
+        {"name": "EVT-3", "title": "Soon", "event_date": datetime.date(2026, 9, 1)},
+    ])
+    events = api.get_events()
+    assert [e["title"] for e in events] == ["TBC", "Soon", "Old"]
+    assert [e["status"] for e in events] == ["Upcoming", "Upcoming", "Past"]
+    assert events[1]["event_date"] == "2026-09-01"
+
+
+def test_get_events_only_requests_published(api, frappe):
+    seen = {}
+    def _get_all(doctype, **kw):
+        seen.update(doctype=doctype, **kw)
+        return []
+    frappe.get_all = _get_all
+    assert api.get_events() == []
+    assert seen["doctype"] == "DPDP Event"
+    assert seen["filters"] == {"published": 1}
+
+
+def test_get_events_attaches_speakers_in_order(api, frappe):
+    calls = _wire_events(
+        frappe,
+        [{"name": "EVT-1", "title": "A", "event_date": None},
+         {"name": "EVT-2", "title": "B", "event_date": None}],
+        links=[{"parent": "EVT-1", "speaker": "SPK-2"},
+               {"parent": "EVT-1", "speaker": "SPK-1"},
+               {"parent": "EVT-2", "speaker": "SPK-1"}],
+        people=[{"name": "SPK-1", "speaker_name": "One", "role": "R1", "linkedin_url": "u1"},
+                {"name": "SPK-2", "speaker_name": "Two", "role": None, "linkedin_url": None}],
+    )
+    by_name = {e["name"]: e for e in api.get_events()}
+    assert [s["speaker_name"] for s in by_name["EVT-1"]["speakers"]] == ["Two", "One"]
+    assert [s["speaker_name"] for s in by_name["EVT-2"]["speakers"]] == ["One"]
+    assert "name" not in by_name["EVT-1"]["speakers"][0]
+    assert calls[1][1]["filters"]["parent"] == ["in", ["EVT-1", "EVT-2"]]
+    assert calls[2][0] == "DPDP Speaker"
+
+
+def test_get_events_skips_links_to_missing_speakers(api, frappe):
+    _wire_events(
+        frappe,
+        [{"name": "EVT-1", "title": "A", "event_date": None}],
+        links=[{"parent": "EVT-1", "speaker": "SPK-9"}],
+        people=[],
+    )
+    assert api.get_events()[0]["speakers"] == []
+
+
+def test_get_events_skips_speaker_query_when_no_events(api, frappe):
+    calls = _wire_events(frappe, [])
+    assert api.get_events() == []
+    assert [c[0] for c in calls] == ["DPDP Event"]
+
+
+def test_get_events_returns_empty_on_error(api, frappe):
+    def _boom(*a, **k):
+        raise RuntimeError("db down")
+    frappe.get_all = _boom
+    assert api.get_events() == []
+
+
+# ─────────────────────────────────────────────────────────────────
+# get_tagged_articles (Tech4Dev blog via WordPress REST)
+# ─────────────────────────────────────────────────────────────────
+
+def _wp_post(**kw):
+    post = {
+        "date": "2026-10-13T09:30:00",
+        "link": "https://projecttech4dev.org/helping-ngos/",
+        "title": {"rendered": "Helping NGOs &#8211; DPDP"},
+        "excerpt": {"rendered": "<p>At a roundtable &amp; more [&hellip;]</p>\n"},
+    }
+    post.update(kw)
+    return post
+
+
+def _wire_wp(monkeypatch, responses):
+    calls = []
+
+    def _get(url, params=None, timeout=None):
+        calls.append(url)
+        body = responses[url.rsplit("/", 1)[-1]]
+        if isinstance(body, Exception):
+            raise body
+        return types.SimpleNamespace(json=lambda: body)
+
+    monkeypatch.setitem(sys.modules, "requests", types.SimpleNamespace(get=_get))
+    return calls
+
+
+def test_wp_post_to_article_cleans_text_and_formats_date(api):
+    a = api._wp_post_to_article(_wp_post())
+    assert a == {
+        "title": "Helping NGOs – DPDP",
+        "summary": "At a roundtable & more…",
+        "date": "13 Oct 2026",
+        "link": "https://projecttech4dev.org/helping-ngos/",
+    }
+
+
+def test_wp_post_to_article_drops_offsite_link_and_trims_summary(api):
+    long = "<p>" + "word " * 100 + "</p>"
+    a = api._wp_post_to_article(_wp_post(link="https://evil.example/x", excerpt={"rendered": long}))
+    assert a["link"] == ""
+    assert len(a["summary"]) <= 181 and a["summary"].endswith("…")
+
+
+def test_get_tagged_articles_fetches_tag_then_posts(api, monkeypatch):
+    calls = _wire_wp(monkeypatch, {"tags": [{"id": 7}], "posts": [_wp_post()]})
+    articles = api.get_tagged_articles("dpdp-ngo-cohort-1")
+    assert [a["title"] for a in articles] == ["Helping NGOs – DPDP"]
+    assert [c.rsplit("/", 1)[-1] for c in calls] == ["tags", "posts"]
+
+
+def test_get_tagged_articles_unknown_tag_is_empty(api, monkeypatch):
+    calls = _wire_wp(monkeypatch, {"tags": []})
+    assert api.get_tagged_articles("nope") == []
+    assert len(calls) == 1
+
+
+def test_get_tagged_articles_network_error_returns_empty(api, monkeypatch):
+    _wire_wp(monkeypatch, {"tags": RuntimeError("timeout")})
+    assert api.get_tagged_articles("dpdp-ngo-cohort-1") == []
