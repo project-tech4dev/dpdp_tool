@@ -85,6 +85,21 @@ def _section_scores_from_doc(doc):
 
 
 # ─────────────────────────────────────────────────────────────────
+# LEGACY RECOMMENDATION ENDPOINTS — disabled by default
+# get_recommendations, check_reco and patch_assessment_reco are unused since
+# the 2-call flow. Open to guests, they let anyone run Claude on our key and
+# overwrite records, so they refuse every call unless site config has
+# "dpdp_legacy_reco_enabled": 1. Kept for a trial period, then to be deleted.
+# ─────────────────────────────────────────────────────────────────
+
+def _require_legacy_reco_enabled(endpoint):
+    if not frappe.conf.get("dpdp_legacy_reco_enabled"):
+        # No request data logged; just which endpoint something still calls
+        frappe.log_error(f"Disabled legacy endpoint called: {endpoint}", "DPDP Legacy Endpoint")
+        frappe.throw("This endpoint is disabled.", frappe.PermissionError)
+
+
+# ─────────────────────────────────────────────────────────────────
 # METHOD 1 — get_recommendations  (legacy single-call, kept as fallback)
 # ─────────────────────────────────────────────────────────────────
 
@@ -96,6 +111,7 @@ def get_recommendations(docname, sector, org_size, beneficiaries,
     The new 2-call flow is triggered automatically from store_assessment.
     Kept for backward compatibility and as a manual retry mechanism.
     """
+    _require_legacy_reco_enabled("get_recommendations")
     try:
         _validate_origin()
         if not docname:
@@ -169,6 +185,7 @@ def _run_recommendation_job(docname, sector, org_size, beneficiaries,
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def check_reco(docname):
     """Legacy: polls recommendations field. New code uses poll_status instead."""
+    _require_legacy_reco_enabled("check_reco")
     try:
         _validate_origin()
         if not docname:
@@ -288,6 +305,7 @@ def poll_status(docname):
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def patch_assessment_reco(docname, recommendations):
     """Patch recommendations onto an existing DPDP Assessment doc."""
+    _require_legacy_reco_enabled("patch_assessment_reco")
     try:
         _validate_origin()
         if not docname:
