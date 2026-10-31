@@ -22,6 +22,7 @@ Methods:
 import frappe
 import json
 from datetime import datetime
+from html import escape
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -400,9 +401,9 @@ def run_summary_call(docname):
                 subject=f"[DPDP] Summary generation failed — {doc.org_name}",
                 message=(
                     f"The AI summary call failed for assessment <b>{docname}</b>.<br><br>"
-                    f"<b>Organisation:</b> {doc.org_name}<br>"
-                    f"<b>Assessor:</b> {doc.contact_name} ({doc.org_email})<br>"
-                    f"<b>Error:</b> {e}<br><br>"
+                    f"<b>Organisation:</b> {escape(doc.org_name or '')}<br>"
+                    f"<b>Assessor:</b> {escape(doc.contact_name or '')} ({escape(doc.org_email or '')})<br>"
+                    f"<b>Error:</b> {escape(str(e))}<br><br>"
                     f"The roadmap call will still run. The summary tab will be blank.<br><br>"
                     f"<a href='{frappe.utils.get_url()}/app/dpdp-assessment/{docname}'>View in Frappe Desk</a>"
                 ),
@@ -462,9 +463,9 @@ def run_roadmap_call(docname):
                 subject=f"[DPDP] Roadmap generation failed — {doc.org_name}",
                 message=(
                     f"The AI roadmap call failed for assessment <b>{docname}</b>.<br><br>"
-                    f"<b>Organisation:</b> {doc.org_name}<br>"
-                    f"<b>Assessor:</b> {doc.contact_name} ({doc.org_email})<br>"
-                    f"<b>Error:</b> {e}<br><br>"
+                    f"<b>Organisation:</b> {escape(doc.org_name or '')}<br>"
+                    f"<b>Assessor:</b> {escape(doc.contact_name or '')} ({escape(doc.org_email or '')})<br>"
+                    f"<b>Error:</b> {escape(str(e))}<br><br>"
                     f"The PDF will still be generated and emailed with the executive summary only. "
                     f"The roadmap section will be blank.<br><br>"
                     f"<a href='{frappe.utils.get_url()}/app/dpdp-assessment/{docname}'>View in Frappe Desk</a>"
@@ -582,7 +583,7 @@ def _send_report_email(doc, file_doc):
     html = _render_email_template("DPDP Assessment Report", args)
     if not html:
         html = (
-            f"Dear {doc.contact_name or doc.org_name},<br><br>"
+            f"Dear {escape(doc.contact_name or doc.org_name or '')},<br><br>"
             f"Your DPDP Readiness Report is attached.<br><br>"
             f"Score: {doc.total_score}/50 — {band['emoji']} {band['label']}<br><br>"
             f"Tech4Dev DPDP Navigator"
