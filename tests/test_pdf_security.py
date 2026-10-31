@@ -30,6 +30,12 @@ def _weasyprint():
         pytest.skip("WeasyPrint not available")
 
 
+def _fetch(gen, url):
+    """WeasyPrint 68+ returns a URLFetcher instance; older versions a plain function."""
+    fetcher = gen._url_fetcher()
+    return getattr(fetcher, "fetch", fetcher)(url)
+
+
 # ─────────────────────────────────────────────────────────────────
 # Markdown → HTML
 # ─────────────────────────────────────────────────────────────────
@@ -48,7 +54,14 @@ def test_md_links_http_only_and_cannot_break_out_of_href(gen):
     )
     assert '<a href="https://example.org/a?x=1&amp;y=2">ok</a>' in out
     assert out.count("<a ") == 1
-    assert "file:" not in out and "javascript:" not in out and 'rel="attachment' not in out
+    assert 'href="file' not in out and 'href="javascript' not in out and 'rel="' not in out
+    assert "j (javascript:alert(1)" in out          # non-http link shown as text, URL kept
+
+
+def test_md_link_title_and_entities(gen):
+    out = gen._md_to_html('[Act](https://meity.gov.in "DPDP") R&amp;D&nbsp;team')
+    assert '<a href="https://meity.gov.in">Act</a>' in out
+    assert "R&amp;D" in out and "&amp;amp;" not in out and "&amp;nbsp;" not in out
 
 
 def test_md_keeps_tables_headings_bullets(gen):
@@ -70,15 +83,26 @@ def test_md_keeps_tables_headings_bullets(gen):
 def test_fetcher_refuses_anything_but_the_logo(gen, url):
     _weasyprint()
     with pytest.raises(ValueError):
-        gen._url_fetcher().fetch(url)
+        _fetch(gen, url)
+
+
+def test_fetcher_lets_the_logo_through(gen, monkeypatch):
+    _weasyprint()
+    import weasyprint.urls as urls
+    if hasattr(urls, "URLFetcher"):
+        monkeypatch.setattr(urls.URLFetcher, "fetch", lambda self, url, headers=None: ("fetched", url))
+    else:
+        monkeypatch.setattr(urls, "default_url_fetcher", lambda url, *a, **k: ("fetched", url))
+    assert _fetch(gen, gen.LOGO_URL) == ("fetched", gen.LOGO_URL)
 
 
 # ─────────────────────────────────────────────────────────────────
 # End to end with real WeasyPrint
 # ─────────────────────────────────────────────────────────────────
 
-def test_report_cannot_embed_local_files(gen, frappe, tmp_path):
+def test_report_cannot_embed_local_files(gen, frappe, tmp_path, monkeypatch):
     _weasyprint()
+    monkeypatch.setattr(gen, "ALLOWED_RESOURCE_URLS", set())   # no network: logo refused too
     secret = tmp_path / "site_config.json"
     secret.write_text("TOP-SECRET-db_password")
     f = secret.as_uri()

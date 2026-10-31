@@ -13,7 +13,7 @@ Section order (agreed):
   Appendix B: References
 """
 
-from html import escape
+from html import escape, unescape
 import json
 import re
 import frappe
@@ -166,12 +166,14 @@ def _md_to_html(text):
     if not text:
         return ''
 
-    # LLM output can echo guest-supplied text: escape it, then add our own tags
-    t = escape(text)
+    # LLM output can echo guest-supplied text: escape it, then add our own tags.
+    # Unescape first so entities the LLM already wrote (&amp;, &nbsp;) aren't doubled.
+    t = escape(unescape(text))
 
-    # Links: [text](url) → <a>, http(s) only; any other link keeps just its text
-    t = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)\)', r'<a href="\2">\1</a>', t)
-    t = re.sub(r'\[([^\]]+)\]\([^)]*\)', r'\1', t)
+    # Links: [text](url "optional title") → <a>, http(s) only.
+    # Any other link becomes plain text with its URL shown, never a live link.
+    t = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)(?:\s+&quot;[^)]*&quot;)?\)', r'<a href="\2">\1</a>', t)
+    t = re.sub(r'\[([^\]]+)\]\(([^)\s]+)[^)]*\)', r'\1 (\2)', t)
 
     # Tables — find header|separator|rows blocks
     def fmt_table(m):
@@ -512,19 +514,35 @@ def generate_assessment_pdf(doc, cfg):
         base_url=frappe.utils.get_url(),
         url_fetcher=_url_fetcher(),
     ).write_pdf(
-        stylesheets=[CSS(string=_get_pdf_css(doc.org_name))]
+        stylesheets=[CSS(string=_get_pdf_css(doc.org_name), url_fetcher=_url_fetcher())]
     )
+
+
+def _check_allowed(url):
+    if url not in ALLOWED_RESOURCE_URLS:
+        raise ValueError(f'PDF resource not allowed: {url[:80]}')
 
 
 def _url_fetcher():
     """WeasyPrint fetcher that loads only ALLOWED_RESOURCE_URLS and refuses
-    everything else (file://, data:, internal hosts, redirects)."""
-    from weasyprint.urls import URLFetcher
+    everything else (file://, data:, internal hosts).
+
+    Works across the WeasyPrint versions Frappe pins: 68+ has the URLFetcher
+    class (and 70 drops default_url_fetcher); older versions (59, 66) only
+    have the default_url_fetcher function."""
+    try:
+        from weasyprint.urls import URLFetcher
+    except ImportError:
+        from weasyprint.urls import default_url_fetcher
+
+        def fetch(url, *args, **kwargs):
+            _check_allowed(url)
+            return default_url_fetcher(url, *args, **kwargs)
+        return fetch
 
     class AllowlistFetcher(URLFetcher):
         def fetch(self, url, headers=None):
-            if url not in ALLOWED_RESOURCE_URLS:
-                raise ValueError(f'PDF resource not allowed: {url[:80]}')
+            _check_allowed(url)
             return super().fetch(url, headers)
 
     return AllowlistFetcher(allowed_protocols=('https',), allow_redirects=False)
