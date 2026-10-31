@@ -78,6 +78,7 @@ def test_md_keeps_tables_headings_bullets(gen):
     "file:///etc/passwd",
     "http://169.254.169.254/latest/meta-data/",
     "https://evil.example/x.png",
+    "https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png",
     "data:image/png;base64,AAAA",
 ])
 def test_fetcher_refuses_anything_but_the_logo(gen, url):
@@ -86,14 +87,19 @@ def test_fetcher_refuses_anything_but_the_logo(gen, url):
         _fetch(gen, url)
 
 
-def test_fetcher_lets_the_logo_through(gen, monkeypatch):
+def test_fetcher_lets_the_embedded_logo_through(gen):
     _weasyprint()
-    import weasyprint.urls as urls
-    if hasattr(urls, "URLFetcher"):
-        monkeypatch.setattr(urls.URLFetcher, "fetch", lambda self, url, headers=None: ("fetched", url))
+    response = _fetch(gen, gen._logo_data_uri())   # served from the data: URI, no network
+    if isinstance(response, dict):   # WeasyPrint < 68: {"string": …} or {"file_obj": …}
+        body = response.get("string") or response["file_obj"].read()
     else:
-        monkeypatch.setattr(urls, "default_url_fetcher", lambda url, *a, **k: ("fetched", url))
-    assert _fetch(gen, gen.LOGO_URL) == ("fetched", gen.LOGO_URL)
+        body = response.read()
+    assert body == gen.LOGO_PATH.read_bytes()
+
+
+def test_cover_embeds_the_bundled_logo(gen):
+    assert gen.LOGO_PATH.read_bytes().startswith(b"\x89PNG")
+    assert gen._logo_data_uri().startswith("data:image/png;base64,iVBOR")
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -102,7 +108,6 @@ def test_fetcher_lets_the_logo_through(gen, monkeypatch):
 
 def test_report_cannot_embed_local_files(gen, frappe, tmp_path, monkeypatch):
     _weasyprint()
-    monkeypatch.setattr(gen, "ALLOWED_RESOURCE_URLS", set())   # no network: logo refused too
     secret = tmp_path / "site_config.json"
     secret.write_text("TOP-SECRET-db_password")
     f = secret.as_uri()

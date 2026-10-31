@@ -13,19 +13,24 @@ Section order (agreed):
   Appendix B: References
 """
 
-from html import escape, unescape
+import base64
+import functools
 import json
+import pathlib
 import re
+from html import escape, unescape
+
 import frappe
 
 
-LOGO_URL = (
-    'https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png'
-)
+# Bundled copy of the Tech4Dev logo, embedded in the PDF so rendering needs no
+# network fetch (and can't lose the logo if the website moves or redirects it).
+LOGO_PATH = pathlib.Path(__file__).parent / 'public' / 'images' / 'tech4dev-logo.png'
 
-# The only resources WeasyPrint may load. Report text comes from guests and from
-# the LLM, so anything else (file:// paths, internal hosts) must never be fetched.
-ALLOWED_RESOURCE_URLS = {LOGO_URL}
+
+@functools.lru_cache(maxsize=1)
+def _logo_data_uri():
+    return 'data:image/png;base64,' + base64.b64encode(LOGO_PATH.read_bytes()).decode()
 
 STATIC_CSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -387,7 +392,7 @@ def generate_assessment_pdf(doc, cfg):
 
   <!-- White top bar: logo + DPDP Navigator title -->
   <div class="cover-topbar">
-    <img class="cover-logo" src="{LOGO_URL}" alt="Tech4Dev">
+    <img class="cover-logo" src="{_logo_data_uri()}" alt="Tech4Dev">
     <div class="cover-logo-divider"></div>
     <div class="cover-nav-title">DPDP Readiness Navigator</div>
   </div>
@@ -519,13 +524,16 @@ def generate_assessment_pdf(doc, cfg):
 
 
 def _check_allowed(url):
-    if url not in ALLOWED_RESOURCE_URLS:
+    # The only resource WeasyPrint may load is our own embedded logo. Report text
+    # comes from guests and from the LLM, so anything else (file:// paths,
+    # internal hosts, other data: URIs) must never be fetched.
+    if url != _logo_data_uri():
         raise ValueError(f'PDF resource not allowed: {url[:80]}')
 
 
 def _url_fetcher():
-    """WeasyPrint fetcher that loads only ALLOWED_RESOURCE_URLS and refuses
-    everything else (file://, data:, internal hosts).
+    """WeasyPrint fetcher that loads only the embedded logo and refuses
+    everything else (file://, http(s), other data: URIs).
 
     Works across the WeasyPrint versions Frappe pins: 68+ has the URLFetcher
     class (and 70 drops default_url_fetcher); older versions (59, 66) only
@@ -545,7 +553,7 @@ def _url_fetcher():
             _check_allowed(url)
             return super().fetch(url, headers)
 
-    return AllowlistFetcher(allowed_protocols=('https',), allow_redirects=False)
+    return AllowlistFetcher(allowed_protocols=('data',), allow_redirects=False)
 
 
 def send_report_email(doc, file_doc):
