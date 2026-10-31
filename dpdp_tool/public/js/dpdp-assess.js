@@ -71,7 +71,7 @@ function renderSectorCheckboxes(sectors) {
 
 // ── SESSION STORAGE ─────────────────────────────────────────────────
 const S_VER = 'dpdp_v1_';
-const S_TTL = 7 * 24 * 60 * 60 * 1000;
+const S_TTL = 3 * 24 * 60 * 60 * 1000;  // matches REPORT_PUBLIC_DAYS: the PDF goes private after 3 days
 
 function getSessionKey() {
   const e = document.getElementById('i-email')?.value?.trim().toLowerCase();
