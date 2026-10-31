@@ -191,7 +191,9 @@ def check_reco(docname):
 # Now also enqueues the 2-call AI background jobs.
 # ─────────────────────────────────────────────────────────────────
 
-@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
+# POST only: takes org name, email, contact name and beneficiaries, which must
+# never travel in a URL (it would land in access logs)
+@frappe.whitelist(allow_guest=True, methods=["POST"])
 def store_assessment(org_name, org_email, contact_name, sector, org_size,
                      beneficiaries, total_score, score_consent, score_storage,
                      score_usage, score_rights, score_governance,
