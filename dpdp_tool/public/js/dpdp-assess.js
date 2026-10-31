@@ -71,7 +71,16 @@ function renderSectorCheckboxes(sectors) {
 
 // ── SESSION STORAGE ─────────────────────────────────────────────────
 const S_VER = 'dpdp_v1_';
-const S_TTL = 3 * 24 * 60 * 60 * 1000;  // matches REPORT_PUBLIC_DAYS: the PDF goes private after 3 days
+const S_TTL = 7 * 24 * 60 * 60 * 1000;
+const PDF_TTL = 3 * 24 * 60 * 60 * 1000;  // matches REPORT_PUBLIC_DAYS: the PDF goes private after 3 days
+
+// Saved PDF link, only while it can still be opened: under 3 days old and a
+// current random file name (older DPDP_<Org>_<date>.pdf links were renamed).
+// Otherwise Download PDF falls back to the browser-generated PDF.
+function savedPdfUrl(saved) {
+  const url = saved.pdfUrl || '';
+  return Date.now() - saved.savedAt < PDF_TTL && /\/DPDP_Report_[0-9a-f]{16}\.pdf$/.test(url) ? url : null;
+}
 
 function getSessionKey() {
   const e = document.getElementById('i-email')?.value?.trim().toLowerCase();
@@ -169,7 +178,7 @@ function viewReport() {
   const saved = _autoSession.data;
   answers = saved.answers;
   org = saved.org;
-  _pdfUrl = saved.pdfUrl || null;
+  _pdfUrl = savedPdfUrl(saved);
   if (saved.org.email) document.getElementById('i-email').value = saved.org.email;
   const { secScores, total } = calcScores();
   showScreen('s-result');
@@ -922,7 +931,7 @@ function generatePDFFallback() {
 function viewReport() {
   if (!_autoSession) return;
   const saved = _autoSession.data;
-  answers = saved.answers; org = saved.org; _pdfUrl = saved.pdfUrl || null;
+  answers = saved.answers; org = saved.org; _pdfUrl = savedPdfUrl(saved);
   if (saved.org.email) document.getElementById('i-email').value = saved.org.email;
   const { secScores, total } = calcScores();
   showScreen('s-result');

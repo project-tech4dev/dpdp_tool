@@ -174,8 +174,8 @@ def check_reco(docname):
         if not docname:
             return {"status": "error", "message": "docname required"}
         from dpdp_tool.report_privacy import is_within_public_window
-        doc = frappe.get_doc("DPDP Assessment", docname)
-        if not is_within_public_window(doc.creation):
+        doc = frappe.db.get_value("DPDP Assessment", docname, ["creation", "recommendations"], as_dict=True)
+        if not doc or not is_within_public_window(doc.creation):
             return {"status": "not_found"}
         if doc.recommendations:
             return {"status": "ok", "recommendations": doc.recommendations}

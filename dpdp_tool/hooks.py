@@ -40,7 +40,8 @@ fixtures = [
 
 web_include_css = ["/assets/dpdp_tool/css/dpdp.css"]
 
-# Random names for new assessments (custom DocType, so no controller autoname)
+# Random names for new assessments (custom DocType, so no controller autoname).
+# The fixture's autoname "hash" is only a non-sequential fallback.
 doc_events = {
     "DPDP Assessment": {
         "autoname": "dpdp_tool.report_privacy.set_random_name",
