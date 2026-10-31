@@ -186,9 +186,11 @@ async function submitConsult(){
   const btn=document.querySelector('.fsub');btn.textContent='Submitting…';btn.disabled=true;
   try{
     const cp=new URLSearchParams({org_name:org,contact_name:name,email,sector:JSON.stringify(sectors),org_size:size,service_interest:document.getElementById('cf-svc').value,message:document.getElementById('cf-msg').value});
-    const cr=await fetch(`${FU}/api/method/dpdp_tool.api.submit_consult_request?${cp}`);
-    const cj=await cr.json();console.log('Consult result:',cj.message);
-  }catch(e){console.error('submitConsult failed:',e);}
+    // POST body, never the URL: these fields are personal data (CLAUDE.md)
+    const cr=await fetch(`${FU}/api/method/dpdp_tool.api.submit_consult_request`,{method:'POST',headers:{'X-Frappe-CSRF-Token':'fetch'},body:cp});
+    const cj=await cr.json();
+    console.log(cj.message?.status==='ok'?'[dpdp] consult submitted':'[dpdp] consult failed');
+  }catch(e){console.warn('[dpdp] consult failed');}
   document.getElementById('cf-inner').style.display='none';
   document.getElementById('cf-success').style.display='block';
 }
