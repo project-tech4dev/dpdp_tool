@@ -554,30 +554,3 @@ def _url_fetcher():
             return super().fetch(url, headers)
 
     return AllowlistFetcher(allowed_protocols=('data',), allow_redirects=False)
-
-
-def send_report_email(doc, file_doc):
-    """Email the completed report to the assessor."""
-    cfg  = _get_config_cached()
-    band = next(
-        (b for b in cfg['scoring']['bands'] if doc.total_score >= b['min']),
-        cfg['scoring']['bands'][-1]
-    )
-    frappe.sendmail(
-        recipients=[doc.org_email],
-        subject=f'Your DPDP Readiness Report — {doc.org_name}',
-        template='DPDP Assessment Report',
-        args={
-            'doc':        doc,
-            'band_label': band['label'],
-            'band_emoji': band['emoji'],
-            'site_url':   frappe.utils.get_url(),
-        },
-        attachments=[{'fname': file_doc.file_name, 'fid': file_doc.name}]
-    )
-
-
-def _get_config_cached():
-    """Import config loader from api module to avoid duplication."""
-    from dpdp_tool.api import _get_config
-    return _get_config()
