@@ -492,3 +492,13 @@ def test_get_tagged_articles_unknown_tag_is_empty(api, monkeypatch):
 def test_get_tagged_articles_network_error_returns_empty(api, monkeypatch):
     _wire_wp(monkeypatch, {"tags": RuntimeError("timeout")})
     assert api.get_tagged_articles("dpdp-ngo-cohort-1") == []
+
+
+def test_store_assessment_is_post_only(api):
+    """It takes personal data, so it must never accept GET (data would be in the URL)."""
+    import ast
+    tree = ast.parse(open(api.__file__).read())
+    fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "store_assessment")
+    methods = next(ast.literal_eval(kw.value) for d in fn.decorator_list if isinstance(d, ast.Call)
+                   for kw in d.keywords if kw.arg == "methods")
+    assert methods == ["POST"]
