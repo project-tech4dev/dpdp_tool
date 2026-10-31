@@ -653,7 +653,8 @@ def get_sector_insights():
 # METHOD 4 — submit_consult_request  (unchanged)
 # ─────────────────────────────────────────────────────────────────
 
-@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
+# POST only: org name, contact name, email and message must never be in a URL
+@frappe.whitelist(allow_guest=True, methods=["POST"])
 def submit_consult_request(org_name, contact_name, email,
                            sector="", org_size="", service_interest="",
                            message="", phone=""):
