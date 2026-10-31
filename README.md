@@ -65,9 +65,9 @@ dpdp_tool/                              ← repo root (Frappe app)
 |---|---|---|
 | `store_assessment` | Whitelisted | Saves assessment, enqueues AI background jobs |
 | `poll_status` | Whitelisted | JS polls this for summary/roadmap/PDF readiness |
-| `get_recommendations` | Whitelisted | Legacy single-call Claude (fallback) |
-| `check_reco` | Whitelisted | Legacy poll for recommendations field |
-| `patch_assessment_reco` | Whitelisted | Patches recommendations onto existing doc |
+| `get_recommendations` | Whitelisted, **disabled** | Legacy single-call Claude. Refuses calls unless site config `dpdp_legacy_reco_enabled: 1` |
+| `check_reco` | Whitelisted, **disabled** | Legacy poll for recommendations field (same switch) |
+| `patch_assessment_reco` | Whitelisted, **disabled** | Patches recommendations onto existing doc (same switch) |
 | `get_sector_insights` | Whitelisted | Aggregates scores by sector for dashboard |
 | `submit_consult_request` | Whitelisted | Saves consult enquiry |
 | `rerun_ai_calls` | Whitelisted | Desk button: re-enqueue both AI calls |

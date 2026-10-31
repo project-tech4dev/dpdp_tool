@@ -106,6 +106,7 @@ def test_poll_status_hides_old_and_missing_assessments(api, frappe, rp):
 
 
 def test_check_reco_hides_old_and_missing_assessments(api, frappe, rp):
+    frappe.conf.get = lambda key, default=None: 1 if key == "dpdp_legacy_reco_enabled" else default
     frappe.db.get_value = lambda *a, **k: _assessment(dt.timedelta(days=10))
     assert api.check_reco("DPDP-0123456789abcdef") == {"status": "not_found"}
     frappe.db.get_value = lambda *a, **k: None          # unknown name: same answer, no error
