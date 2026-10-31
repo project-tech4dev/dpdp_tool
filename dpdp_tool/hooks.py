@@ -39,3 +39,16 @@ fixtures = [
 ]
 
 web_include_css = ["/assets/dpdp_tool/css/dpdp.css"]
+
+# Random names for new assessments (custom DocType, so no controller autoname)
+doc_events = {
+    "DPDP Assessment": {
+        "autoname": "dpdp_tool.report_privacy.set_random_name",
+    },
+}
+
+scheduler_events = {
+    "daily": [
+        "dpdp_tool.report_privacy.make_old_report_pdfs_private",
+    ],
+}

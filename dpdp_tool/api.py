@@ -173,7 +173,10 @@ def check_reco(docname):
         _validate_origin()
         if not docname:
             return {"status": "error", "message": "docname required"}
+        from dpdp_tool.report_privacy import is_within_public_window
         doc = frappe.get_doc("DPDP Assessment", docname)
+        if not is_within_public_window(doc.creation):
+            return {"status": "not_found"}
         if doc.recommendations:
             return {"status": "ok", "recommendations": doc.recommendations}
         return {"status": "pending"}
@@ -256,13 +259,15 @@ def poll_status(docname):
     """
     try:
         _validate_origin()
+        from dpdp_tool.report_privacy import is_within_public_window
         doc = frappe.db.get_value(
             "DPDP Assessment", docname,
             ["status", "executive_summary", "action_roadmap",
-             "pdf_file", "failed_reason"],
+             "pdf_file", "failed_reason", "creation"],
             as_dict=True
         )
-        if not doc:
+        # Only the submitter's browser polls, and only for a few minutes
+        if not doc or not is_within_public_window(doc.creation):
             return {"status": "not_found"}
         return {
             "status":          doc.status,
@@ -467,16 +472,14 @@ def generate_and_attach_pdf(docname):
     """
     try:
         from dpdp_tool.pdf_generator import generate_assessment_pdf
+        from dpdp_tool.report_privacy import random_report_filename
 
         doc = frappe.get_doc("DPDP Assessment", docname)
         cfg = _get_config()
 
         pdf_bytes = generate_assessment_pdf(doc, cfg)
 
-        filename = (
-            f"DPDP_{doc.org_name.replace(' ', '_')}"
-            f"_{frappe.utils.today()}.pdf"
-        )
+        filename = random_report_filename()  # public for a few days; no org name in the URL
 
         file_doc = frappe.get_doc({
             "doctype":             "File",
@@ -540,7 +543,9 @@ def _send_report_email(doc, file_doc):
         file_path = frappe.get_doc("File", file_doc.name).get_full_path()
         with open(file_path, "rb") as f:
             pdf_bytes = f.read()
-        attachments = [{"fname": file_doc.file_name, "fcontent": pdf_bytes}]
+        # Stored file has a random name; the emailed copy keeps a readable one
+        attachments = [{"fname": f"DPDP_{doc.org_name.replace(' ', '_')}_{frappe.utils.today()}.pdf",
+                        "fcontent": pdf_bytes}]
         frappe.logger("dpdp").info(f"[DPDP] PDF read OK: {len(pdf_bytes)} bytes for {doc.name}")
     except Exception as e:
         frappe.log_error(f"[DPDP] PDF read failed, falling back to fid: {e}", "DPDP Email")

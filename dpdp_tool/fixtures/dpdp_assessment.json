@@ -5,7 +5,7 @@
     "module": "DPDP Tool",
     "doctype": "DocType",
     "is_submittable": 0,
-    "autoname": "format:DPDP-ASSESS-{####}",
+    "autoname": "hash",
     "sort_field": "submitted_on",
     "sort_order": "DESC",
     "fields": [
@@ -171,6 +171,13 @@
         "in_list_view": 1
       },
       {
+        "fieldname": "legacy_id",
+        "fieldtype": "Data",
+        "label": "Legacy ID",
+        "read_only": 1,
+        "description": "Sequential name (DPDP-ASSESS-####) this assessment had before random names were introduced."
+      },
+      {
         "fieldname": "is_testing",
         "fieldtype": "Check",
         "label": "Is Testing",
@@ -187,6 +194,7 @@
         "create": 1,
         "delete": 1
       }
-    ]
+    ],
+    "search_fields": "org_name,legacy_id"
   }
 ]
