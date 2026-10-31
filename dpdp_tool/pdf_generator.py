@@ -13,6 +13,7 @@ Section order (agreed):
   Appendix B: References
 """
 
+from html import escape
 import json
 import re
 import frappe
@@ -21,6 +22,10 @@ import frappe
 LOGO_URL = (
     'https://projecttech4dev.org/wp-content/uploads/2024/05/13b5fab9b3d478788afed54141951357.png'
 )
+
+# The only resources WeasyPrint may load. Report text comes from guests and from
+# the LLM, so anything else (file:// paths, internal hosts) must never be fetched.
+ALLOWED_RESOURCE_URLS = {LOGO_URL}
 
 STATIC_CSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -161,10 +166,12 @@ def _md_to_html(text):
     if not text:
         return ''
 
-    t = text
+    # LLM output can echo guest-supplied text: escape it, then add our own tags
+    t = escape(text)
 
-    # Links: [text](url) → <a>
-    t = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2">\1</a>', t)
+    # Links: [text](url) → <a>, http(s) only; any other link keeps just its text
+    t = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)\)', r'<a href="\2">\1</a>', t)
+    t = re.sub(r'\[([^\]]+)\]\([^)]*\)', r'\1', t)
 
     # Tables — find header|separator|rows blocks
     def fmt_table(m):
@@ -347,10 +354,16 @@ def generate_assessment_pdf(doc, cfg):
     <div class="sc-lbl">{sd['lbl']} · {sd['pct']}%</div>
   </div>''' for i, sd in enumerate(sec_data))
 
+    # ── Guest-entered fields, escaped for HTML ──
+    org_name     = escape(doc.org_name or '')
+    contact_name = escape(doc.contact_name or '') or org_name
+    sector       = escape(doc.sector or '')
+    org_size     = escape(doc.org_size or '')
+
     # ── Beneficiary row (conditional) ──
     bene_row = (
         f"<tr><td class='op-pdf-key'>Beneficiaries</td>"
-        f"<td colspan='3'>{doc.beneficiaries}</td></tr>"
+        f"<td colspan='3'>{escape(doc.beneficiaries)}</td></tr>"
         if doc.beneficiaries else ''
     )
 
@@ -385,8 +398,8 @@ def generate_assessment_pdf(doc, cfg):
     <div class="cover-bottom">
       <div class="cover-org-row">
         <div>
-          <div class="cover-org">{doc.org_name}</div>
-          <div class="cover-meta">{doc.sector} · {doc.org_size} · {doc.contact_name or doc.org_name}</div>
+          <div class="cover-org">{org_name}</div>
+          <div class="cover-meta">{sector} · {org_size} · {contact_name}</div>
         </div>
         <div class="cover-score-block">
           <div class="cover-score">{int(doc.total_score)}/50</div>
@@ -496,10 +509,25 @@ def generate_assessment_pdf(doc, cfg):
     # ── Render to PDF ──
     return HTML(
         string=html,
-        base_url=frappe.utils.get_url()
+        base_url=frappe.utils.get_url(),
+        url_fetcher=_url_fetcher(),
     ).write_pdf(
         stylesheets=[CSS(string=_get_pdf_css(doc.org_name))]
     )
+
+
+def _url_fetcher():
+    """WeasyPrint fetcher that loads only ALLOWED_RESOURCE_URLS and refuses
+    everything else (file://, data:, internal hosts, redirects)."""
+    from weasyprint.urls import URLFetcher
+
+    class AllowlistFetcher(URLFetcher):
+        def fetch(self, url, headers=None):
+            if url not in ALLOWED_RESOURCE_URLS:
+                raise ValueError(f'PDF resource not allowed: {url[:80]}')
+            return super().fetch(url, headers)
+
+    return AllowlistFetcher(allowed_protocols=('https',), allow_redirects=False)
 
 
 def send_report_email(doc, file_doc):
