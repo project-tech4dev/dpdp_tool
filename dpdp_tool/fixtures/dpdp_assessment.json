@@ -5,7 +5,7 @@
     "module": "DPDP Tool",
     "doctype": "DocType",
     "is_submittable": 0,
-    "autoname": "format:DPDP-ASSESS-{####}",
+    "autoname": "hash",
     "sort_field": "submitted_on",
     "sort_order": "DESC",
     "fields": [
