@@ -33,7 +33,9 @@ def set_random_name(doc, method=None):
 
 
 def is_within_public_window(creation):
-    return bool(creation) and frappe.utils.now_datetime() - creation < timedelta(days=REPORT_PUBLIC_DAYS)
+    if not creation:
+        return False
+    return frappe.utils.now_datetime() - frappe.utils.get_datetime(creation) < timedelta(days=REPORT_PUBLIC_DAYS)
 
 
 def make_old_report_pdfs_private():

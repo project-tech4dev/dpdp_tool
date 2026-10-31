@@ -29,6 +29,7 @@ def _load(name, path):
 @pytest.fixture()
 def rp(frappe, monkeypatch):
     frappe.utils.now_datetime = lambda: NOW
+    frappe.utils.get_datetime = lambda v: v if isinstance(v, dt.datetime) else dt.datetime.fromisoformat(str(v))
     module = _load("dpdp_tool.report_privacy", ROOT / "report_privacy.py")
     # api.py imports it lazily as dpdp_tool.report_privacy
     monkeypatch.setitem(sys.modules, "dpdp_tool", types.ModuleType("dpdp_tool"))
@@ -84,6 +85,7 @@ def test_patch_is_registered():
 ])
 def test_public_window(rp, age, ok):
     assert rp.is_within_public_window(NOW - age) is ok
+    assert rp.is_within_public_window(str(NOW - age)) is ok   # DB may hand back a string
     assert rp.is_within_public_window(None) is False
 
 
