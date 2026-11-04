@@ -11,16 +11,32 @@ no_cache: 1
 <div class="res-hero">
   <div class="container">
     <div class="eyelabel">Resources · Blog</div>
-    <h1 class="res-hero-h">From the Tech4Dev blog: <em>DPDP in practice.</em></h1>
-    <p class="res-hero-sub">Field notes, cohort reflections and announcements on the DPDP Act from Project Tech4Dev.</p>
+    <h1 class="res-hero-h">Our writing on <em>DPDP in practice.</em></h1>
+    <p class="res-hero-sub">Articles we've published externally, plus field notes, cohort reflections and announcements on the DPDP Act from Project Tech4Dev.</p>
   </div>
 </div>
+
+<!-- PUBLISHED EXTERNALLY (hand-maintained until there are several) -->
+<section id="blog-external">
+  <div class="container">
+    <div class="res-section-hdr"><span class="res-section-lbl">Published externally</span><div class="res-section-line"></div></div>
+    <article class="rcard rcard-featured blog-pub">
+      <div class="rcard-featured-visual"><img src="/assets/dpdp_tool/images/publishers/idr.png?v={{ asset_v }}" alt="India Development Review (IDR)"></div>
+      <div class="rcard-featured-body">
+        <div class="rcard-meta"><span class="rcard-time">IDR · 25 Aug 2026 · Shweta Jain Chaudhury</span></div>
+        <h3 class="rcard-title rcard-title-lg">Answering key questions about India's data protection regulations</h3>
+        <p class="rcard-desc">The DPDP Act governs how organisations collect, use, and share personal data. Here's what nonprofits need to know to stay compliant.</p>
+        <div class="rcard-footer-inline"><a class="rcard-cta" href="https://idronline.org/article/board-governance/answering-key-questions-about-indias-data-protection-regulations/" target="_blank" rel="noopener">Read on IDR ↗</a></div>
+      </div>
+    </article>
+  </div>
+</section>
 
 <!-- ARTICLES (Tech4Dev blog posts tagged dpdp) -->
 {% if articles %}
 <section id="blog-articles">
   <div class="container">
-    <div class="res-section-hdr"><span class="res-section-lbl">Newest first</span><div class="res-section-line"></div></div>
+    <div class="res-section-hdr"><span class="res-section-lbl">On the Tech4Dev blog · newest first</span><div class="res-section-line"></div></div>
     <div class="res-grid-row">
       {% for a in articles %}
       <article class="rcard{% if loop.first %} op-full blog-card-lead{% endif %}">

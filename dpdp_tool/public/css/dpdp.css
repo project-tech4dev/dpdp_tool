@@ -886,3 +886,11 @@ footer{background:var(--navy);padding:2.5rem 3rem;display:flex;justify-content:s
   .blog-card-lead{display:flex}
   .blog-card-lead .blog-img{grid-row:auto;aspect-ratio:16/9;border-right:0;border-bottom:1px solid var(--border)}
 }
+/* Published externally: .rcard-featured with the publisher's logo on the left */
+#blog-external{padding-top:2.5rem;padding-bottom:0}
+.blog-pub .rcard-featured-visual{background:var(--white);border-right:1px solid var(--border);padding:1rem}
+.blog-pub .rcard-featured-visual img{max-width:100%;max-height:64px;object-fit:contain}
+@media(max-width:768px){
+  .blog-pub .rcard-featured-visual{display:flex;width:auto;justify-content:flex-start;border-right:0;padding:1.25rem 1.5rem 0}
+  .blog-pub .rcard-featured-visual img{max-height:40px}
+}
