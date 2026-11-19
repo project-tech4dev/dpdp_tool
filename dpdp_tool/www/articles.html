@@ -25,9 +25,10 @@ no_cache: 1
     <article class="rcard rcard-featured blog-pub">
       {% if x.logo %}<div class="rcard-featured-visual"><img src="{{ x.logo | e }}" alt="{{ x.publisher | e }}"></div>{% endif %}
       <div class="rcard-featured-body">
-        <div class="rcard-meta"><span class="rcard-time">{{ x.publisher | e }}{% if x.date %} · {{ x.date }}{% endif %}{% if x.author %} · {{ x.author | e }}{% endif %}</span></div>
+        <div class="rcard-meta"><span class="rcard-time">{{ x.publisher | e }}{% if x.date %} · {{ x.date }}{% endif %}</span></div>
         <h3 class="rcard-title rcard-title-lg">{{ x.title | e }}</h3>
         <p class="rcard-desc">{{ x.summary | e }}</p>
+        {% if x.author %}<div class="ev-names">By {% if x.author_url %}<a href="{{ x.author_url | e }}" target="_blank" rel="noopener">{{ x.author | e }}</a>{% else %}<b>{{ x.author | e }}</b>{% endif %}</div>{% endif %}
         <div class="rcard-footer-inline"><a class="rcard-cta" href="{{ x.url | e }}" target="_blank" rel="noopener">Read on {{ x.publisher | e }} ↗</a></div>
       </div>
     </article>

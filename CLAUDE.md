@@ -6,6 +6,7 @@ This tool processes personal data submitted by NGOs (org name, contact name, ema
 
 - **Never add PII to URLs or query parameters.** Use POST with a JSON/form body. URL parameters appear in server access logs, browser history, and referrer headers.
 - **Never log PII to the browser console.** Console messages must be generic stage markers only (e.g. `[dpdp] storing assessment`) — no data values, no URLs, no response bodies.
+- **No real people's names in the repo or on GitHub without explicit permission.** This covers code, templates, fixtures and Desk help text, tests, comments, commit messages, PR titles and descriptions. Use obviously made-up placeholders instead (e.g. `Author One`, `Person Two`). Real names belong only in Desk records (e.g. DPDP Speaker), never in source.
 - **Never include org names or contact details in LLM prompts** unless strictly required for the output. The Anthropic API currently receives: sector, org size, beneficiaries description, section scores, and gap question text. `org_name` must not be included.
 - **Audit any new external call** (fetch, API, analytics, third-party SDK) before adding it. Confirm what data is sent and where it goes. No analytics or tracking SDKs are used by design.
 - **API keys** must be stored in Frappe site config (`frappe.conf.get(...)`), never hardcoded in source files.

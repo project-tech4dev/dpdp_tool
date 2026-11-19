@@ -82,9 +82,10 @@
    },
    {
     "fieldname": "author",
-    "fieldtype": "Data",
+    "fieldtype": "Link",
     "label": "Author",
-    "description": "Byline as shown on the card, e.g. Shweta Jain Chaudhury"
+    "options": "DPDP Speaker",
+    "description": "Pick from DPDP Speaker; shown on the card as By <name>, linking to their LinkedIn"
    }
   ],
   "permissions": [

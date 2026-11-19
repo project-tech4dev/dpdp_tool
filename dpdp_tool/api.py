@@ -21,6 +21,7 @@ Methods:
 
 import frappe
 import json
+import re
 from datetime import datetime
 from html import escape
 
@@ -780,6 +781,9 @@ def get_events():
         return []
 
 
+LINKEDIN_RE = re.compile(r"^https://([a-z]{2,3}\.)?linkedin\.com/", re.I)
+
+
 def _fmt_date(d):
     """Card date, e.g. 16 Nov 2026; empty if no date."""
     return f"{d.day} {d.strftime('%b %Y')}" if d else ""
@@ -799,11 +803,22 @@ def get_external_articles():
                     "url", "published_on", "author"],
             order_by="published_on desc, creation desc",
         )
+        # Author: article → DPDP Speaker (same records as event speakers)
+        people = {}
+        author_ids = list({r["author"] for r in rows if r.get("author")})
+        if author_ids:
+            people = {sp.pop("name"): sp for sp in frappe.get_all(
+                "DPDP Speaker",
+                filters={"name": ["in", author_ids]},
+                fields=["name", "speaker_name", "linkedin_url"],
+            )}
     except Exception as e:
         frappe.log_error(f"DPDP get_external_articles error: {e}", "DPDP API")
         return []
     articles = []
     for r in rows:
+        person = people.get(r.get("author")) or {}
+        linkedin = (person.get("linkedin_url") or "").strip()
         url = (r.get("url") or "").strip()
         if not url.lower().startswith("https://"):
             continue
@@ -815,7 +830,8 @@ def get_external_articles():
             "logo": logo if logo.startswith("/files/") else "",
             "url": url,
             "date": _fmt_date(r.get("published_on")),
-            "author": r.get("author") or "",
+            "author": person.get("speaker_name") or "",
+            "author_url": linkedin if LINKEDIN_RE.match(linkedin) else "",
         })
     return articles
 
