@@ -3,34 +3,38 @@ no_cache: 1
 ---
 {% extends "templates/dpdp_base.html" %}
 
-{% block title %}Blog — DPDP Readiness Navigator{% endblock %}
+{% block title %}Articles — DPDP Readiness Navigator{% endblock %}
 
 {% block content %}
 
 <!-- HERO -->
 <div class="res-hero">
   <div class="container">
-    <div class="eyelabel">Resources · Blog</div>
+    <div class="eyelabel">Resources · Articles</div>
     <h1 class="res-hero-h">Our articles on <em>DPDP in practice.</em></h1>
     <p class="res-hero-sub">Articles we've published externally, plus field notes, cohort reflections and announcements on the DPDP Act from Project Tech4Dev.</p>
   </div>
 </div>
 
-<!-- PUBLISHED EXTERNALLY (hand-maintained until there are several) -->
+<!-- PUBLISHED EXTERNALLY (DPDP External Article records, managed in Desk) -->
+{% if external_articles %}
 <section id="blog-external">
   <div class="container">
     <div class="res-section-hdr"><span class="res-section-lbl">Published externally</span><div class="res-section-line"></div></div>
+    {% for x in external_articles %}
     <article class="rcard rcard-featured blog-pub">
-      <div class="rcard-featured-visual"><img src="/assets/dpdp_tool/images/publishers/idr.png?v={{ asset_v }}" alt="India Development Review (IDR)"></div>
+      {% if x.logo %}<div class="rcard-featured-visual"><img src="{{ x.logo | e }}" alt="{{ x.publisher | e }}"></div>{% endif %}
       <div class="rcard-featured-body">
-        <div class="rcard-meta"><span class="rcard-time">IDR · 25 Aug 2026 · Shweta Jain Chaudhury</span></div>
-        <h3 class="rcard-title rcard-title-lg">Answering key questions about India's data protection regulations</h3>
-        <p class="rcard-desc">The DPDP Act governs how organisations collect, use, and share personal data. Here's what nonprofits need to know to stay compliant.</p>
-        <div class="rcard-footer-inline"><a class="rcard-cta" href="https://idronline.org/article/board-governance/answering-key-questions-about-indias-data-protection-regulations/" target="_blank" rel="noopener">Read on IDR ↗</a></div>
+        <div class="rcard-meta"><span class="rcard-time">{{ x.publisher | e }}{% if x.date %} · {{ x.date }}{% endif %}{% if x.author %} · {{ x.author | e }}{% endif %}</span></div>
+        <h3 class="rcard-title rcard-title-lg">{{ x.title | e }}</h3>
+        <p class="rcard-desc">{{ x.summary | e }}</p>
+        <div class="rcard-footer-inline"><a class="rcard-cta" href="{{ x.url | e }}" target="_blank" rel="noopener">Read on {{ x.publisher | e }} ↗</a></div>
       </div>
     </article>
+    {% endfor %}
   </div>
 </section>
+{% endif %}
 
 <!-- ARTICLES (Tech4Dev blog posts tagged dpdp) -->
 {% if articles %}
