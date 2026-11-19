@@ -8,6 +8,11 @@ app_color       = "#1D6FB8"
 app_email       = "dpdp@projecttech4dev.org"
 app_license     = "MIT"
 
+# The Blog page was renamed to Articles; keep old links working.
+website_redirects = [
+    {"source": "/blog", "target": "/articles"},
+]
+
 # Fixtures — DocType definitions and Email Templates auto-applied on bench migrate.
 # After changing a DocType via Desk, run:
 #   bench --site dpdp.projecttech4dev.org export-fixtures
@@ -21,7 +26,8 @@ fixtures = [
             "DPDP Resource",
             "DPDP Speaker",
             "DPDP Event Speaker",
-            "DPDP Event"
+            "DPDP Event",
+            "DPDP External Article"
         ]]]
     },
     {

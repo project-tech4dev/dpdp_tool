@@ -1,0 +1,108 @@
+[
+ {
+  "name": "DPDP External Article",
+  "custom": 1,
+  "module": "DPDP Tool",
+  "doctype": "DocType",
+  "autoname": "format:EXT-{###}",
+  "naming_rule": "Expression (old style)",
+  "title_field": "title",
+  "sort_field": "published_on",
+  "sort_order": "DESC",
+  "track_changes": 0,
+  "make_attachments_public": 1,
+  "fields": [
+   {
+    "fieldname": "title",
+    "fieldtype": "Data",
+    "label": "Title",
+    "reqd": 1,
+    "bold": 1,
+    "in_list_view": 1,
+    "in_standard_filter": 1
+   },
+   {
+    "fieldname": "summary",
+    "fieldtype": "Text",
+    "label": "Summary",
+    "reqd": 1,
+    "description": "One or two sentences shown on the card"
+   },
+   {
+    "fieldname": "column_break_status",
+    "fieldtype": "Column Break"
+   },
+   {
+    "fieldname": "published",
+    "fieldtype": "Check",
+    "label": "Published",
+    "default": "1",
+    "in_list_view": 1,
+    "description": "Shows this article in the Published externally section of /articles"
+   },
+   {
+    "fieldname": "section_break_source",
+    "fieldtype": "Section Break",
+    "label": "Publisher and Link"
+   },
+   {
+    "fieldname": "publisher",
+    "fieldtype": "Data",
+    "label": "Publisher",
+    "reqd": 1,
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "description": "Short name shown on the card and button, e.g. IDR or Indian Express"
+   },
+   {
+    "fieldname": "publisher_logo",
+    "fieldtype": "Attach Image",
+    "label": "Publisher Logo",
+    "description": "Upload the logo here so it is served from our site. Wide logos on a white or transparent background work best"
+   },
+   {
+    "fieldname": "url",
+    "fieldtype": "Data",
+    "label": "Article URL",
+    "options": "URL",
+    "reqd": 1,
+    "description": "Full https:// link to the article on the publisher's site"
+   },
+   {
+    "fieldname": "column_break_byline",
+    "fieldtype": "Column Break"
+   },
+   {
+    "fieldname": "published_on",
+    "fieldtype": "Date",
+    "label": "Published On",
+    "reqd": 1,
+    "in_list_view": 1,
+    "description": "Sets the order on the page, newest first"
+   },
+   {
+    "fieldname": "author",
+    "fieldtype": "Data",
+    "label": "Author",
+    "description": "Byline as shown on the card, e.g. Shweta Jain Chaudhury"
+   }
+  ],
+  "permissions": [
+   {
+    "role": "System Manager",
+    "read": 1,
+    "write": 1,
+    "create": 1,
+    "delete": 1,
+    "email": 1,
+    "export": 1,
+    "print": 1,
+    "report": 1,
+    "select": 1,
+    "share": 1,
+    "import": 1
+   }
+  ],
+  "allow_import": 1
+ }
+]

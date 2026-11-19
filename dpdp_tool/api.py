@@ -780,6 +780,46 @@ def get_events():
         return []
 
 
+def _fmt_date(d):
+    """Card date, e.g. 16 Nov 2026; empty if no date."""
+    return f"{d.day} {d.strftime('%b %Y')}" if d else ""
+
+
+def get_external_articles():
+    """Published DPDP External Article records for /articles, newest first.
+
+    Read server-side by articles.py (not whitelisted). Links must be https; logos
+    must be public uploads on our own site, so the page makes no request to a publisher.
+    """
+    try:
+        rows = frappe.get_all(
+            "DPDP External Article",
+            filters={"published": 1},
+            fields=["title", "summary", "publisher", "publisher_logo",
+                    "url", "published_on", "author"],
+            order_by="published_on desc, creation desc",
+        )
+    except Exception as e:
+        frappe.log_error(f"DPDP get_external_articles error: {e}", "DPDP API")
+        return []
+    articles = []
+    for r in rows:
+        url = (r.get("url") or "").strip()
+        if not url.lower().startswith("https://"):
+            continue
+        logo = (r.get("publisher_logo") or "").strip()
+        articles.append({
+            "title": r["title"],
+            "summary": r.get("summary") or "",
+            "publisher": r["publisher"],
+            "logo": logo if logo.startswith("/files/") else "",
+            "url": url,
+            "date": _fmt_date(r.get("published_on")),
+            "author": r.get("author") or "",
+        })
+    return articles
+
+
 # Tech4Dev blog (WordPress) — public posts and author names only; no user data is sent.
 WP_API = "https://projecttech4dev.org/wp-json/wp/v2"
 
@@ -807,7 +847,7 @@ def _wp_post_to_article(post, authors=None):
     return {
         "title": _wp_text(post.get("title", {}).get("rendered")),
         "summary": _wp_text(post.get("excerpt", {}).get("rendered"), max_len=180),
-        "date": f"{d.day} {d.strftime('%b %Y')}",
+        "date": _fmt_date(d),
         "author": (authors or {}).get(post.get("author"), ""),
         "image": _wp_onsite(post.get("jetpack_featured_media_url")),
         "link": _wp_onsite(post.get("link")),
